@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder.WatchKit.Storyboard" version="3.0" toolsVersion="13196" targetRuntime="watchKit" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="AgC-eL-Hgc">
+    <device id="watch38" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="watchOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13173"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBWatchKitPlugin" version="13051"/>
+    </dependencies>
+    <scenes>
+        <!--Interface Controller-->
+        <scene sceneID="aou-V4-d1y">
+            <objects>
+                <controller id="AgC-eL-Hgc" customClass="InterfaceController" customModule="Watch_Podcast" customModuleProvider="target">
+                    <items>
+                        <table alignment="left" id="ePh-l9-J37">
+                            <items>
+                                <tableRow identifier="podcastRow" id="2LV-Cm-KcT" customClass="PodcastRow" customModule="Watch_Podcast_Extension">
+                                    <group key="rootItem" width="1" height="0.0" alignment="left" id="qGz-wJ-Xtq">
+                                        <items>
+                                            <label width="1" alignment="left" verticalAlignment="center" text="Label" textAlignment="left" numberOfLines="0" id="eYs-cu-OXh"/>
+                                        </items>
+                                    </group>
+                                    <connections>
+                                        <outlet property="podcastName" destination="eYs-cu-OXh" id="xT8-yJ-DSl"/>
+                                    </connections>
+                                </tableRow>
+                            </items>
+                        </table>
+                    </items>
+                    <connections>
+                        <outlet property="tableView" destination="ePh-l9-J37" id="PYt-0g-XdE"/>
+                    </connections>
+                </controller>
+            </objects>
+        </scene>
+        <!--podcastPlayer-->
+        <scene sceneID="Uq6-Nu-v32">
+            <objects>
+                <controller identifier="podcastPlayer" title="podcastPlayer" id="RWs-jK-SQh" customClass="PodcastPlayerWKIC" customModule="Watch_Podcast_Extension">
+                    <items>
+                        <group width="1" alignment="left" layout="vertical" spacing="25" id="OnS-ff-2fe">
+                            <items>
+                                <group width="1" alignment="left" id="nfK-j0-iTv">
+                                    <items>
+                                        <label width="1" alignment="left" text="Label" numberOfLines="0" id="hl2-zw-tow"/>
+                                    </items>
+                                </group>
+                                <group alignment="center" spacing="10" id="7FS-Ud-OVn">
+                                    <items>
+                                        <button width="35" height="35" alignment="left" backgroundImage="Previous" id="vij-Bz-7F9">
+                                            <connections>
+                                                <action selector="previousButtonPressed" destination="RWs-jK-SQh" id="c92-v6-3Ui"/>
+                                            </connections>
+                                        </button>
+                                        <button width="35" height="35" alignment="center" backgroundImage="PlayPause" id="V2D-iT-ZBR">
+                                            <connections>
+                                                <action selector="playButtonPressed" destination="RWs-jK-SQh" id="uRe-O5-P60"/>
+                                            </connections>
+                                        </button>
+                                        <button width="35" height="35" alignment="center" backgroundImage="Next" id="wgL-XO-QzX">
+                                            <connections>
+                                                <action selector="nextButtonPressed" destination="RWs-jK-SQh" id="KTs-Lb-Lck"/>
+                                            </connections>
+                                        </button>
+                                    </items>
+                                    <edgeInsets key="margins" left="2" right="2" top="0.0" bottom="0.0"/>
+                                </group>
+                            </items>
+                        </group>
+                    </items>
+                    <connections>
+                        <outlet property="titleLabel" destination="hl2-zw-tow" id="SI9-9J-iU1"/>
+                    </connections>
+                </controller>
+            </objects>
+            <point key="canvasLocation" x="264" y="54"/>
+        </scene>
+    </scenes>
+</document>

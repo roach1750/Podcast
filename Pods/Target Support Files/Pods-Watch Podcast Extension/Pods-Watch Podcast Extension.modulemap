@@ -1,0 +1,6 @@
+framework module Pods_Watch_Podcast_Extension {
+  umbrella header "Pods-Watch Podcast Extension-umbrella.h"
+
+  export *
+  module * { export * }
+}
