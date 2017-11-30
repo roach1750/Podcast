@@ -11,13 +11,16 @@ import AVFoundation
 import MediaPlayer
 import RealmSwift
 import NVActivityIndicatorView
+import KDEAudioPlayer
 
 class PodcastPlayerVC: UIViewController {
     
     var episode: Episode? {
         didSet{
             print("episode set")
-            setUpActivityView()
+            if SingletonPlayerDelegate.sharedInstance.player.state == .buffering {
+                setUpActivityView()
+            }
         }
     }
     
@@ -43,37 +46,31 @@ class PodcastPlayerVC: UIViewController {
     
     override func viewDidLoad() {
         setUpVolumeView()
-        setUpRemoteCommandCenter()
         setUpRouteButtonView()
-        updateNowPlayingInfoForCurrentPlaybackItem()
-            
-        NotificationCenter.default.addObserver(self, selector: #selector(PodcastPlayerVC.playerFinishedPlaying),
-                                               name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: EpisodePlayer.sharedInstance.audioPlayer.currentItem)
-        
+        SingletonPlayerDelegate.sharedInstance.player.delegate = self
         super.viewDidLoad()
     }
     
     func reloadImage() {
-        if EpisodePlayer.sharedInstance.nowPlayingPodcast?.artwork600x600 != nil {
-            podcastImageView.image = UIImage(data: (EpisodePlayer.sharedInstance.nowPlayingPodcast?.artwork600x600)!)
+        if SingletonPlayerDelegate.sharedInstance.nowPlayingPodcast?.artwork600x600 != nil {
+            podcastImageView.image = UIImage(data: (SingletonPlayerDelegate.sharedInstance.nowPlayingPodcast?.artwork600x600)!)
         }
     }
     
     
     override func viewWillAppear(_ animated: Bool) {
-        self.episode = EpisodePlayer.sharedInstance.nowPlayingEpisode
+        if episode != SingletonPlayerDelegate.sharedInstance.nowPlayingEpisode {
+            episode = SingletonPlayerDelegate.sharedInstance.nowPlayingEpisode
+        }
         self.titleLabel.text = episode?.title
         setUpLabelsForAudioPlayer()
-        setUpPlayPauseButtonLabels()
         UIApplication.shared.statusBarStyle = .lightContent
-        
-        if EpisodePlayer.sharedInstance.nowPlayingPodcast?.artwork600x600 != nil {
-            podcastImageView.image = UIImage(data: (EpisodePlayer.sharedInstance.nowPlayingPodcast?.artwork600x600)!)
+        if SingletonPlayerDelegate.sharedInstance.nowPlayingPodcast?.artwork600x600 != nil {
+            podcastImageView.image = UIImage(data: (SingletonPlayerDelegate.sharedInstance.nowPlayingPodcast?.artwork600x600)!)
         }
         else {
             NotificationCenter.default.addObserver(self, selector: #selector(PodcastPlayerVC.reloadImage), name: NSNotification.Name(rawValue: "podcastArtworkDownloaded"), object: nil)
         }
-        
     }
     
     
@@ -114,64 +111,24 @@ class PodcastPlayerVC: UIViewController {
         routeButtonView.addSubview(routeView)
     }
     
-    func setUpRemoteCommandCenter() {
-        UIApplication.shared.beginReceivingRemoteControlEvents()
-        let commandCenter = MPRemoteCommandCenter.shared()
-        
-        commandCenter.pauseCommand.addTarget { (event) -> MPRemoteCommandHandlerStatus in
-            //Update your button here for the pause command
-            EpisodePlayer.sharedInstance.audioPlayer.pause()
-            return .success
-        }
-        
-        commandCenter.playCommand.addTarget { (event) -> MPRemoteCommandHandlerStatus in
-            EpisodePlayer.sharedInstance.audioPlayer.play()
-            return .success
-        }
-    }
-    
-    func playerFinishedPlaying() {
-        print("episode finished playing")
-        RealmInteractor().setEpisodeToPlayed(episode: episode!)
-    }
-    
-    func updateNowPlayingInfoForCurrentPlaybackItem() {
-        
-        guard let currentEpisode = EpisodePlayer.sharedInstance.nowPlayingEpisode, let currentPodcast = EpisodePlayer.sharedInstance.nowPlayingPodcast else {
-            return
-        }
-        
-        var nowPlayingInfo = [MPMediaItemPropertyTitle: currentEpisode.title! ,
-                              MPMediaItemPropertyArtist: currentPodcast.name!,
-                              MPMediaItemPropertyPlaybackDuration: currentEpisode.duration,
-                              MPNowPlayingInfoPropertyPlaybackRate: NSNumber(value: 1.0 as Float)] as [String : Any]
-        
-        if let image = UIImage(data: currentPodcast.artwork100x100!) {
-            let size = CGSize(width: 100.0, height: 100.0)
-            let albumArt = MPMediaItemArtwork(boundsSize:size) { sz in
-                return image
-            }
-            nowPlayingInfo[MPMediaItemPropertyArtwork] = albumArt
-        }
-        MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
-    }
+
     
     @IBAction func playBackSpeedButtonPressed(_ sender: UIButton) {
         if sender.titleLabel?.text == "1x" {
             playBackSpeedButton.setTitle("2x", for: .normal)
-            EpisodePlayer.sharedInstance.audioPlayer.rate = 2.0
+            SingletonPlayerDelegate.sharedInstance.adjustPlaybackRate(rate: 2.0)
         }
         else if sender.titleLabel?.text == "2x" {
             playBackSpeedButton.setTitle("3x", for: .normal)
-            EpisodePlayer.sharedInstance.audioPlayer.rate = 3.0
+            SingletonPlayerDelegate.sharedInstance.adjustPlaybackRate(rate: 3.0)
         }
         else if sender.titleLabel?.text == "3x" {
             playBackSpeedButton.setTitle("1/2x", for: .normal)
-            EpisodePlayer.sharedInstance.audioPlayer.rate = 0.5
+            SingletonPlayerDelegate.sharedInstance.adjustPlaybackRate(rate: 0.5)
         }
         else if sender.titleLabel?.text == "1/2x" {
             playBackSpeedButton.setTitle("1x", for: .normal)
-            EpisodePlayer.sharedInstance.audioPlayer.rate = 1.0
+            SingletonPlayerDelegate.sharedInstance.adjustPlaybackRate(rate: 1.0)
         }
     }
     
@@ -181,64 +138,29 @@ class PodcastPlayerVC: UIViewController {
     }
     
     @IBAction func seekSliderAdjusted(_ sender: UISlider) {
-        EpisodePlayer.sharedInstance.seekToSeconds(seconds: Double(sender.value))
+        SingletonPlayerDelegate.sharedInstance.player.seek(to: TimeInterval(sender.value))
     }
+        
     
     func setUpLabelsForAudioPlayer() {
+
+        if episode?.duration != 0 && episode?.currentPlaybackDuration != 0 {
+            let currentTime = episode?.currentPlaybackDuration
+            let duration  = episode?.duration
+            seekSlider.maximumValue = Float(duration!)
+            let timeRemaining = duration! - currentTime!
+            self.adjustTimeLabel(label: self.currentTimeLabel, duration: Int(currentTime!))
+            self.adjustTimeLabel(label: self.timeRemainingLabel, duration: Int(timeRemaining))
+            self.seekSlider.setValue(Float(currentTime!), animated: false)
+            SingletonPlayerDelegate.sharedInstance.player.seek(to: (episode?.currentPlaybackDuration)!)
+            
+        }
+        else {
             adjustTimeLabel(label: currentTimeLabel, duration: 0)
             adjustTimeLabel(label: timeRemainingLabel, duration: 0)
             seekSlider.setValue(0.0, animated: false)
-            
-            let interval = CMTimeMake(1, 1)
-            EpisodePlayer.sharedInstance.audioPlayer.addPeriodicTimeObserver(forInterval: interval, queue: DispatchQueue.main, using: { (time) in
-
-                
-                if EpisodePlayer.sharedInstance.audioPlayer.currentItem?.status == AVPlayerItemStatus.readyToPlay {
-                    if (EpisodePlayer.sharedInstance.audioPlayer.currentItem?.isPlaybackLikelyToKeepUp) != nil && EpisodePlayer.sharedInstance.isPlaying == true {
-                        if self.activityView != nil && self.activityView?.isHidden == false {
-                            self.activityView?.stopAnimating()
-                            self.activityView?.isHidden = true
-                        }
-                    }
-                }
-                
-                
-                let currentTime = CMTimeGetSeconds(EpisodePlayer.sharedInstance.audioPlayer.currentTime())
-                guard let duration  = EpisodePlayer.sharedInstance.audioPlayer.currentItem?.duration else{
-                    return
-                }
-            
-                let timeRemaining = CMTimeGetSeconds(duration) - currentTime 
-                
-                guard !(timeRemaining.isNaN || timeRemaining.isInfinite) else {
-                    return
-                }
-                
-                self.adjustTimeLabel(label: self.currentTimeLabel, duration: Int(currentTime))
-                
-                self.adjustTimeLabel(label: self.timeRemainingLabel, duration: Int(timeRemaining))
-                
-                //slider - need to get this originally
-                self.seekSlider.maximumValue = Float(CMTimeGetSeconds(duration)) 
-                self.seekSlider.setValue(Float(currentTime), animated: true)
-                
-            })
-            
-    }
-    
-    func setUpPlayPauseButtonLabels() {
-        if episode != nil {
-        
-        if EpisodePlayer.sharedInstance.isPlaying {
-            playPauseButton.setImage(UIImage(named: "Pause Button"), for: .normal)
-        }
-        else {
-            playPauseButton.setImage(UIImage(named: "Play Button"), for: .normal)
-        }
         }
     }
-    
-    
     
     func adjustTimeLabel(label:UILabel, duration: Int) {
         let (h,m,s) = secondsToHoursMinutesSeconds(seconds: duration)
@@ -258,22 +180,21 @@ class PodcastPlayerVC: UIViewController {
     
     
     @IBAction func playPauseButtonPressed(_ sender: UIButton) {
-        if EpisodePlayer.sharedInstance.isPlaying {
-            EpisodePlayer.sharedInstance.audioPlayer.pause()
+        if SingletonPlayerDelegate.sharedInstance.isPlaying {
+            SingletonPlayerDelegate.sharedInstance.pause()
         }
         else {
-            EpisodePlayer.sharedInstance.audioPlayer.play()
+            SingletonPlayerDelegate.sharedInstance.play()
         }
-        setUpPlayPauseButtonLabels()
     }
     
 
     @IBAction func skipForwardButtonPressed(_ sender: UIButton) {
-        EpisodePlayer.sharedInstance.skipForward()
+        SingletonPlayerDelegate.sharedInstance.skipForward()
     }
     
     @IBAction func skipBackwardButtonPressed(_ sender: UIButton) {
-        EpisodePlayer.sharedInstance.skipBackward()
+        SingletonPlayerDelegate.sharedInstance.skipBackward()
 
     }
     
@@ -284,3 +205,86 @@ class PodcastPlayerVC: UIViewController {
     
     
 }
+
+extension PodcastPlayerVC: AudioPlayerDelegate {
+    func audioPlayer(_ audioPlayer: AudioPlayer, didChangeStateFrom from: AudioPlayerState, to state: AudioPlayerState) {
+        print("did change state called from: \(from) to: \(state)")
+        switch state {
+        case .playing:
+            if self.activityView != nil && self.activityView?.isHidden == false {
+                self.activityView?.stopAnimating()
+                self.activityView?.isHidden = true
+            }
+            playPauseButton.setImage(UIImage(named: "Pause Button"), for: .normal)
+            SingletonPlayerDelegate.sharedInstance.isPlaying = true
+        case .paused:
+            playPauseButton.setImage(UIImage(named: "Play Button"), for: .normal)
+            SingletonPlayerDelegate.sharedInstance.isPlaying = false
+        case .stopped:
+            //reached the end of the episode:
+            RealmInteractor().setEpisodeToPlayed(episode: episode!)
+        default:
+            return
+        }
+    }
+    
+    func audioPlayer(_ audioPlayer: AudioPlayer, didFindDuration duration: TimeInterval, for item: AudioItem) {
+        if episode?.duration == 0 {
+            RealmInteractor().setEpisodeDuration(episode: episode!, duration: duration)
+            seekSlider.maximumValue = Float(duration)
+            self.adjustTimeLabel(label: self.currentTimeLabel, duration: 0)
+            self.adjustTimeLabel(label: self.timeRemainingLabel, duration: Int(duration))
+        }
+
+    }
+    
+    func audioPlayer(_ audioPlayer: AudioPlayer, didUpdateProgressionTo time: TimeInterval, percentageRead: Float) {
+        seekSlider.value = Float(time)
+        let currentTime = Double(time)
+        RealmInteractor().setEpisodeCurrentPlaybackDuration(episode: episode!, currentPlaybackDuration: Double(currentTime))
+        let duration  = episode?.duration
+        let timeRemaining = duration! - currentTime
+        self.adjustTimeLabel(label: self.currentTimeLabel, duration: Int(currentTime))
+        self.adjustTimeLabel(label: self.timeRemainingLabel, duration: Int(timeRemaining))
+    }
+}
+
+
+//    func setUpRemoteCommandCenter() {
+//        UIApplication.shared.beginReceivingRemoteControlEvents()
+//        let commandCenter = MPRemoteCommandCenter.shared()
+//
+//        commandCenter.pauseCommand.addTarget { (event) -> MPRemoteCommandHandlerStatus in
+//            //Update your button here for the pause command
+//            EpisodePlayer.sharedInstance.audioPlayer.pause()
+//            return .success
+//        }
+//
+//        commandCenter.playCommand.addTarget { (event) -> MPRemoteCommandHandlerStatus in
+//            EpisodePlayer.sharedInstance.audioPlayer.play()
+//            return .success
+//        }
+//    }
+//
+
+//    func updateNowPlayingInfoForCurrentPlaybackItem() {
+//        guard let currentEpisode = EpisodePlayer.sharedInstance.nowPlayingEpisode, let currentPodcast = EpisodePlayer.sharedInstance.nowPlayingPodcast else {
+//            return
+//        }
+//        var nowPlayingInfo = [MPMediaItemPropertyTitle: currentEpisode.title! ,
+//                              MPMediaItemPropertyArtist: currentPodcast.name!,
+//                              MPMediaItemPropertyPlaybackDuration: currentEpisode.duration,
+//                              MPNowPlayingInfoPropertyPlaybackRate: NSNumber(value: 1.0 as Float)] as [String : Any]
+//        if let image = UIImage(data: currentPodcast.artwork100x100!) {
+//            let size = CGSize(width: 100.0, height: 100.0)
+//            let albumArt = MPMediaItemArtwork(boundsSize:size) { sz in
+//                return image
+//            }
+//            nowPlayingInfo[MPMediaItemPropertyArtwork] = albumArt
+//        }
+//        MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
+//    }
+
+
+
+

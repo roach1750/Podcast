@@ -25,7 +25,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         UITabBar.appearance().backgroundImage = UIImage()
         UITabBar.appearance().shadowImage = UIImage()
 
-
         let audioSession = AVAudioSession.sharedInstance()
         
         do {
@@ -60,7 +59,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return true
 
     }
-
+    
+    override func remoteControlReceived(with event: UIEvent?) {
+        if let event = event {
+            SingletonPlayerDelegate.sharedInstance.player.remoteControlReceived(with: event)
+        }
+    }
+    
     func application(_ application: UIApplication, performFetchWithCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
         
         print("background app refresh called")

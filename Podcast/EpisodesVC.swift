@@ -139,19 +139,19 @@ class EpisodesVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
             cell.contentView.alpha = 1.0
         }
         
-        if episode == EpisodePlayer.sharedInstance.nowPlayingEpisode {
+        if episode == SingletonPlayerDelegate.sharedInstance.nowPlayingEpisode {
             cell.specsLabel.text = "Now Playing"
             cell.specsLabel.textColor = UIColor.green
         }
         else if episode.currentPlaybackDuration != 0 && episode.isPlayed != true {
-            let timeRemaining = episode.duration - episode.currentPlaybackDuration
+            let timeRemaining = episode.estimatedDuration - episode.currentPlaybackDuration
             let minutesRemainingString = generateTimeString(duration: Int(timeRemaining)) + " Remaining"
             cell.specsLabel.text = minutesRemainingString
             cell.specsLabel.textColor = UIColor.red
         }
         else {
             let sizeInMB = (episode.fileSize) / 1048576
-            cell.specsLabel.text =  generateTimeString(duration: Int((episode.duration))) + ", " + String(format:"%.1f", sizeInMB) + " MB"
+            cell.specsLabel.text =  generateTimeString(duration: Int((episode.estimatedDuration))) + ", " + String(format:"%.1f", sizeInMB) + " MB"
             cell.specsLabel.textColor = UIColor.black
         }
         
@@ -164,22 +164,12 @@ class EpisodesVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         let date = dates![indexPath.section]
         let episode = results![date]![indexPath.row]
         
-//        if episode.soundDataList.count == 0 {
-//            let PD = Downloader()
-//            PD.downloadInvidualEpisode(episode: episode)
-//        }
-//        else {
-//            //start the podcast player and go to now playing tab
-//
-////            if podcast?.artwork600x600 == nil {
-////                Downloader().downloadImageForPodcast(podcastID: podcast!, highRes: true)
-////            }
-        
-
-            EpisodePlayer.sharedInstance.initalizeViewAndHadleEpisode(episode: episode)
-            EpisodePlayer.sharedInstance.nowPlayingPodcast = podcast
-            tabBarController?.selectedIndex = 2
-//        }
+        //If the selected episode isn't the one playing:
+        if episode != SingletonPlayerDelegate.sharedInstance.nowPlayingEpisode {
+            SingletonPlayerDelegate.sharedInstance.nowPlayingPodcast = podcast
+            SingletonPlayerDelegate.sharedInstance.initalizeViewAndHadleEpisode(episode: episode)
+        }
+        tabBarController?.selectedIndex = 2
         tableView.deselectRow(at: indexPath, animated: false)
     }
     

@@ -188,10 +188,10 @@
                                         <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="SX6-Wu-Fqh" userLabel="seekSlider">
+                                    <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="SX6-Wu-Fqh" userLabel="seekSlider">
                                         <rect key="frame" x="48" y="0.0" width="263" height="31"/>
                                         <connections>
-                                            <action selector="seekSliderAdjusted:" destination="h9o-AN-VcD" eventType="valueChanged" id="Uzi-KX-Szo"/>
+                                            <action selector="seekSliderAdjusted:" destination="h9o-AN-VcD" eventType="valueChanged" id="F9V-fm-wPb"/>
                                         </connections>
                                     </slider>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="10:11" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pLa-5P-Oda" userLabel="RemainingTime">

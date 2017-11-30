@@ -15,7 +15,9 @@ class Episode: Object {
     @objc dynamic var title: String?
     @objc dynamic var descript: String?
     @objc dynamic var publishedDate: Date?
+    @objc dynamic var estimatedDuration = 0.0
     @objc dynamic var duration = 0.0
+
     @objc dynamic var currentPlaybackDuration = 0.0
 
     @objc dynamic var downloadURL: String?

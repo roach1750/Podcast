@@ -1,0 +1,126 @@
+//
+//  SingletonPlayerDelegate.swift
+//  Podcast
+//
+//  Created by Andrew Roach on 11/19/17.
+//  Copyright © 2017 Andrew Roach. All rights reserved.
+//
+
+import UIKit
+import KDEAudioPlayer
+import MediaPlayer
+
+class SingletonPlayerDelegate: AudioPlayerDelegate {
+    
+    static let sharedInstance: SingletonPlayerDelegate = {
+        let instance = SingletonPlayerDelegate()
+        return instance
+    }()
+    var nowPlayingEpisode: Episode?
+    var nowPlayingPodcast: Podcast?
+    
+    let player = AudioPlayer()
+    var isPlaying = Bool()
+    
+    fileprivate let seekDuration: Float64 = 15
+    
+    
+    func initalizeViewAndHadleEpisode(episode: Episode) {
+        if episode != nowPlayingEpisode {
+            nowPlayingEpisode = episode
+            playEpisodeFromStream(episode: episode)
+        }
+    }
+    
+    func playEpisodeFromStream(episode: Episode) {
+        let url = URL(string: episode.downloadURL!)
+        let item = AudioItem(mediumQualitySoundURL: url)
+        setUpRemoteCommandCenter(item: item)
+        player.play(item: item!)
+    }
+    
+    func play() {
+        player.resume()
+        isPlaying = true
+    }
+    
+    func pause() {
+        player.pause()
+        isPlaying = false
+    }
+    
+    func stop() {
+        player.stop()
+    }
+    
+    func resume() {
+        player.resume()
+    }
+    
+    func adjustPlaybackRate(rate: Float) {
+        player.rate = rate
+    }
+    
+    func skipForward() {
+        let playerCurrentTime = player.currentItemProgression
+        let newTime = playerCurrentTime! + seekDuration
+        player.seek(to: newTime)
+    }
+    
+    
+    
+    func skipBackward() {
+        let playerCurrentTime = player.currentItemProgression
+        var newTime = playerCurrentTime! - seekDuration
+        if newTime < 0 {
+            newTime = 0
+        }
+        player.seek(to: newTime)
+    }
+    
+    
+    //Set up MPRemoteCommandCenter:
+    
+    
+    func setUpRemoteCommandCenter(item: AudioItem?) {
+        if let imageData = nowPlayingPodcast?.artwork100x100 {
+            if let image = UIImage(data: imageData) {
+                item?.artwork = MPMediaItemArtwork.init(boundsSize: image.size, requestHandler: { (size) -> UIImage in
+                    return image
+                })
+            }
+        }
+        item?.artist = nowPlayingPodcast?.name
+        item?.title = nowPlayingEpisode?.title
+        
+        let remoteCommandCenter = MPRemoteCommandCenter.shared()
+        
+        remoteCommandCenter.pauseCommand.addTarget { (event) -> MPRemoteCommandHandlerStatus in
+            //Update your button here for the pause command
+            self.pause()
+            return .success
+        }
+        
+        remoteCommandCenter.playCommand.addTarget { (event) -> MPRemoteCommandHandlerStatus in
+            self.play()
+            return .success
+        }
+        
+        remoteCommandCenter.skipForwardCommand.addTarget { (event) -> MPRemoteCommandHandlerStatus in
+            self.skipForward()
+            return .success
+        }
+        
+        remoteCommandCenter.skipBackwardCommand.addTarget { (event) -> MPRemoteCommandHandlerStatus in
+            self.skipBackward()
+            return .success
+        }
+        
+        remoteCommandCenter.changePlaybackPositionCommand.addTarget { (event) -> MPRemoteCommandHandlerStatus in
+            self.player.seek(to:(event as! MPChangePlaybackPositionCommandEvent).positionTime)
+            return .success
+        }
+
+    }
+    
+}

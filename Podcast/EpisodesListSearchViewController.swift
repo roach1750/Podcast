@@ -99,7 +99,7 @@ class EpisodesListSearchViewController: UIViewController,UITableViewDataSource, 
         formatter.dateFormat = "M-dd-yy"
         let dateString = formatter.string(from: (episode.publishedDate!))
         let sizeInMB = (episode.fileSize) / 1048576
-        cell.specsLabel.text = dateString + ", " + generateTimeString(duration: Int((episode.duration))) + ", " + String(format:"%.1f", sizeInMB) + " MB"
+        cell.specsLabel.text = dateString + ", " + generateTimeString(duration: Int((episode.estimatedDuration))) + ", " + String(format:"%.1f", sizeInMB) + " MB"
         cell.longDescriptionLabel.text = episode.descript
         return cell
     }

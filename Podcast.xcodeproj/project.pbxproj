@@ -16,6 +16,7 @@
 		2122CDA21F8D1686009A0EB5 /* ExtensionDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2122CDA11F8D1686009A0EB5 /* ExtensionDelegate.swift */; };
 		2122CDA41F8D1686009A0EB5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2122CDA31F8D1686009A0EB5 /* Assets.xcassets */; };
 		2122CDA81F8D1686009A0EB5 /* Watch Podcast.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 2122CD8E1F8D1686009A0EB5 /* Watch Podcast.app */; };
+		2129DD911FC25A380093D4E1 /* SingletonPlayerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2129DD901FC25A380093D4E1 /* SingletonPlayerDelegate.swift */; };
 		2149D6731F8D8FCC00F518D0 /* PodcastRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2149D6721F8D8FCC00F518D0 /* PodcastRow.swift */; };
 		219038831F8E72DE008BAED1 /* PodcastPlayerWKIC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 219038821F8E72DE008BAED1 /* PodcastPlayerWKIC.swift */; };
 		219038851F8EADDC008BAED1 /* EpisodeCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 219038841F8EADDC008BAED1 /* EpisodeCell.xib */; };
@@ -109,6 +110,7 @@
 		2122CDA31F8D1686009A0EB5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		2122CDA51F8D1686009A0EB5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2122CDB21F8D2846009A0EB5 /* Podcast.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Podcast.entitlements; sourceTree = "<group>"; };
+		2129DD901FC25A380093D4E1 /* SingletonPlayerDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingletonPlayerDelegate.swift; sourceTree = "<group>"; };
 		2146BCA31F8D56CA009B5C37 /* Pods_Watch_Podcast.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Pods_Watch_Podcast.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		2146BCA61F8D5768009B5C37 /* Pods_Watch_Podcast.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Pods_Watch_Podcast.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		2146BCA71F8D57E4009B5C37 /* Documents */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Documents; path = "../../Library/Mobile Documents/com~apple~CloudDocs/Documents"; sourceTree = "<group>"; };
@@ -194,6 +196,7 @@
 				21CDF0FC1F3BBDE000A6F4DC /* Episode.swift */,
 				21B66F991F8FBDBF009FC323 /* EpisodeData.swift */,
 				21B66FA01F8FF885009FC323 /* EpisodePlayer.swift */,
+				2129DD901FC25A380093D4E1 /* SingletonPlayerDelegate.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -525,6 +528,7 @@
 				"${SRCROOT}/Pods/Target Support Files/Pods-Podcast/Pods-Podcast-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/Alamofire/Alamofire.framework",
 				"${BUILT_PRODUCTS_DIR}/FeedKit/FeedKit.framework",
+				"${BUILT_PRODUCTS_DIR}/KDEAudioPlayer/KDEAudioPlayer.framework",
 				"${BUILT_PRODUCTS_DIR}/Kanna/Kanna.framework",
 				"${BUILT_PRODUCTS_DIR}/NVActivityIndicatorView/NVActivityIndicatorView.framework",
 				"${BUILT_PRODUCTS_DIR}/Realm-iOS/Realm.framework",
@@ -534,6 +538,7 @@
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Alamofire.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FeedKit.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/KDEAudioPlayer.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Kanna.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/NVActivityIndicatorView.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Realm.framework",
@@ -595,6 +600,7 @@
 				21CB11D91F943716009DC978 /* LibraryVC.swift in Sources */,
 				21B577901F99072400F5B4F1 /* PodcastTableViewCell.swift in Sources */,
 				21CDF1011F3BBF8900A6F4DC /* Downloader.swift in Sources */,
+				2129DD911FC25A380093D4E1 /* SingletonPlayerDelegate.swift in Sources */,
 				21CDF0E91F32A70F00A6F4DC /* AppDelegate.swift in Sources */,
 				21D7517E1F8C0B65001B4AF7 /* PodcastPlayerVC.swift in Sources */,
 			);

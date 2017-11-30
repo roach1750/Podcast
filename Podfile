@@ -12,6 +12,8 @@ target ‘Podcast’ do
     	pod 'Alamofire', '~> 4.5'
     	pod 'Kanna', '~> 2.1.0'
   	pod 'FeedKit', '~> 6.0'
+	pod 'KDEAudioPlayer'
+
 pod 'NVActivityIndicatorView'
 end
 

@@ -151,7 +151,7 @@ class RealmInteractor: NSObject {
         try! realm.write {
             episode.currentPlaybackDuration = currentPlaybackDuration
         }
-        let timeRemaining = episode.duration - currentPlaybackDuration
+        let timeRemaining = episode.estimatedDuration - currentPlaybackDuration
         if timeRemaining < 45 {
             setEpisodeToPlayed(episode: episode)
         }
@@ -165,6 +165,12 @@ class RealmInteractor: NSObject {
         }
     }
     
+    func setEpisodeDuration(episode: Episode, duration: Double) {
+        let realm = try! Realm()
+        try! realm.write {
+            episode.duration = duration
+        }
+    }
     
     func setPodcastToSearchResult(id: String) {
         let realm = try! Realm()

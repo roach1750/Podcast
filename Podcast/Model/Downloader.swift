@@ -142,7 +142,7 @@ class Downloader: NSObject {
                     episode.descript = item.description?.replacingOccurrences(of: "</p>", with: "").replacingOccurrences(of: "<p>", with: "").replacingOccurrences(of: "&nbsp;", with: "").replacingOccurrences(of: "&amp;", with: "") //Title without the segment
                     episode.publishedDate =  item.pubDate //Publish Date
                     if let duration = item.iTunes?.iTunesDuration {
-                        episode.duration = duration  //duration in sections
+                        episode.estimatedDuration = duration  //duration in sections
                     }
                     episode.downloadURL =  item.enclosure?.attributes?.url //this is the download URL
                     episode.fileSize =  Double((item.enclosure?.attributes?.length)!) //size in bytes
