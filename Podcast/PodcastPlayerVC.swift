@@ -146,14 +146,14 @@ class PodcastPlayerVC: UIViewController {
 
         if episode?.duration != 0 && episode?.currentPlaybackDuration != 0 {
             let currentTime = episode?.currentPlaybackDuration
-            let duration  = episode?.duration
-            seekSlider.maximumValue = Float(duration!)
-            let timeRemaining = duration! - currentTime!
+            if let duration  = episode?.duration {
+                seekSlider.maximumValue = Float(duration)
+                let timeRemaining = duration - currentTime!
             self.adjustTimeLabel(label: self.currentTimeLabel, duration: Int(currentTime!))
             self.adjustTimeLabel(label: self.timeRemainingLabel, duration: Int(timeRemaining))
             self.seekSlider.setValue(Float(currentTime!), animated: false)
             SingletonPlayerDelegate.sharedInstance.player.seek(to: (episode?.currentPlaybackDuration)!)
-            
+            }
         }
         else {
             adjustTimeLabel(label: currentTimeLabel, duration: 0)

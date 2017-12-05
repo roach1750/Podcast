@@ -21,6 +21,9 @@
 		219038831F8E72DE008BAED1 /* PodcastPlayerWKIC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 219038821F8E72DE008BAED1 /* PodcastPlayerWKIC.swift */; };
 		219038851F8EADDC008BAED1 /* EpisodeCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 219038841F8EADDC008BAED1 /* EpisodeCell.xib */; };
 		219038871F8EB01A008BAED1 /* EpisodeTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 219038861F8EB01A008BAED1 /* EpisodeTableViewCell.swift */; };
+		21B016771FCF9C500055512B /* ContainerVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21B016761FCF9C500055512B /* ContainerVC.swift */; };
+		21B016791FCF9C630055512B /* PlayerRemoteVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21B016781FCF9C630055512B /* PlayerRemoteVC.swift */; };
+		21B0167B1FCF9FFE0055512B /* TabBarVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21B0167A1FCF9FFE0055512B /* TabBarVC.swift */; };
 		21B5778E1F9906BB00F5B4F1 /* PodcastCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 21B5778D1F9906BB00F5B4F1 /* PodcastCell.xib */; };
 		21B577901F99072400F5B4F1 /* PodcastTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21B5778F1F99072400F5B4F1 /* PodcastTableViewCell.swift */; };
 		21B577921F99877400F5B4F1 /* EpisodesListSearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21B577911F99877400F5B4F1 /* EpisodesListSearchViewController.swift */; };
@@ -120,6 +123,9 @@
 		219038821F8E72DE008BAED1 /* PodcastPlayerWKIC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PodcastPlayerWKIC.swift; sourceTree = "<group>"; };
 		219038841F8EADDC008BAED1 /* EpisodeCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = EpisodeCell.xib; sourceTree = "<group>"; };
 		219038861F8EB01A008BAED1 /* EpisodeTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EpisodeTableViewCell.swift; sourceTree = "<group>"; };
+		21B016761FCF9C500055512B /* ContainerVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContainerVC.swift; sourceTree = "<group>"; };
+		21B016781FCF9C630055512B /* PlayerRemoteVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerRemoteVC.swift; sourceTree = "<group>"; };
+		21B0167A1FCF9FFE0055512B /* TabBarVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarVC.swift; sourceTree = "<group>"; };
 		21B5778D1F9906BB00F5B4F1 /* PodcastCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PodcastCell.xib; sourceTree = "<group>"; };
 		21B5778F1F99072400F5B4F1 /* PodcastTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PodcastTableViewCell.swift; sourceTree = "<group>"; };
 		21B577911F99877400F5B4F1 /* EpisodesListSearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EpisodesListSearchViewController.swift; sourceTree = "<group>"; };
@@ -250,8 +256,11 @@
 			isa = PBXGroup;
 			children = (
 				2122CDB21F8D2846009A0EB5 /* Podcast.entitlements */,
-				21CDF0EC1F32A70F00A6F4DC /* Main.storyboard */,
 				21CDF0E81F32A70F00A6F4DC /* AppDelegate.swift */,
+				21CDF0EC1F32A70F00A6F4DC /* Main.storyboard */,
+				21B016761FCF9C500055512B /* ContainerVC.swift */,
+				21B0167A1FCF9FFE0055512B /* TabBarVC.swift */,
+				21B016781FCF9C630055512B /* PlayerRemoteVC.swift */,
 				21CB11DA1F958404009DC978 /* SearchViewController.swift */,
 				21B577911F99877400F5B4F1 /* EpisodesListSearchViewController.swift */,
 				21CB11D81F943716009DC978 /* LibraryVC.swift */,
@@ -588,6 +597,7 @@
 			files = (
 				21EBD9F01F9EDCFE0052738E /* EpisodesVC.swift in Sources */,
 				21B66FA11F8FF885009FC323 /* EpisodePlayer.swift in Sources */,
+				21B0167B1FCF9FFE0055512B /* TabBarVC.swift in Sources */,
 				219038871F8EB01A008BAED1 /* EpisodeTableViewCell.swift in Sources */,
 				21CDF0FB1F3BBDC400A6F4DC /* RealmInteractor.swift in Sources */,
 				21CDF0FD1F3BBDE000A6F4DC /* Episode.swift in Sources */,
@@ -601,7 +611,9 @@
 				21B577901F99072400F5B4F1 /* PodcastTableViewCell.swift in Sources */,
 				21CDF1011F3BBF8900A6F4DC /* Downloader.swift in Sources */,
 				2129DD911FC25A380093D4E1 /* SingletonPlayerDelegate.swift in Sources */,
+				21B016791FCF9C630055512B /* PlayerRemoteVC.swift in Sources */,
 				21CDF0E91F32A70F00A6F4DC /* AppDelegate.swift in Sources */,
+				21B016771FCF9C500055512B /* ContainerVC.swift in Sources */,
 				21D7517E1F8C0B65001B4AF7 /* PodcastPlayerVC.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

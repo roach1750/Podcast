@@ -29,6 +29,7 @@ class SingletonPlayerDelegate: AudioPlayerDelegate {
         if episode != nowPlayingEpisode {
             nowPlayingEpisode = episode
             playEpisodeFromStream(episode: episode)
+            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "showPlayerRemote"), object: nil)
         }
     }
     
@@ -36,7 +37,7 @@ class SingletonPlayerDelegate: AudioPlayerDelegate {
         let url = URL(string: episode.downloadURL!)
         let item = AudioItem(mediumQualitySoundURL: url)
         setUpRemoteCommandCenter(item: item)
-        player.play(item: item!)
+        //player.play(item: item!)
     }
     
     func play() {
