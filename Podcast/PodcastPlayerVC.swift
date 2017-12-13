@@ -48,17 +48,20 @@ class PodcastPlayerVC: UIViewController {
         setUpVolumeView()
         setUpRouteButtonView()
         SingletonPlayerDelegate.sharedInstance.player.delegate = self
+        print("playerViewDidLoad")
         super.viewDidLoad()
     }
     
     func reloadImage() {
-        if SingletonPlayerDelegate.sharedInstance.nowPlayingPodcast?.artwork600x600 != nil {
-            podcastImageView.image = UIImage(data: (SingletonPlayerDelegate.sharedInstance.nowPlayingPodcast?.artwork600x600)!)
+        if let imageData = SingletonPlayerDelegate.sharedInstance.nowPlayingPodcast?.artwork600x600  {
+            podcastImageView.image = UIImage(data: imageData)
         }
     }
     
     
     override func viewWillAppear(_ animated: Bool) {
+        print("playerViewWillAppear")
+
         if episode != SingletonPlayerDelegate.sharedInstance.nowPlayingEpisode {
             episode = SingletonPlayerDelegate.sharedInstance.nowPlayingEpisode
         }
@@ -69,7 +72,7 @@ class PodcastPlayerVC: UIViewController {
             podcastImageView.image = UIImage(data: (SingletonPlayerDelegate.sharedInstance.nowPlayingPodcast?.artwork600x600)!)
         }
         else {
-            NotificationCenter.default.addObserver(self, selector: #selector(PodcastPlayerVC.reloadImage), name: NSNotification.Name(rawValue: "podcastArtworkDownloaded"), object: nil)
+//            NotificationCenter.default.addObserver(self, selector: #selector(PodcastPlayerVC.reloadImage), name: NSNotification.Name(rawValue: "podcastArtworkDownloaded"), object: nil)
         }
     }
     

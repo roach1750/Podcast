@@ -1,11 +1,11 @@
 PODS:
-  - Alamofire (4.5.1)
+  - Alamofire (4.6.0)
   - FeedKit (6.2.0)
   - Kanna (2.1.1)
   - KDEAudioPlayer (1.1.0)
-  - NVActivityIndicatorView (4.0.0):
-    - NVActivityIndicatorView/Presenter (= 4.0.0)
-  - NVActivityIndicatorView/Presenter (4.0.0)
+  - NVActivityIndicatorView (4.0.1):
+    - NVActivityIndicatorView/Presenter (= 4.0.1)
+  - NVActivityIndicatorView/Presenter (4.0.1)
   - Realm (3.0.2):
     - Realm/Headers (= 3.0.2)
   - Realm/Headers (3.0.2)
@@ -21,11 +21,11 @@ DEPENDENCIES:
   - RealmSwift
 
 SPEC CHECKSUMS:
-  Alamofire: 2d95912bf4c34f164fdfc335872e8c312acaea4a
+  Alamofire: f41a599bd63041760b26d393ec1069d9d7b917f4
   FeedKit: 48e371d0884b3bc7d87253f5ae3313c91d2a7e72
   Kanna: 9b4b086c218703f2b94f5b21a466217dd2f9332e
   KDEAudioPlayer: b3787f02b6718c2416589a7726f2633cde2cd60e
-  NVActivityIndicatorView: 54c9b93b6f25a4f467512680c0c90c09a1095cf2
+  NVActivityIndicatorView: 77ed6d7b571643e24899e7858bf9ae2ee4c21f31
   Realm: 6f23fd1f178a09342eac21bfa7c2bf4312a7a180
   RealmSwift: 695393add1b8f9d5fa75dd16e6355cf3935f71e2
 

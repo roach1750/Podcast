@@ -76,7 +76,7 @@ class ContainerVC: UIViewController {
         else {
             UIView.animate(withDuration: duration) {
                 self.tabBarController?.tabBar.isHidden = true
-                self.remoteView.frame = CGRect(x: 0, y: 75, width: self.remoteView.frame.width, height: self.view.frame.height)
+                self.remoteView.frame = CGRect(x: 0, y: 0, width: self.remoteView.frame.width, height: self.view.frame.height)
                 self.view.setNeedsDisplay()
                 self.view.layoutIfNeeded()
                 self.isSmall = false

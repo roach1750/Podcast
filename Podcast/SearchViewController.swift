@@ -23,18 +23,23 @@ class SearchViewController: UIViewController, UISearchBarDelegate, UITableViewDe
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        NotificationCenter.default.addObserver(self, selector: #selector(SearchViewController.reloadData), name: NSNotification.Name(rawValue: "searchResultsFound"), object: nil)
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(SearchViewController.reloadData), name: NSNotification.Name(rawValue: "podcastArtworkDownloaded"), object: nil)
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(SearchViewController.noResultsFound), name: NSNotification.Name(rawValue: "noSearchResultsFound"), object: nil)
 
         tableView.tableFooterView = UIView()
-        
-        
-        
     }
     
+    
+    override func viewDidAppear(_ animated: Bool) {
+        NotificationCenter.default.addObserver(self, selector: #selector(SearchViewController.reloadData), name: NSNotification.Name(rawValue: "searchResultsFound"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(SearchViewController.reloadData), name: NSNotification.Name(rawValue: "podcastArtworkDownloaded"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(SearchViewController.noResultsFound), name: NSNotification.Name(rawValue: "noSearchResultsFound"), object: nil)
+
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: "searchResultsFound"), object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: "podcastArtworkDownloaded"), object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: "noSearchResultsFound"), object: nil)
+    }
 
     
     

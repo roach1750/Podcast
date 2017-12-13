@@ -37,7 +37,7 @@ class SingletonPlayerDelegate: AudioPlayerDelegate {
         let url = URL(string: episode.downloadURL!)
         let item = AudioItem(mediumQualitySoundURL: url)
         setUpRemoteCommandCenter(item: item)
-        //player.play(item: item!)
+        player.play(item: item!)
     }
     
     func play() {
