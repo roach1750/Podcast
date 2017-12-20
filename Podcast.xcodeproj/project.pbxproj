@@ -380,7 +380,7 @@
 					2122CD8D1F8D1686009A0EB5 = {
 						CreatedOnToolsVersion = 9.0;
 						DevelopmentTeam = P44AL382B9;
-						LastSwiftMigration = 0910;
+						LastSwiftMigration = 0920;
 						ProvisioningStyle = Automatic;
 					};
 					2122CD991F8D1686009A0EB5 = {
@@ -391,7 +391,7 @@
 					21CDF0E41F32A70F00A6F4DC = {
 						CreatedOnToolsVersion = 8.3.3;
 						DevelopmentTeam = P44AL382B9;
-						LastSwiftMigration = 0910;
+						LastSwiftMigration = 0920;
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
 							com.apple.ApplicationGroups.iOS = {

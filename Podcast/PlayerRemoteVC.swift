@@ -15,7 +15,7 @@ import KDEAudioPlayer
 
 
 class PlayerRemoteVC: UIViewController {
-
+    
     @IBOutlet var podcastArtworkImageViewSmall: UIImageView!
     @IBOutlet var podcastTitleLabelSmall: UILabel!
     @IBOutlet var playPauseButtonSmall: UIButton!
@@ -23,7 +23,7 @@ class PlayerRemoteVC: UIViewController {
     @IBOutlet var smallToolbarStackView: UIStackView!
     @IBOutlet weak var volumeView: UIView!
     @IBOutlet weak var routeButtonView: UIView!
-
+    
     
     @IBOutlet var podcastArtworkImageViewLarge: UIImageView!
     @IBOutlet var titleLabelLarge: UILabel!
@@ -34,19 +34,20 @@ class PlayerRemoteVC: UIViewController {
     @IBOutlet weak var timeRemainingLabel: UILabel!
     
     @IBOutlet weak var playPauseButtonLarge: UIButton!
-
-    var activityView: NVActivityIndicatorView?
-
+    
+    var smallActivityView: NVActivityIndicatorView?
+    var largeActivityView: NVActivityIndicatorView?
     
     
     var episode: Episode? {
         didSet{
             if SingletonPlayerDelegate.sharedInstance.player.state == .buffering {
-                setUpActivityView()
+                    setUpSmallActivityView()
+                
             }
         }
     }
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(imageTapped(tapGestureRecognizer:)))
@@ -61,12 +62,16 @@ class PlayerRemoteVC: UIViewController {
         podcastTitleLabelSmall.isUserInteractionEnabled = true
         podcastTitleLabelSmall.addGestureRecognizer(tapGestureRecognizerLabel)
         
-
+        
         setUpVolumeView()
         setUpRouteButtonView()
         
+        let inset = CGFloat(7)
+        self.playPauseButtonSmall.imageEdgeInsets = UIEdgeInsets(top: inset, left: inset, bottom: inset, right: inset)
+        self.skipButtonSmall.imageEdgeInsets = UIEdgeInsets(top: inset, left: inset, bottom: inset, right: inset)
+        
         SingletonPlayerDelegate.sharedInstance.player.delegate = self
-
+        
         NotificationCenter.default.addObserver(self, selector: #selector(PlayerRemoteVC.configureView), name: NSNotification.Name(rawValue: "showPlayerRemote"), object: nil)
     }
     
@@ -82,7 +87,7 @@ class PlayerRemoteVC: UIViewController {
         }
         else {
             
-//            NotificationCenter.default.addObserver(self, selector: #selector(PodcastPlayerVC.reloadImage), name: NSNotification.Name(rawValue: "podcastArtworkDownloaded"), object: nil)
+            //            NotificationCenter.default.addObserver(self, selector: #selector(PodcastPlayerVC.reloadImage), name: NSNotification.Name(rawValue: "podcastArtworkDownloaded"), object: nil)
         }
     }
     
@@ -95,29 +100,44 @@ class PlayerRemoteVC: UIViewController {
     
     func setUpRouteButtonView() {
         
-        print(routeButtonView.bounds)
-        
         let routeView = MPVolumeView(frame: routeButtonView.bounds)
         routeView.showsVolumeSlider = false
         routeView.tintColor = UIColor.black
         //        routeView.setRouteButtonImage(UIImage(named: "AirplayButton"), for: .normal)
         routeButtonView.addSubview(routeView)
         routeButtonView.backgroundColor = UIColor.clear
-
+        
     }
     
-    func setUpActivityView() {
-        if activityView != nil {
-            activityView?.startAnimating()
-            activityView?.isHidden = false
+    func setUpSmallActivityView() {
+        //small
+        if smallActivityView != nil {
+            smallActivityView?.startAnimating()
+            smallActivityView?.isHidden = false
         }
         else{
-            let frame = CGRect(x: view.frame.width/2 - 50, y: view.frame.height/2 - 50, width: 100, height: 100)
-            activityView = NVActivityIndicatorView(frame: frame, type: .lineScalePulseOut, color: .red, padding: nil)
-            activityView?.startAnimating()
-            view.addSubview(activityView!)
+            let smallImageWidth = podcastArtworkImageViewSmall.bounds.size.width
+            let smallImageHeight = podcastArtworkImageViewSmall.bounds.size.height
+            let frame = CGRect(x: smallImageWidth/4, y: smallImageHeight/4, width: smallImageWidth / 2, height: smallImageHeight / 2)
+            smallActivityView = NVActivityIndicatorView(frame: frame, type: .lineScalePulseOut, color: .white, padding: nil)
+            smallActivityView?.startAnimating()
+            view.addSubview(smallActivityView!)
         }
-        
+    }
+    
+    func setUpLargeActivityView() {
+        if largeActivityView != nil {
+            largeActivityView?.startAnimating()
+            largeActivityView?.isHidden = false
+        }
+        else {
+            let largeImageWidth = podcastArtworkImageViewLarge.frame.size.width
+            let largeImageHeight = podcastArtworkImageViewLarge.frame.size.height
+            let frame = CGRect(x: view.frame.size.width / 2 - largeImageWidth / 8 , y: largeImageHeight/2, width: largeImageWidth / 4, height: largeImageHeight / 4)
+            largeActivityView = NVActivityIndicatorView(frame: frame, type: .lineScalePulseOut, color: .white, padding: nil)
+            largeActivityView?.startAnimating()
+            view.addSubview(largeActivityView!)
+        }
     }
     
     
@@ -129,32 +149,49 @@ class PlayerRemoteVC: UIViewController {
             podcastArtworkImageViewSmall.image = UIImage(data: artworkData)
             podcastArtworkImageViewLarge.image = UIImage(data: artworkData)
         }
-
+        
     }
     
-
+    
     
     @objc func imageTapped(tapGestureRecognizer: UITapGestureRecognizer)
     {
-        let duration = 0.3
         self.view.layoutIfNeeded()
-        //going small
-        UIView.animate(withDuration: duration) {
-            if self.view.frame.size.height > 100 {
-                self.smallToolbarStackView.isHidden = false
-                self.podcastArtworkImageViewLarge.isHidden = true
-                
-            }
-                //going large
-            else {
-                
-                self.smallToolbarStackView.isHidden = true
-                self.podcastArtworkImageViewLarge.isHidden = false
-            }
-            
+        if self.view.frame.size.height > 100 {
+            goSmall()
+        }
+        else {
+            goLarge()
         }
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: "buttonPressed"), object: nil)
     }
+    
+    let duration = 0.3
+    
+    func goSmall() {
+        UIView.animate(withDuration: duration) {
+            self.smallToolbarStackView.isHidden = false
+            self.podcastArtworkImageViewLarge.isHidden = true
+
+        }
+        if SingletonPlayerDelegate.sharedInstance.player.state == .buffering {
+            self.largeActivityView?.isHidden = true
+            self.setUpSmallActivityView()
+        }
+    }
+    
+    func goLarge() {
+        UIView.animate(withDuration: duration) {
+            self.smallToolbarStackView.isHidden = true
+            self.podcastArtworkImageViewLarge.isHidden = false
+
+        }
+        if SingletonPlayerDelegate.sharedInstance.player.state == .buffering {
+            self.smallActivityView?.isHidden = true
+            self.setUpLargeActivityView()
+        }
+    }
+    
     
     
     @IBAction func seekSliderAdjusted(_ sender: UISlider) {
@@ -231,9 +268,13 @@ extension PlayerRemoteVC: AudioPlayerDelegate {
         print("did change state called from: \(from) to: \(state)")
         switch state {
         case .playing:
-            if self.activityView != nil && self.activityView?.isHidden == false {
-                self.activityView?.stopAnimating()
-                self.activityView?.isHidden = true
+            if self.smallActivityView != nil && self.smallActivityView?.isHidden == false {
+                self.smallActivityView?.stopAnimating()
+                self.smallActivityView?.isHidden = true
+            }
+            if self.largeActivityView != nil && self.largeActivityView?.isHidden == false {
+                self.largeActivityView?.stopAnimating()
+                self.largeActivityView?.isHidden = true
             }
             playPauseButtonLarge.setImage(UIImage(named: "Pause Button"), for: .normal)
             playPauseButtonSmall.setImage(UIImage(named: "Pause Button"), for: .normal)
@@ -255,16 +296,14 @@ extension PlayerRemoteVC: AudioPlayerDelegate {
         if episode?.duration == 0 {
             RealmInteractor().setEpisodeDuration(episode: episode!, duration: duration)
         }
-            seekSlider.maximumValue = Float(duration)
-            self.adjustTimeLabel(label: self.currentTimeLabel, duration: 0)
-            self.adjustTimeLabel(label: self.timeRemainingLabel, duration: Int(duration))
+        seekSlider.maximumValue = Float(duration)
+        self.adjustTimeLabel(label: self.currentTimeLabel, duration: 0)
+        self.adjustTimeLabel(label: self.timeRemainingLabel, duration: Int(duration))
         
         
     }
     
     func audioPlayer(_ audioPlayer: AudioPlayer, didUpdateProgressionTo time: TimeInterval, percentageRead: Float) {
-        
-        
         seekSlider.setValue(Float(time), animated: true)
         let currentTime = Double(time)
         RealmInteractor().setEpisodeCurrentPlaybackDuration(episode: episode!, currentPlaybackDuration: Double(currentTime))
