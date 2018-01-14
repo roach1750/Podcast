@@ -335,15 +335,4 @@ class RealmInteractor: NSObject {
         
     }
     
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
 }

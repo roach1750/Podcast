@@ -133,13 +133,14 @@ class Downloader: NSObject {
             var newEpisodes = false
             for item in (result.rssFeed?.items)! {
                 let guid = item.guid!.value
+                print(item)
                 
                 if RealmInteractor().checkIfPodcastEpisodeExists(guid: guid!) == false {
                     let episode = Episode()
                     newEpisodes = true
                     episode.guid = item.guid!.value //Unique ID
                     episode.title = item.title //Title
-                    episode.descript = item.description?.replacingOccurrences(of: "</p>", with: "").replacingOccurrences(of: "<p>", with: "").replacingOccurrences(of: "&nbsp;", with: "").replacingOccurrences(of: "&amp;", with: "") //Title without the segment
+                    episode.descript = item.description?.replacingOccurrences(of: "<[^>]+>", with: "", options: .regularExpression, range: nil).trimmingCharacters(in: .whitespacesAndNewlines)        //Title without the segment
                     episode.publishedDate =  item.pubDate //Publish Date
                     if let duration = item.iTunes?.iTunesDuration {
                         episode.estimatedDuration = duration  //duration in sections

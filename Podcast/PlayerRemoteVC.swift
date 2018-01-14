@@ -113,16 +113,27 @@ class PlayerRemoteVC: UIViewController {
         let myVolumeView = MPVolumeView(frame: volumeView.bounds)
         myVolumeView.showsRouteButton = false
         volumeView.addSubview(myVolumeView)
-
-        
+        volumeView.willMove(toWindow: self.view.window)
+        volumeView.didMoveToSuperview()
     }
+    
     
     func setUpRouteButtonView() {
         
         let routeView = MPVolumeView(frame: routeButtonView.bounds)
         routeView.showsVolumeSlider = false
-        routeView.tintColor = UIColor.black
+//        routeView.routeButtonImage(for: .normal)?.withRenderingMode(.alwaysTemplate)
+//        routeView.tintColor = UIColor.black
+
         //        routeView.setRouteButtonImage(UIImage(named: "AirplayButton"), for: .normal)
+        
+        if let routeButton = routeView.subviews.last as? UIButton,
+            let routeButtonTemplateImage  = routeButton.currentImage?.withRenderingMode(.alwaysTemplate)
+        {
+            routeView.setRouteButtonImage(routeButtonTemplateImage, for: .normal)
+            routeView.tintColor = UIColor.gray
+        }
+    
         routeButtonView.addSubview(routeView)
         routeButtonView.backgroundColor = UIColor.clear
         
