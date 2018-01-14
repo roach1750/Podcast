@@ -202,7 +202,6 @@ class RealmInteractor: NSObject {
         let realm = try! Realm()
         let predicate = NSPredicate(format: "isSubscribed == %@", NSNumber(value: false))
         var allUnsubscribedPodcast = Array(realm.objects(Podcast.self).filter(predicate))
-        print(allUnsubscribedPodcast.count)
         if allUnsubscribedPodcast.count > 0 {
             for podcast in allUnsubscribedPodcast {
                 if podcast.isSubscribed {
@@ -215,6 +214,9 @@ class RealmInteractor: NSObject {
             
             
         try! realm.write {
+            for podcastToDelete in allUnsubscribedPodcast {
+                realm.delete(podcastToDelete.episodesList)
+            }
             realm.delete(allUnsubscribedPodcast)
         }
         }
