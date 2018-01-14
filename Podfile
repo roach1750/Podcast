@@ -8,6 +8,8 @@ use_frameworks!
 
 target ‘Podcast’ do
   	platform :ios, '10.0'
+inhibit_all_warnings!
+
 	pod 'RealmSwift'
     	pod 'Alamofire', '~> 4.5'
     	pod 'Kanna', '~> 2.1.0'

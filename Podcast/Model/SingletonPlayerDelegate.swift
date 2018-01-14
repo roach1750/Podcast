@@ -38,6 +38,12 @@ class SingletonPlayerDelegate: AudioPlayerDelegate {
         let item = AudioItem(mediumQualitySoundURL: url)
         setUpRemoteCommandCenter(item: item)
         player.play(item: item!)
+        
+    
+        
+        if episode.currentPlaybackDuration != 0 {
+            player.seek(to: episode.currentPlaybackDuration)
+        }
     }
     
     func play() {
@@ -77,6 +83,10 @@ class SingletonPlayerDelegate: AudioPlayerDelegate {
             newTime = 0
         }
         player.seek(to: newTime)
+    }
+    
+    func seekToDuration(duration: Double) {
+        player.seek(to: duration)
     }
     
     

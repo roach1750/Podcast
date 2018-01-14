@@ -168,10 +168,15 @@
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </tabBar>
+                    <userDefinedRuntimeAttributes>
+                        <userDefinedRuntimeAttribute type="number" keyPath="selectedIndex">
+                            <integer key="value" value="1"/>
+                        </userDefinedRuntimeAttribute>
+                    </userDefinedRuntimeAttributes>
                     <connections>
-                        <segue destination="Kzv-iM-bXU" kind="relationship" relationship="viewControllers" id="CbX-8h-gyz"/>
-                        <segue destination="hFj-f8-r1h" kind="relationship" relationship="viewControllers" id="9b2-m2-DfG"/>
                         <segue destination="XYb-0l-Tca" kind="relationship" relationship="viewControllers" id="SX0-CR-rx6"/>
+                        <segue destination="hFj-f8-r1h" kind="relationship" relationship="viewControllers" id="9b2-m2-DfG"/>
+                        <segue destination="Kzv-iM-bXU" kind="relationship" relationship="viewControllers" id="CbX-8h-gyz"/>
                     </connections>
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="IOX-tq-1Lq" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -834,7 +839,7 @@
                                 <rect key="frame" x="40" y="483.5" width="295" height="28"/>
                                 <color key="backgroundColor" red="0.0" green="1" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                             </view>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="SmallVolumne" translatesAutoresizingMaskIntoConstraints="NO" id="gdo-IS-ms7">
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="SmallVolumne" translatesAutoresizingMaskIntoConstraints="NO" id="gdo-IS-ms7">
                                 <rect key="frame" x="8" y="483.5" width="17" height="17"/>
                                 <constraints>
                                     <constraint firstAttribute="width" secondItem="gdo-IS-ms7" secondAttribute="height" multiplier="1:1" id="D5m-l0-312"/>
@@ -857,7 +862,7 @@
                                 </constraints>
                             </view>
                         </subviews>
-                        <color key="backgroundColor" red="0.94174087049999999" green="0.49406752440565688" blue="0.17658022054476716" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                         <constraints>
                             <constraint firstItem="BHL-q8-4uQ" firstAttribute="leading" secondItem="PRD-Ux-fpE" secondAttribute="leading" constant="8" id="0Sg-Wq-zJJ"/>
                             <constraint firstItem="PRD-Ux-fpE" firstAttribute="trailing" secondItem="BHL-q8-4uQ" secondAttribute="trailing" constant="8" id="1bf-rN-aCw"/>
@@ -896,6 +901,7 @@
                     <size key="freeformSize" width="375" height="700"/>
                     <connections>
                         <outlet property="currentTimeLabel" destination="zOG-JS-0eS" id="xH3-Mz-gB1"/>
+                        <outlet property="largeVolumeIcon" destination="76u-GU-fmi" id="i3f-eC-8ko"/>
                         <outlet property="playPauseButtonLarge" destination="Jnn-fb-uSJ" id="9kL-QE-PMl"/>
                         <outlet property="playPauseButtonSmall" destination="Est-6y-uwQ" id="mVz-K1-0cC"/>
                         <outlet property="podcastArtworkImageViewLarge" destination="bhz-2E-s3e" id="vC6-Mb-X9H"/>
@@ -905,6 +911,7 @@
                         <outlet property="seekSlider" destination="hcv-5v-AuX" id="dlS-pd-d4c"/>
                         <outlet property="skipButtonSmall" destination="t12-zE-G3n" id="giE-5G-9vn"/>
                         <outlet property="smallToolbarStackView" destination="JMC-hh-KgW" id="rq6-dL-TLU"/>
+                        <outlet property="smallVolumeIcon" destination="gdo-IS-ms7" id="hxB-AD-f1n"/>
                         <outlet property="timeRemainingLabel" destination="pDR-VN-ii2" id="PWC-rn-KBs"/>
                         <outlet property="titleLabelLarge" destination="5aK-5m-iqP" id="FAA-p4-eJN"/>
                         <outlet property="volumeView" destination="L0b-BZ-XLW" id="hcO-hR-IwL"/>

@@ -265,7 +265,6 @@
 				21B577911F99877400F5B4F1 /* EpisodesListSearchViewController.swift */,
 				21CB11D81F943716009DC978 /* LibraryVC.swift */,
 				21EBD9EF1F9EDCFE0052738E /* EpisodesVC.swift */,
-				21D7517D1F8C0B65001B4AF7 /* PodcastPlayerVC.swift */,
 				21EBD9EE1F9EDC7F0052738E /* Old */,
 				2122CD8B1F8D1470009A0EB5 /* Model */,
 				219038841F8EADDC008BAED1 /* EpisodeCell.xib */,
@@ -282,6 +281,7 @@
 		21EBD9EE1F9EDC7F0052738E /* Old */ = {
 			isa = PBXGroup;
 			children = (
+				21D7517D1F8C0B65001B4AF7 /* PodcastPlayerVC.swift */,
 				21D7517B1F8C05A6001B4AF7 /* EpisodeListVC.swift */,
 				21D9016C1F8E6219001F2265 /* SendToWatchVC.swift */,
 			);

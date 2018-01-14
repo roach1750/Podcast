@@ -92,7 +92,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 if result == true {
                 DispatchQueue.main.async {
                     let notification = UNMutableNotificationContent()
-                    notification.title = "Podcast App (Some silly name will go here)"
+                    notification.title = "Podcast App"
                     notification.body = "New Episodes Downloaded for: " + podcast.name!
                     let notificationTrigger = UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
                     let request = UNNotificationRequest(identifier: podcast.iD, content: notification, trigger: notificationTrigger)

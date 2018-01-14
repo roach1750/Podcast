@@ -38,12 +38,14 @@ class PlayerRemoteVC: UIViewController {
     var smallActivityView: NVActivityIndicatorView?
     var largeActivityView: NVActivityIndicatorView?
     
+    @IBOutlet var smallVolumeIcon: UIImageView!
+    @IBOutlet var largeVolumeIcon: UIImageView!
     
     var episode: Episode? {
         didSet{
             if SingletonPlayerDelegate.sharedInstance.player.state == .buffering {
                     setUpSmallActivityView()
-                
+                setUpLabelsForAudioPlayer()
             }
         }
     }
@@ -62,6 +64,12 @@ class PlayerRemoteVC: UIViewController {
         podcastTitleLabelSmall.isUserInteractionEnabled = true
         podcastTitleLabelSmall.addGestureRecognizer(tapGestureRecognizerLabel)
         
+        let longPressGestureRecongizerForImage = UILongPressGestureRecognizer(target: self, action: #selector(longPressOnLargeImage))
+        
+        longPressGestureRecongizerForImage.minimumPressDuration = 1.0
+        podcastArtworkImageViewLarge.isUserInteractionEnabled = true
+        podcastArtworkImageViewLarge.addGestureRecognizer(longPressGestureRecongizerForImage)
+        
         
         setUpVolumeView()
         setUpRouteButtonView()
@@ -73,6 +81,15 @@ class PlayerRemoteVC: UIViewController {
         SingletonPlayerDelegate.sharedInstance.player.delegate = self
         
         NotificationCenter.default.addObserver(self, selector: #selector(PlayerRemoteVC.configureView), name: NSNotification.Name(rawValue: "showPlayerRemote"), object: nil)
+        
+        
+        smallVolumeIcon.image = smallVolumeIcon.image!.withRenderingMode(.alwaysTemplate)
+        smallVolumeIcon.tintColor = UIColor.blue
+        
+        largeVolumeIcon.image = largeVolumeIcon.image!.withRenderingMode(.alwaysTemplate)
+        largeVolumeIcon.tintColor = UIColor.blue
+        
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -96,6 +113,8 @@ class PlayerRemoteVC: UIViewController {
         let myVolumeView = MPVolumeView(frame: volumeView.bounds)
         myVolumeView.showsRouteButton = false
         volumeView.addSubview(myVolumeView)
+
+        
     }
     
     func setUpRouteButtonView() {
@@ -165,6 +184,32 @@ class PlayerRemoteVC: UIViewController {
         }
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: "buttonPressed"), object: nil)
     }
+    
+    var episodeDescriptionTextView = UITextView()
+    
+    func longPressOnLargeImage() {
+        
+        if view.subviews.contains(episodeDescriptionTextView) != true {
+            episodeDescriptionTextView = UITextView(frame: podcastArtworkImageViewLarge.frame)
+            episodeDescriptionTextView.text = episode?.descript
+            episodeDescriptionTextView.textColor = UIColor.white
+            episodeDescriptionTextView.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.8)
+            episodeDescriptionTextView.isHidden = false
+            episodeDescriptionTextView.isEditable = false
+            episodeDescriptionTextView.isSelectable = false
+            let tgr = UITapGestureRecognizer(target: self, action: #selector(hideEpisodeDescription))
+            episodeDescriptionTextView.isUserInteractionEnabled = true
+            episodeDescriptionTextView.addGestureRecognizer(tgr)
+            view.addSubview(episodeDescriptionTextView)
+        }
+    }
+    
+
+    
+    func hideEpisodeDescription() {
+        episodeDescriptionTextView.removeFromSuperview()
+    }
+    
     
     let duration = 0.3
     
