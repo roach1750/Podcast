@@ -133,14 +133,12 @@ class Downloader: NSObject {
             var newEpisodes = false
             for item in (result.rssFeed?.items)! {
                 let guid = item.guid!.value
-                print(item)
-                
                 if RealmInteractor().checkIfPodcastEpisodeExists(guid: guid!) == false {
                     let episode = Episode()
                     newEpisodes = true
                     episode.guid = item.guid!.value //Unique ID
                     episode.title = item.title //Title
-                    episode.descript = item.description?.replacingOccurrences(of: "<[^>]+>", with: "", options: .regularExpression, range: nil).trimmingCharacters(in: .whitespacesAndNewlines)        //Title without the segment
+                    episode.descript = item.description?.replacingOccurrences(of: "<[^>]+>", with: "", options: .regularExpression, range: nil).trimmingCharacters(in: .whitespacesAndNewlines).replacingOccurrences(of: "&nbsp;", with: "")
                     episode.publishedDate =  item.pubDate //Publish Date
                     if let duration = item.iTunes?.iTunesDuration {
                         episode.estimatedDuration = duration  //duration in sections
@@ -148,7 +146,6 @@ class Downloader: NSObject {
                     episode.downloadURL =  item.enclosure?.attributes?.url //this is the download URL
                     episode.fileSize =  Double((item.enclosure?.attributes?.length)!) //size in bytes
                     
-
                     DispatchQueue.main.async {
                         RI.saveEpisodeForPodcast(episode: episode, podcast: podcast)
                     }

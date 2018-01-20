@@ -137,6 +137,7 @@ class PlayerRemoteVC: UIViewController {
         routeButtonView.addSubview(routeView)
         routeButtonView.backgroundColor = UIColor.clear
         
+        
     }
     
     func setUpSmallActivityView() {
