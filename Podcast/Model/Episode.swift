@@ -28,7 +28,8 @@ class Episode: Object {
     @objc dynamic var isPlayed = false
     @objc dynamic var isdownloadInProgress = false
     @objc dynamic var downloadProgress = 0.0
-
+    
+    @objc dynamic var podcast: Podcast?
     
     
     override static func primaryKey() -> String? {

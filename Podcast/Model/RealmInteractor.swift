@@ -278,6 +278,13 @@ class RealmInteractor: NSObject {
         }
     }
     
+    func fetchLatestEpisodes() {
+        let realm = try! Realm()
+        let latestEpisodes = realm.objects(Episode.self).sorted(byKeyPath: "publishedDate", ascending: false)
+        print(latestEpisodes)
+
+    }
+    
     func fetchPodcast(withID iD: String) -> Podcast {
         let realm = try! Realm()
         let predicate = NSPredicate(format: "iD = %@",iD)
@@ -286,6 +293,8 @@ class RealmInteractor: NSObject {
         
         return podcast
     }
+    
+    
     
     func fetchEpisodes(withIDs guids: [String]) -> [Episode] {
         let realm = try! Realm()
@@ -297,6 +306,7 @@ class RealmInteractor: NSObject {
         }
         return objectsToReturn
     }
+    
     
     
     func prepareRealmToTransferEpisodes(episodes: [Episode]) -> URL {

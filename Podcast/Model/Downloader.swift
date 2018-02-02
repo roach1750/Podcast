@@ -145,7 +145,7 @@ class Downloader: NSObject {
                     }
                     episode.downloadURL =  item.enclosure?.attributes?.url //this is the download URL
                     episode.fileSize =  Double((item.enclosure?.attributes?.length)!) //size in bytes
-                    
+                    episode.podcast = podcast
                     DispatchQueue.main.async {
                         RI.saveEpisodeForPodcast(episode: episode, podcast: podcast)
                     }
