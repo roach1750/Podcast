@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="13196" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="13771" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13173"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+        <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -21,34 +22,35 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="fFv-gd-j2T">
-                        <rect key="frame" x="8" y="8" width="100" height="100"/>
+                        <rect key="frame" x="16" y="11" width="94" height="94"/>
                         <constraints>
-                            <constraint firstAttribute="width" secondItem="fFv-gd-j2T" secondAttribute="height" multiplier="1:1" id="tNb-TJ-pxv"/>
+                            <constraint firstAttribute="width" secondItem="fFv-gd-j2T" secondAttribute="height" multiplier="1:1" id="Vnl-fJ-KZk"/>
                         </constraints>
                     </imageView>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="This is the title of the podcast that I am going to allow to be 2 lines max" textAlignment="natural" lineBreakMode="clip" numberOfLines="2" baselineAdjustment="alignBaselines" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="cdR-rA-Gj3">
-                        <rect key="frame" x="116" y="8" width="249" height="50.5"/>
+                        <rect key="frame" x="118" y="11" width="241" height="26"/>
                         <fontDescription key="fontDescription" type="boldSystem" pointSize="21"/>
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" verticalCompressionResistancePriority="751" text="Last updated Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HG4-eU-Aml">
-                        <rect key="frame" x="116" y="58" width="249" height="17"/>
+                        <rect key="frame" x="118" y="41" width="241" height="17"/>
                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                         <color key="textColor" red="0.047631848635814565" green="0.14624956629496941" blue="0.87406897668393779" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
                 </subviews>
                 <constraints>
-                    <constraint firstItem="HG4-eU-Aml" firstAttribute="leading" secondItem="fFv-gd-j2T" secondAttribute="trailing" constant="8" id="3Qp-u4-BoI"/>
-                    <constraint firstAttribute="bottom" secondItem="fFv-gd-j2T" secondAttribute="bottom" constant="7.5" id="8p9-cm-Eqq"/>
-                    <constraint firstAttribute="trailingMargin" secondItem="cdR-rA-Gj3" secondAttribute="trailing" constant="2" id="LZD-gm-5Yn"/>
-                    <constraint firstItem="fFv-gd-j2T" firstAttribute="leading" secondItem="Xke-Zo-FfB" secondAttribute="leading" constant="8" id="Qnb-rp-bjk"/>
-                    <constraint firstItem="cdR-rA-Gj3" firstAttribute="leading" secondItem="fFv-gd-j2T" secondAttribute="trailing" constant="8" id="ROa-e5-HaE"/>
-                    <constraint firstAttribute="trailingMargin" secondItem="HG4-eU-Aml" secondAttribute="trailing" constant="2" id="UYY-yJ-F05"/>
-                    <constraint firstItem="cdR-rA-Gj3" firstAttribute="top" secondItem="Xke-Zo-FfB" secondAttribute="topMargin" id="dxc-R5-V5d"/>
-                    <constraint firstItem="fFv-gd-j2T" firstAttribute="top" secondItem="Xke-Zo-FfB" secondAttribute="top" constant="8" id="eFV-cL-n8I"/>
-                    <constraint firstItem="HG4-eU-Aml" firstAttribute="top" secondItem="cdR-rA-Gj3" secondAttribute="bottom" id="qcN-n4-a9Z"/>
+                    <constraint firstItem="HG4-eU-Aml" firstAttribute="top" secondItem="cdR-rA-Gj3" secondAttribute="bottom" constant="4" id="2Ck-Q6-8Ou"/>
+                    <constraint firstItem="fFv-gd-j2T" firstAttribute="top" secondItem="Xke-Zo-FfB" secondAttribute="topMargin" id="7Dp-6a-7UB"/>
+                    <constraint firstItem="cdR-rA-Gj3" firstAttribute="trailing" secondItem="Xke-Zo-FfB" secondAttribute="trailingMargin" id="Cbd-yL-dMR"/>
+                    <constraint firstItem="cdR-rA-Gj3" firstAttribute="leading" secondItem="fFv-gd-j2T" secondAttribute="trailing" constant="8" id="CfO-df-Mrj"/>
+                    <constraint firstItem="HG4-eU-Aml" firstAttribute="trailing" secondItem="Xke-Zo-FfB" secondAttribute="trailingMargin" id="QTA-YW-EKz"/>
+                    <constraint firstItem="fFv-gd-j2T" firstAttribute="leading" secondItem="Xke-Zo-FfB" secondAttribute="leadingMargin" id="QtU-Vt-RuT"/>
+                    <constraint firstItem="fFv-gd-j2T" firstAttribute="bottom" secondItem="Xke-Zo-FfB" secondAttribute="bottomMargin" priority="750" id="d7j-gN-a5P"/>
+                    <constraint firstItem="HG4-eU-Aml" firstAttribute="leading" secondItem="fFv-gd-j2T" secondAttribute="trailing" constant="8" id="mkM-fD-Oep"/>
+                    <constraint firstItem="cdR-rA-Gj3" firstAttribute="top" secondItem="Xke-Zo-FfB" secondAttribute="topMargin" id="oQf-9D-DLB"/>
+                    <constraint firstItem="fFv-gd-j2T" firstAttribute="width" secondItem="Xke-Zo-FfB" secondAttribute="width" multiplier="0.25" id="yDe-t5-kR4"/>
                 </constraints>
             </tableViewCellContentView>
             <connections>

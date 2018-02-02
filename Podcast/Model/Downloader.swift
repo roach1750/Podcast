@@ -138,7 +138,7 @@ class Downloader: NSObject {
                     newEpisodes = true
                     episode.guid = item.guid!.value //Unique ID
                     episode.title = item.title //Title
-                    episode.descript = item.description?.replacingOccurrences(of: "<[^>]+>", with: "", options: .regularExpression, range: nil).trimmingCharacters(in: .whitespacesAndNewlines).replacingOccurrences(of: "&nbsp;", with: "")
+                    episode.descript = item.description?.replacingOccurrences(of: "<[^>]+>", with: "", options: .regularExpression, range: nil).trimmingCharacters(in: .whitespacesAndNewlines).replacingOccurrences(of: "&nbsp;", with: "").replacingOccurrences(of: "&amp;", with: "")
                     episode.publishedDate =  item.pubDate //Publish Date
                     if let duration = item.iTunes?.iTunesDuration {
                         episode.estimatedDuration = duration  //duration in sections

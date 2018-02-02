@@ -14,6 +14,7 @@ class LibraryVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        tableView.tableFooterView = UIView()
     }
     
     var results: [Podcast]?
@@ -45,7 +46,7 @@ class LibraryVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         let cell = tableView.dequeueReusableCell(withIdentifier: "podcastCell") as! PodcastTableViewCell
         cell.titleLabel.text = result.name!
         cell.lastUpdatedLabel.text = RealmInteractor().getFormattedLastUpdatedDateForPodcast(podcast: result)
-        if let imageData = result.artwork100x100 {
+        if let imageData = result.artwork600x600 {
             cell.podcastImage?.image = UIImage(data: imageData)
         }
         return cell

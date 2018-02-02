@@ -89,6 +89,10 @@ class PlayerRemoteVC: UIViewController {
         largeVolumeIcon.image = largeVolumeIcon.image!.withRenderingMode(.alwaysTemplate)
         largeVolumeIcon.tintColor = UIColor.blue
         
+        NotificationCenter.default.addObserver(self, selector: #selector(PlayerRemoteVC.airplayStatusChanged), name: .MPVolumeViewWirelessRouteActiveDidChange, object: nil)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(PlayerRemoteVC.airplayAvailableRoutesChanged), name: .MPVolumeViewWirelessRoutesAvailableDidChange, object: nil)
+
         
     }
     
@@ -117,27 +121,38 @@ class PlayerRemoteVC: UIViewController {
         volumeView.didMoveToSuperview()
     }
     
+    var routeView = MPVolumeView()
     
     func setUpRouteButtonView() {
-        
-        let routeView = MPVolumeView(frame: routeButtonView.bounds)
+        routeView = MPVolumeView(frame: routeButtonView.bounds)
         routeView.showsVolumeSlider = false
-//        routeView.routeButtonImage(for: .normal)?.withRenderingMode(.alwaysTemplate)
-//        routeView.tintColor = UIColor.black
-
-        //        routeView.setRouteButtonImage(UIImage(named: "AirplayButton"), for: .normal)
-        
-        if let routeButton = routeView.subviews.last as? UIButton,
-            let routeButtonTemplateImage  = routeButton.currentImage?.withRenderingMode(.alwaysTemplate)
-        {
-            routeView.setRouteButtonImage(routeButtonTemplateImage, for: .normal)
-            routeView.tintColor = UIColor.gray
-        }
-    
         routeButtonView.addSubview(routeView)
         routeButtonView.backgroundColor = UIColor.clear
-        
-        
+        changeRouteButtonColor(color: .gray)
+    }
+    
+    func airplayStatusChanged(_ n:Notification) {
+        print("Airplay Playing: \(routeView.isWirelessRouteActive)")
+        if routeView.isWirelessRouteActive == true {
+            changeRouteButtonColor(color: .blue)
+        }
+        else {
+            viewDidAppear(true)///Is this really the right things to do here?
+            changeRouteButtonColor(color: .gray)
+        }
+    }
+    
+    func airplayAvailableRoutesChanged(_ n: Notification) {
+        print("wireless routes changed")
+        print("Are wireless routes available: \(routeView.areWirelessRoutesAvailable)")
+    }
+    
+    func changeRouteButtonColor(color: UIColor) {
+        if let routeButton = routeView.subviews.last as? UIButton, let routeButtonTemplateImage  = routeButton.currentImage?.withRenderingMode(.alwaysTemplate)
+        {
+            routeView.setRouteButtonImage(routeButtonTemplateImage, for: .normal)
+            routeView.tintColor = color
+        }
     }
     
     func setUpSmallActivityView() {
@@ -229,7 +244,6 @@ class PlayerRemoteVC: UIViewController {
         UIView.animate(withDuration: duration) {
             self.smallToolbarStackView.isHidden = false
             self.podcastArtworkImageViewLarge.isHidden = true
-
         }
         if SingletonPlayerDelegate.sharedInstance.player.state == .buffering {
             self.largeActivityView?.isHidden = true
@@ -285,6 +299,27 @@ class PlayerRemoteVC: UIViewController {
                 label.text = String(m) + ":" + String(s)
             }
         }
+        else if h != 0 {
+            if s < 10 {
+                label.text = String(h) + ":" +  String(m) + ":" + "0" + String(s)
+                if m < 10 {
+                    label.text = String(h) + ":0" +  String(m) + ":" + "0" + String(s)
+
+                }
+                else {
+                    label.text = String(h) + ":" +  String(m) + ":" + "0" + String(s)
+                }
+            }
+            else {
+                if m < 10 {
+                    label.text = String(h) + ":0" +  String(m) + ":" + String(s)
+                    
+                }
+                else {
+                    label.text = String(h) + ":" +  String(m) + ":" + String(s)
+                }
+            }
+        }
         else {
             label.text = ""
         }
@@ -323,6 +358,7 @@ extension PlayerRemoteVC: AudioPlayerDelegate {
     
     func audioPlayer(_ audioPlayer: AudioPlayer, didChangeStateFrom from: AudioPlayerState, to state: AudioPlayerState) {
         print("did change state called from: \(from) to: \(state)")
+        
         switch state {
         case .playing:
             if self.smallActivityView != nil && self.smallActivityView?.isHidden == false {
@@ -333,13 +369,14 @@ extension PlayerRemoteVC: AudioPlayerDelegate {
                 self.largeActivityView?.stopAnimating()
                 self.largeActivityView?.isHidden = true
             }
-            playPauseButtonLarge.setImage(UIImage(named: "Pause Button"), for: .normal)
-            playPauseButtonSmall.setImage(UIImage(named: "Pause Button"), for: .normal)
-            SingletonPlayerDelegate.sharedInstance.isPlaying = true
+                self.playPauseButtonLarge.setImage(UIImage(named: "Pause Button"), for: .normal)
+                self.playPauseButtonSmall.setImage(UIImage(named: "Pause Button"), for: .normal)
+                SingletonPlayerDelegate.sharedInstance.isPlaying = true
         case .paused:
-            playPauseButtonLarge.setImage(UIImage(named: "Play Button"), for: .normal)
-            playPauseButtonSmall.setImage(UIImage(named: "Play Button"), for: .normal)
-            SingletonPlayerDelegate.sharedInstance.isPlaying = false
+            DispatchQueue.main.async {}
+                self.playPauseButtonLarge.setImage(UIImage(named: "Play Button"), for: .normal)
+                self.playPauseButtonSmall.setImage(UIImage(named: "Play Button"), for: .normal)
+                SingletonPlayerDelegate.sharedInstance.isPlaying = false
         case .stopped:
             //reached the end of the episode:
             RealmInteractor().setEpisodeToPlayed(episode: episode!)
