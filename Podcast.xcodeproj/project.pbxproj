@@ -259,10 +259,10 @@
 			children = (
 				2122CDB21F8D2846009A0EB5 /* Podcast.entitlements */,
 				21CDF0E81F32A70F00A6F4DC /* AppDelegate.swift */,
-				21CDF0EC1F32A70F00A6F4DC /* Main.storyboard */,
-				2173736020240548007AD6E6 /* LatestEpisodesVC.swift */,
 				21B016761FCF9C500055512B /* ContainerVC.swift */,
 				21B0167A1FCF9FFE0055512B /* TabBarVC.swift */,
+				21CDF0EC1F32A70F00A6F4DC /* Main.storyboard */,
+				2173736020240548007AD6E6 /* LatestEpisodesVC.swift */,
 				21B016781FCF9C630055512B /* PlayerRemoteVC.swift */,
 				21CB11DA1F958404009DC978 /* SearchViewController.swift */,
 				21B577911F99877400F5B4F1 /* EpisodesListSearchViewController.swift */,

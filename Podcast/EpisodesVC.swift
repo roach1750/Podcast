@@ -155,8 +155,6 @@ class EpisodesVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
             cell.specsLabel.textColor = UIColor.black
         }
         
-        
-        
         return cell
     }
     

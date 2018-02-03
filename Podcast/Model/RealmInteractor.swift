@@ -278,11 +278,10 @@ class RealmInteractor: NSObject {
         }
     }
     
-    func fetchLatestEpisodes() {
+    func fetchLatestEpisodes() -> [Episode]? {
         let realm = try! Realm()
         let latestEpisodes = realm.objects(Episode.self).sorted(byKeyPath: "publishedDate", ascending: false)
-        print(latestEpisodes)
-
+        return Array(latestEpisodes)
     }
     
     func fetchPodcast(withID iD: String) -> Podcast {
