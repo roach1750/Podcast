@@ -38,14 +38,16 @@ class PlayerRemoteVC: UIViewController {
     var smallActivityView: NVActivityIndicatorView?
     var largeActivityView: NVActivityIndicatorView?
     
-    @IBOutlet var smallVolumeIcon: UIImageView!
-    @IBOutlet var largeVolumeIcon: UIImageView!
+//    @IBOutlet var smallVolumeIcon: UIImageView!
+//    @IBOutlet var largeVolumeIcon: UIImageView!
     
     var episode: Episode? {
         didSet{
             if SingletonPlayerDelegate.sharedInstance.player.state == .buffering {
                     setUpSmallActivityView()
                 setUpLabelsForAudioPlayer()
+                setUpVolumeView()
+                setUpRouteButtonView()
             }
         }
     }
@@ -66,13 +68,12 @@ class PlayerRemoteVC: UIViewController {
         
         let longPressGestureRecongizerForImage = UILongPressGestureRecognizer(target: self, action: #selector(longPressOnLargeImage))
         
-        longPressGestureRecongizerForImage.minimumPressDuration = 1.0
+        longPressGestureRecongizerForImage.minimumPressDuration = 0.50
         podcastArtworkImageViewLarge.isUserInteractionEnabled = true
         podcastArtworkImageViewLarge.addGestureRecognizer(longPressGestureRecongizerForImage)
         
         
-        setUpVolumeView()
-        setUpRouteButtonView()
+
         
         let inset = CGFloat(7)
         self.playPauseButtonSmall.imageEdgeInsets = UIEdgeInsets(top: inset, left: inset, bottom: inset, right: inset)
@@ -83,11 +84,7 @@ class PlayerRemoteVC: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(PlayerRemoteVC.configureView), name: NSNotification.Name(rawValue: "showPlayerRemote"), object: nil)
         
         
-        smallVolumeIcon.image = smallVolumeIcon.image!.withRenderingMode(.alwaysTemplate)
-        smallVolumeIcon.tintColor = UIColor.blue
-        
-        largeVolumeIcon.image = largeVolumeIcon.image!.withRenderingMode(.alwaysTemplate)
-        largeVolumeIcon.tintColor = UIColor.blue
+
         
         NotificationCenter.default.addObserver(self, selector: #selector(PlayerRemoteVC.airplayStatusChanged), name: .MPVolumeViewWirelessRouteActiveDidChange, object: nil)
         
@@ -119,6 +116,14 @@ class PlayerRemoteVC: UIViewController {
         volumeView.addSubview(myVolumeView)
         volumeView.willMove(toWindow: self.view.window)
         volumeView.didMoveToSuperview()
+        
+        if let volumeSliderView = myVolumeView.subviews.first as? UISlider {
+            volumeSliderView.minimumValueImage = UIImage(named: "SmallVolume")?.withRenderingMode(.alwaysTemplate)
+            volumeSliderView.maximumValueImage = UIImage(named: "LargeVolume")?.withRenderingMode(.alwaysTemplate)
+            volumeSliderView.tintColor = #colorLiteral(red: 0.01864526048, green: 0.4776622653, blue: 1, alpha: 1)
+            volumeSliderView.minimumTrackTintColor = #colorLiteral(red: 0.01864526048, green: 0.4776622653, blue: 1, alpha: 1)
+        }
+
     }
     
     var routeView = MPVolumeView()
