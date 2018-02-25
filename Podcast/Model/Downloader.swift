@@ -15,6 +15,18 @@ class Downloader: NSObject {
     
     
     
+    func downloadTopCharts() {
+        
+        let link = "https://rss.itunes.apple.com/api/v1/us/podcasts/top-podcasts/all/50/explicit.json"
+        let url = URL(string: link)
+        Alamofire.request(url!, method: .post, parameters: nil, encoding: JSONEncoding.default)
+            .responseJSON { response in
+                
+                
+        
+        }
+    }
+    
     ///need to fix this for apostrophe 
     
     func searchForPodcast(searchString: String) {
