@@ -108,6 +108,28 @@ class RealmInteractor: NSObject {
     }
     
     
+    func getFavoriteEpisodes() -> [Episode]? {
+        let realm = try! Realm()
+        let predicate = NSPredicate(format: "isFavorite == true")
+        let results = Array(realm.objects(Episode.self).filter(predicate))
+        return results
+    }
+    
+    func markEpisodeAsFavorite(episode: Episode) {
+        let realm = try! Realm()
+        try! realm.write {
+            episode.isFavorite = true
+        }
+    }
+    
+    func markEpisodeAsNotFavoirte(episode: Episode) {
+        let realm = try! Realm()
+        try! realm.write {
+            episode.isFavorite = false
+        }
+    }
+    
+    
     func getFormattedLastUpdatedDateForPodcast(podcast:Podcast) -> String {
         let result = podcast.episodesList.sorted{$0.publishedDate! > $1.publishedDate!}
         if let date = result.first?.publishedDate {

@@ -15,6 +15,7 @@ class LibraryVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.tableFooterView = UIView()
+        tableView.contentInset = UIEdgeInsetsMake(0, 0, 50, 0)
         checkIfNowPlayingEpisode()
     }
     
@@ -85,6 +86,11 @@ class LibraryVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         if segue.identifier == "showEpisodes" {
             let dVC = segue.destination as! EpisodesVC
             dVC.podcast = sender as? Podcast
+            
+            let backItem = UIBarButtonItem()
+            backItem.title = "Back"
+            navigationItem.backBarButtonItem = backItem
+            
         }
     }
 

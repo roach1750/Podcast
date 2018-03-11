@@ -17,21 +17,30 @@ class EpisodesVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     var results: [Date : [Episode]]?
     var dates: [Date]?
     
+    @IBOutlet var sortToolbar: UIToolbar!
+    @IBOutlet var sortSegmentControl: UISegmentedControl!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
         NotificationCenter.default.addObserver(self, selector: #selector(EpisodesVC.reloadData), name: NSNotification.Name(rawValue: "newEpisodeListDownloaded"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(EpisodesVC.reloadData), name: NSNotification.Name(rawValue: "episodeDownloaded"), object: nil)
         self.tableView.addSubview(self.refreshControl)
         self.title = podcast?.name
+        tableView.tableFooterView = UIView()
         reloadData()
     }
     
     func reloadData() {
         let oldPodcastID = podcast!.iD
         self.podcast = RealmInteractor().fetchPodcast(withID: oldPodcastID)
-        self.results = sortEpisodesIntoDictionary(data: Array(podcast!.episodesList.sorted(byKeyPath: "publishedDate", ascending: false)))
+        switch sortSegmentControl.selectedSegmentIndex {
+        case 0: //All
+            self.results = sortEpisodesIntoDictionary(data: Array(podcast!.episodesList.sorted(byKeyPath: "publishedDate", ascending: false)), unplayedOnly: false)
+        case 1://Unplayed
+            self.results = sortEpisodesIntoDictionary(data: Array(podcast!.episodesList.sorted(byKeyPath: "publishedDate", ascending: false)), unplayedOnly: true)
+        default:
+            return
+        }
         refreshControl.endRefreshing()
         tableView.reloadData()
     }
@@ -40,10 +49,18 @@ class EpisodesVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         super.viewWillAppear(true)
         reloadData()
     }
-
-    func sortEpisodesIntoDictionary(data: [Episode]) -> [Date : [Episode]] {
+    
+    @IBAction func sortSegmentControlDidChange(_ sender: UISegmentedControl) {
+        reloadData()
+    }
+    
+    
+    func sortEpisodesIntoDictionary(data: [Episode], unplayedOnly: Bool) -> [Date : [Episode]] {
         var dictionary = [Date : [Episode]]()
         for episode in data {
+            if episode.isPlayed == true && unplayedOnly == true {
+                continue
+            }
             let calendar = Calendar.current
             let componets = calendar.dateComponents([.year,.month,.day], from: episode.publishedDate!)
             let date = calendar.date(from: componets)!
@@ -158,6 +175,23 @@ class EpisodesVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         return cell
     }
     
+    
+    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        return true
+    }
+    
+    
+    func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
+        let favorite = UITableViewRowAction(style: .normal, title: "⭐️") { action, index in
+            print("favorite button tapped")
+            let date = self.dates![indexPath.section]
+            let episode = self.results![date]![indexPath.row]
+            RealmInteractor().markEpisodeAsFavorite(episode: episode)
+        }
+        favorite.backgroundColor = #colorLiteral(red: 0.3459055424, green: 0.3397476971, blue: 0.8399652839, alpha: 1)
+        return [favorite]
+    }
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let date = dates![indexPath.section]
         let episode = results![date]![indexPath.row]
@@ -167,8 +201,6 @@ class EpisodesVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
             SingletonPlayerDelegate.sharedInstance.nowPlayingPodcast = podcast
             SingletonPlayerDelegate.sharedInstance.initalizeViewAndHandleEpisode(episode: episode, startPlaying: true)
         }
-        
-        
         tableView.deselectRow(at: indexPath, animated: false)
     }
     

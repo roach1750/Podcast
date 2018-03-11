@@ -20,6 +20,7 @@ class Episode: Object {
 
     
     @objc dynamic var isNowPlayingEpisode = false
+    @objc dynamic var isFavorite = false
 
     
     @objc dynamic var currentPlaybackDuration = 0.0
