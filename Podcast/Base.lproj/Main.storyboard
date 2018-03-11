@@ -901,7 +901,6 @@
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="L0b-BZ-XLW">
                                 <rect key="frame" x="8" y="532.33333333333337" width="359" height="32"/>
-                                <color key="backgroundColor" red="0.0" green="1" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="32" id="5fa-Ef-fxZ"/>
                                 </constraints>

@@ -95,6 +95,9 @@ class SearchViewController: UIViewController, UISearchBarDelegate, UITableViewDe
     }
     
 
+    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
+        searchBar.setShowsCancelButton(true, animated: true)
+    }
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         if searchText.count == 0 {
@@ -122,7 +125,14 @@ class SearchViewController: UIViewController, UISearchBarDelegate, UITableViewDe
         }
         Downloader().searchForPodcast(searchString: searchBar.text!)
         searchBar.resignFirstResponder()
+        searchBar.setShowsCancelButton(false, animated: true)
     }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.resignFirstResponder()
+        searchBar.setShowsCancelButton(false, animated: true)
+    }
+    
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showEpisodes" {
