@@ -18,6 +18,10 @@ class Episode: Object {
     @objc dynamic var estimatedDuration = 0.0
     @objc dynamic var duration = 0.0
 
+    
+    @objc dynamic var isNowPlayingEpisode = false
+
+    
     @objc dynamic var currentPlaybackDuration = 0.0
 
     @objc dynamic var downloadURL: String?

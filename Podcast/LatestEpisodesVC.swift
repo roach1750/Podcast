@@ -56,7 +56,7 @@ class LatestEpisodesVC: UIViewController, UITableViewDelegate, UITableViewDataSo
         //If the selected episode isn't the one playing:
         if episode != SingletonPlayerDelegate.sharedInstance.nowPlayingEpisode {
             SingletonPlayerDelegate.sharedInstance.nowPlayingPodcast = episode.podcast
-            SingletonPlayerDelegate.sharedInstance.initalizeViewAndHadleEpisode(episode: episode)
+            SingletonPlayerDelegate.sharedInstance.initalizeViewAndHandleEpisode(episode: episode, startPlaying: true)
         }
         
         

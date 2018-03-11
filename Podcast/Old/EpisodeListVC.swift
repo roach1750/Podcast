@@ -159,7 +159,7 @@ class EpisodeListVC: UIViewController, UITableViewDelegate, UITableViewDataSourc
             }
             else {
                 //start the podcast player and go to now playing tab
-                SingletonPlayerDelegate.sharedInstance.initalizeViewAndHadleEpisode(episode: episode)
+                SingletonPlayerDelegate.sharedInstance.initalizeViewAndHandleEpisode(episode: episode, startPlaying: true)
                 tabBarController?.selectedIndex = 2
             }
             tableView.deselectRow(at: indexPath, animated: false)

@@ -71,10 +71,42 @@ class RealmInteractor: NSObject {
                 }
             }
         }
-        
-        
-        
     }
+    
+    func markEpisodeAsNowPlaying(episode: Episode) {
+        let realm = try! Realm()
+        let results = Array(realm.objects(Episode.self))
+        for episode in results {
+            if episode.isNowPlayingEpisode == true {
+                try! realm.write {
+                    episode.isNowPlayingEpisode = false
+                }
+            }
+        }
+        try! realm.write {
+            episode.isNowPlayingEpisode = true
+        }
+    }
+    
+    func markAllEpisodesAsNotPlaying() {
+        let realm = try! Realm()
+        let results = Array(realm.objects(Episode.self))
+        for episode in results {
+            if episode.isNowPlayingEpisode == true {
+                try! realm.write {
+                    episode.isNowPlayingEpisode = false
+                }
+            }
+        }
+    }
+    
+    func getNowPlayingEpisode() -> Episode? {
+        let realm = try! Realm()
+        let predicate = NSPredicate(format: "isNowPlayingEpisode == true")
+        let result = realm.objects(Episode.self).filter(predicate)
+        return result.first
+    }
+    
     
     func getFormattedLastUpdatedDateForPodcast(podcast:Podcast) -> String {
         let result = podcast.episodesList.sorted{$0.publishedDate! > $1.publishedDate!}

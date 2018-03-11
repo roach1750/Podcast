@@ -16,7 +16,11 @@ class SingletonPlayerDelegate: AudioPlayerDelegate {
         let instance = SingletonPlayerDelegate()
         return instance
     }()
-    var nowPlayingEpisode: Episode?
+    var nowPlayingEpisode: Episode? {
+        didSet {
+            RealmInteractor().markEpisodeAsNowPlaying(episode: nowPlayingEpisode!)
+        }
+    }
     var nowPlayingPodcast: Podcast?
     
     let player = AudioPlayer()
@@ -25,29 +29,34 @@ class SingletonPlayerDelegate: AudioPlayerDelegate {
     fileprivate let seekDuration: Float64 = 15
     
     
-    func initalizeViewAndHadleEpisode(episode: Episode) {
+    func initalizeViewAndHandleEpisode(episode: Episode, startPlaying: Bool) {
         if episode != nowPlayingEpisode {
             nowPlayingEpisode = episode
-            playEpisodeFromStream(episode: episode)
+            playEpisodeFromStream(episode: episode, startPlaying: startPlaying)
             NotificationCenter.default.post(name: NSNotification.Name(rawValue: "showPlayerRemote"), object: nil)
         }
     }
     
-    func playEpisodeFromStream(episode: Episode) {
+    
+    func playEpisodeFromStream(episode: Episode, startPlaying: Bool) {
         let url = URL(string: episode.downloadURL!)
         let item = AudioItem(mediumQualitySoundURL: url)
         setUpRemoteCommandCenter(item: item)
-        player.play(item: item!)
-        
-    
-        
         if episode.currentPlaybackDuration != 0 {
             player.seek(to: episode.currentPlaybackDuration)
+        }
+        if startPlaying == true {
+            player.play(item: item!)
         }
     }
     
     func play() {
-        player.resume()
+        if player.state == .stopped {
+            playEpisodeFromStream(episode: nowPlayingEpisode!, startPlaying: true)
+        }
+        else {
+            player.resume()
+        }
         isPlaying = true
     }
     
@@ -94,6 +103,7 @@ class SingletonPlayerDelegate: AudioPlayerDelegate {
     
     
     func setUpRemoteCommandCenter(item: AudioItem?) {
+        
         if let imageData = nowPlayingPodcast?.artwork100x100 {
             if let image = UIImage(data: imageData) {
                 item?.artwork = MPMediaItemArtwork.init(boundsSize: image.size, requestHandler: { (size) -> UIImage in
@@ -107,7 +117,6 @@ class SingletonPlayerDelegate: AudioPlayerDelegate {
         let remoteCommandCenter = MPRemoteCommandCenter.shared()
         
         remoteCommandCenter.pauseCommand.addTarget { (event) -> MPRemoteCommandHandlerStatus in
-            //Update your button here for the pause command
             self.pause()
             return .success
         }

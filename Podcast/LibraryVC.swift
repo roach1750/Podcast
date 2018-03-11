@@ -15,6 +15,7 @@ class LibraryVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.tableFooterView = UIView()
+        checkIfNowPlayingEpisode()
     }
     
     var results: [Podcast]?
@@ -25,6 +26,14 @@ class LibraryVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         self.title = "Subscribed"
     }
 
+    func checkIfNowPlayingEpisode() {
+        if let nowPlayingEpisode = RealmInteractor().getNowPlayingEpisode() {
+            SingletonPlayerDelegate.sharedInstance.nowPlayingPodcast = nowPlayingEpisode.podcast!
+            SingletonPlayerDelegate.sharedInstance.initalizeViewAndHandleEpisode(episode: nowPlayingEpisode, startPlaying: false)
+        }
+    }
+    
+    
     func reloadData() {
         results = RealmInteractor().fetchAllSubscribedPodcast()
         tableView.reloadData()
