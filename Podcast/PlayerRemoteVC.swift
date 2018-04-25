@@ -32,6 +32,7 @@ class PlayerRemoteVC: UIViewController {
     @IBOutlet weak var seekSlider: UISlider!
     @IBOutlet weak var currentTimeLabel: UILabel!
     @IBOutlet weak var timeRemainingLabel: UILabel!
+    @IBOutlet var seekSegmentedControl: UISegmentedControl!
     
     @IBOutlet weak var playPauseButtonLarge: UIButton!
     
@@ -48,6 +49,7 @@ class PlayerRemoteVC: UIViewController {
                 setUpLabelsForAudioPlayer()
                 setUpVolumeView()
                 setUpRouteButtonView()
+                setUpSeekSegmentedControl()
             }
         }
     }
@@ -110,9 +112,12 @@ class PlayerRemoteVC: UIViewController {
     }
     
     func setUpVolumeView() {
+        print("set up volume view called")
         volumeView.backgroundColor = UIColor.clear
         let myVolumeView = MPVolumeView(frame: volumeView.bounds)
         myVolumeView.showsRouteButton = false
+        
+        //WTF is all this for?
         volumeView.addSubview(myVolumeView)
         volumeView.willMove(toWindow: self.view.window)
         volumeView.didMoveToSuperview()
@@ -135,6 +140,30 @@ class PlayerRemoteVC: UIViewController {
         routeButtonView.backgroundColor = UIColor.clear
         changeRouteButtonColor(color: .gray)
     }
+    
+    func setUpSeekSegmentedControl() {
+        
+        seekSegmentedControl.removeAllSegments()
+        let seconds = TimeSeekData().descriptionToTimeObjects(descript: episode!.descript!)
+
+        for (index, second) in seconds.enumerated() {
+            seekSegmentedControl.insertSegment(withTitle: TimeSeekData().secondsToString(seconds: second), at: index, animated: false)
+        }
+
+    }
+    
+    @IBAction func seekSegmentedControlPress(_ sender: UISegmentedControl) {
+        let title = sender.titleForSegment(at: sender.selectedSegmentIndex)
+        let timeInSeconds = TimeSeekData().timeStringToSeconds(timeString: title!)
+        SingletonPlayerDelegate.sharedInstance.player.seek(to: (TimeInterval(timeInSeconds)))
+
+        print(timeInSeconds)
+        
+    }
+    
+    
+    
+    
     
     func airplayStatusChanged(_ n:Notification) {
         print("Airplay Playing: \(routeView.isWirelessRouteActive)")
@@ -412,6 +441,8 @@ extension PlayerRemoteVC: AudioPlayerDelegate {
         self.adjustTimeLabel(label: self.timeRemainingLabel, duration: Int(timeRemaining))
     }
 }
+
+
 
 
 

@@ -11,8 +11,8 @@ target ‘Podcast’ do
 inhibit_all_warnings!
 
 	pod 'RealmSwift'
-    	pod 'Alamofire', '~> 4.5'
-    	pod 'Kanna', '~> 2.1.0'
+    	pod 'Alamofire', '~> 4.7'
+    	pod 'Kanna', '~> 4.0.0'
   	pod 'FeedKit', '~> 6.0'
 	pod 'KDEAudioPlayer'
 
