@@ -13,22 +13,100 @@ import AVFoundation
 
 class Downloader: NSObject {
     
-    
+
     
     func downloadTopCharts() {
         
         let link = "https://rss.itunes.apple.com/api/v1/us/podcasts/top-podcasts/all/50/explicit.json"
-        let url = URL(string: link)
-        Alamofire.request(url!, method: .post, parameters: nil, encoding: JSONEncoding.default)
-            .responseJSON { response in
-                
-                
-        
+        Alamofire.request(link).responseJSON { response in
+            let allResults = response.result.value as! NSDictionary
+            let feed = allResults.object(forKey: "feed") as! NSDictionary
+            let allTopPodcasts = feed.object(forKey: "results") as! NSArray
+            
+            print(allTopPodcasts.count)
+            let RI = RealmInteractor()
+            for (index, result) in (allTopPodcasts as! [NSDictionary]).enumerated() {
+                let podcast = Podcast()
+                podcast.name = result["name"] as? String
+                podcast.artworkLink100x100 = result["artworkUrl100"] as? String
+                podcast.iD = (result["id"] as? String)!
+                podcast.downloadLink = result["url"] as? String
+                podcast.ranking = index + 1
+                podcast.isTopChartResult = true
+                RI.savePodcast(podcast: podcast)
+                print("Podcast: \(podcast.name!) ranking: \(podcast.ranking)")
+            }
+            DispatchQueue.main.async {
+                NotificationCenter.default.post(name: NSNotification.Name(rawValue: "topPodcastChartsDownloaded"), object: nil)
+            }
         }
     }
     
-    ///need to fix this for apostrophe 
+    func searchPodcastInformation() {
+        let link = "https://itunes.apple.com/us/podcast/couples-therapy-with-candice-and-casey/id1380252026?mt=2&uo=4"
+                    
+        let url = URL(string: link)!
+        Alamofire.request(url).responseString { response in
+            
+            print(response)
+                
+        }
+
+        
+    }
     
+    
+    func convertTopPodcastToRealPodcast(topPodcast: Podcast, completion: @escaping(Podcast) -> Void) {
+        downloadIndividualPodcastWithID(podcastID: topPodcast.iD) { (podcastResult) in
+            print("Completion of converter")
+            completion(podcastResult)
+        }
+    }
+    
+    func downloadIndividualPodcastWithID(podcastID: String, completion: @escaping(Podcast) -> Void) {
+        let link = "https://itunes.apple.com/lookup?id=" + podcastID
+        let url = URL(string: link)
+        Alamofire.request(url!, method: .post, parameters: nil, encoding: JSONEncoding.default)
+            .responseJSON { response in
+                //to get status code
+                if let status = response.response?.statusCode {
+                    switch(status){
+                    case 201:
+                        print("example success")
+                    default:
+                        print("error with response status: \(status)")
+                    }
+                }
+                //to get JSON return value
+                if let result = response.result.value {
+                    let JSON = result as! NSDictionary
+                    print("Found: " + String(describing: JSON["resultCount"]!) + " results")
+                    let resultCount = JSON["resultCount"] as! Int
+                    if resultCount == 0 {
+                        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "noSearchResultsFound"), object: nil)
+                        return
+                    }
+                    else {
+                        for result in JSON.value(forKey: "results") as! [NSDictionary] {
+                            let id = String(result["collectionId"] as! Int)
+                                let podcast = Podcast()
+                                podcast.name = result["collectionName"] as? String
+                                podcast.artworkLink100x100 = result["artworkUrl100"] as? String
+                                podcast.artworkLink600x600 = result["artworkUrl600"] as? String
+                                podcast.iD = String(result["collectionId"] as! Int)
+                                podcast.isSubscribed = false
+                                podcast.isSearchResult = true
+                                podcast.downloadLink = result["feedUrl"] as? String
+                                let RI = RealmInteractor()
+                                RI.savePodcast(podcast: podcast)
+                                completion(podcast)
+                        }
+                    }
+                }
+        }
+    }
+    
+    ///need to fix this for apostrophe
     func searchForPodcast(searchString: String) {
         let correctedSearchString = searchString.replacingOccurrences(of: " ", with: "+")
         let link = "https://itunes.apple.com/search?term=+" + correctedSearchString + "+&entity=podcast"
@@ -56,6 +134,7 @@ class Downloader: NSObject {
                     }
                     else {
                     for result in JSON.value(forKey: "results") as! [NSDictionary] {
+                        print(result)
                         let id = String(result["collectionId"] as! Int)
                         if RealmInteractor().checkIfPodcastExists(id: id) == false {
                             let podcast = Podcast()
@@ -73,12 +152,9 @@ class Downloader: NSObject {
                             RealmInteractor().setPodcastToSearchResult(id: id)
                         }
                     }
-                    
                     NotificationCenter.default.post(name: NSNotification.Name(rawValue: "searchResultsFound"), object: nil)
-                    
                 }
-                }
-                
+            }
         }
     }
     

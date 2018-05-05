@@ -23,20 +23,32 @@ class EpisodesListSearchViewController: UIViewController,UITableViewDataSource, 
     @IBOutlet weak var subscribeButton: UIButton!
     
     
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         NotificationCenter.default.addObserver(self, selector: #selector(EpisodesListSearchViewController.reloadData), name: NSNotification.Name(rawValue: "newEpisodeListDownloaded"), object: nil)
         if let art = podcast?.artwork100x100 {
             podcastImageView.image = UIImage(data: art)
         }
+        else {
+            Downloader().downloadImageForPodcast(podcastID: (podcast?.iD)!, highRes: false)
+        }
+        
         podcastTitleLabel.text = podcast?.name
         if podcast?.isSubscribed == true {
             changeButtonToSubcribedState()
         }
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(EpisodesListSearchViewController.updateArtWork), name: NSNotification.Name(rawValue: "podcastArtworkDownloaded"), object: nil)
+        
         self.title = podcast?.name
         self.tableView.addSubview(self.refreshControl)
         reloadData()
+    }
+    
+    func updateArtWork() {
+        if let art = podcast?.artwork100x100 {
+            podcastImageView.image = UIImage(data: art)
+        }
     }
     
     @IBAction func subscribeButtonPressed(_ sender: UIButton) {
@@ -103,6 +115,23 @@ class EpisodesListSearchViewController: UIViewController,UITableViewDataSource, 
         cell.longDescriptionLabel.text = episode.descript
         return cell
     }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        let episode = results![indexPath.row]
+        
+        //If the selected episode isn't the one playing:
+        if episode != SingletonPlayerDelegate.sharedInstance.nowPlayingEpisode {
+            SingletonPlayerDelegate.sharedInstance.nowPlayingPodcast = podcast
+            SingletonPlayerDelegate.sharedInstance.initalizeViewAndHandleEpisode(episode: episode, startPlaying: true)
+        }
+        tableView.deselectRow(at: indexPath, animated: false)
+    }
+    
+    
+    
+    
+    
     func generateTimeString(duration: Int) -> String {
         
         let (h,m,s) = secondsToHoursMinutesSeconds(seconds: duration)

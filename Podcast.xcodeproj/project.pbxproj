@@ -22,6 +22,8 @@
 		219038831F8E72DE008BAED1 /* PodcastPlayerWKIC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 219038821F8E72DE008BAED1 /* PodcastPlayerWKIC.swift */; };
 		219038851F8EADDC008BAED1 /* EpisodeCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 219038841F8EADDC008BAED1 /* EpisodeCell.xib */; };
 		219038871F8EB01A008BAED1 /* EpisodeTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 219038861F8EB01A008BAED1 /* EpisodeTableViewCell.swift */; };
+		21998A6A209E196700840188 /* TopChartPodcastCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 21998A69209E196700840188 /* TopChartPodcastCell.xib */; };
+		21998A6C209E1A6500840188 /* TopChartPodcastTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21998A6B209E1A6500840188 /* TopChartPodcastTableViewCell.swift */; };
 		21B016771FCF9C500055512B /* ContainerVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21B016761FCF9C500055512B /* ContainerVC.swift */; };
 		21B016791FCF9C630055512B /* PlayerRemoteVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21B016781FCF9C630055512B /* PlayerRemoteVC.swift */; };
 		21B0167B1FCF9FFE0055512B /* TabBarVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21B0167A1FCF9FFE0055512B /* TabBarVC.swift */; };
@@ -127,6 +129,8 @@
 		219038821F8E72DE008BAED1 /* PodcastPlayerWKIC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PodcastPlayerWKIC.swift; sourceTree = "<group>"; };
 		219038841F8EADDC008BAED1 /* EpisodeCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = EpisodeCell.xib; sourceTree = "<group>"; };
 		219038861F8EB01A008BAED1 /* EpisodeTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EpisodeTableViewCell.swift; sourceTree = "<group>"; };
+		21998A69209E196700840188 /* TopChartPodcastCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TopChartPodcastCell.xib; sourceTree = "<group>"; };
+		21998A6B209E1A6500840188 /* TopChartPodcastTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopChartPodcastTableViewCell.swift; sourceTree = "<group>"; };
 		21B016761FCF9C500055512B /* ContainerVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContainerVC.swift; sourceTree = "<group>"; };
 		21B016781FCF9C630055512B /* PlayerRemoteVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerRemoteVC.swift; sourceTree = "<group>"; };
 		21B0167A1FCF9FFE0055512B /* TabBarVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarVC.swift; sourceTree = "<group>"; };
@@ -278,6 +282,8 @@
 				2122CD8B1F8D1470009A0EB5 /* Model */,
 				219038841F8EADDC008BAED1 /* EpisodeCell.xib */,
 				21B5778D1F9906BB00F5B4F1 /* PodcastCell.xib */,
+				21998A69209E196700840188 /* TopChartPodcastCell.xib */,
+				21998A6B209E1A6500840188 /* TopChartPodcastTableViewCell.swift */,
 				21B5778F1F99072400F5B4F1 /* PodcastTableViewCell.swift */,
 				219038861F8EB01A008BAED1 /* EpisodeTableViewCell.swift */,
 				21CDF0EF1F32A70F00A6F4DC /* Assets.xcassets */,
@@ -458,6 +464,7 @@
 				219038851F8EADDC008BAED1 /* EpisodeCell.xib in Resources */,
 				21CDF0EE1F32A70F00A6F4DC /* Main.storyboard in Resources */,
 				21B5778E1F9906BB00F5B4F1 /* PodcastCell.xib in Resources */,
+				21998A6A209E196700840188 /* TopChartPodcastCell.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -595,6 +602,7 @@
 				21CDF0E91F32A70F00A6F4DC /* AppDelegate.swift in Sources */,
 				21B016771FCF9C500055512B /* ContainerVC.swift in Sources */,
 				21D7517E1F8C0B65001B4AF7 /* PodcastPlayerVC.swift in Sources */,
+				21998A6C209E1A6500840188 /* TopChartPodcastTableViewCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

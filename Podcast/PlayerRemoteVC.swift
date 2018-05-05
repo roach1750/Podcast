@@ -75,7 +75,7 @@ class PlayerRemoteVC: UIViewController {
         podcastArtworkImageViewLarge.addGestureRecognizer(longPressGestureRecongizerForImage)
         
         
-
+        seekSegmentedControl.isHidden = true
         
         let inset = CGFloat(7)
         self.playPauseButtonSmall.imageEdgeInsets = UIEdgeInsets(top: inset, left: inset, bottom: inset, right: inset)
@@ -149,6 +149,7 @@ class PlayerRemoteVC: UIViewController {
         for (index, second) in seconds.enumerated() {
             seekSegmentedControl.insertSegment(withTitle: TimeSeekData().secondsToString(seconds: second), at: index, animated: false)
         }
+        seekSegmentedControl.isHidden = false
 
     }
     
@@ -295,6 +296,12 @@ class PlayerRemoteVC: UIViewController {
             self.smallActivityView?.isHidden = true
             self.setUpLargeActivityView()
         }
+        
+        if seekSegmentedControl.isHidden == true {
+            setUpSeekSegmentedControl() 
+        }
+        
+        
     }
     
     

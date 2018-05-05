@@ -372,7 +372,7 @@
             </objects>
             <point key="canvasLocation" x="-1626" y="1867"/>
         </scene>
-        <!--Search-->
+        <!--Search & Top Charts-->
         <scene sceneID="TsO-SB-ckU">
             <objects>
                 <viewController id="oow-6V-2d3" customClass="SearchViewController" customModule="Podcast" customModuleProvider="target" sceneMemberID="viewController">
@@ -427,7 +427,7 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="kWU-jq-qUf"/>
                     </view>
-                    <navigationItem key="navigationItem" title="Search" id="VDI-Xp-mgc"/>
+                    <navigationItem key="navigationItem" title="Search &amp; Top Charts" id="VDI-Xp-mgc"/>
                     <connections>
                         <outlet property="searchBar" destination="35b-vK-YQf" id="Bsv-bW-2pU"/>
                         <outlet property="tableView" destination="CvN-lf-fFQ" id="ZcO-fR-Tcc"/>

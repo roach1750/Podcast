@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14109" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
+        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="topChartPodcastCell" id="5rV-RC-MbI" customClass="TopChartPodcastTableViewCell" customModule="Podcast" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="116"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="5rV-RC-MbI" id="1Ks-7Q-j68">
+                <rect key="frame" x="0.0" y="0.0" width="375" height="115.5"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <stackView opaque="NO" contentMode="scaleToFill" alignment="center" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="48J-DL-I4V">
+                        <rect key="frame" x="8" y="8" width="359" height="99.5"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="50" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="X5a-sn-rnR">
+                                <rect key="frame" x="0.0" y="39.5" width="23" height="20.5"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="23" id="yZw-g9-GTM"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="47W-g0-v7Q">
+                                <rect key="frame" x="31" y="0.5" width="99" height="99"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="99" id="7AV-X3-pwv"/>
+                                    <constraint firstAttribute="width" secondItem="47W-g0-v7Q" secondAttribute="height" multiplier="1:1" id="RbE-Jt-Slq"/>
+                                </constraints>
+                            </imageView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="wordWrap" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6RJ-PK-Ffi">
+                                <rect key="frame" x="138" y="39.5" width="221" height="20.5"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                    </stackView>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="48J-DL-I4V" firstAttribute="top" secondItem="1Ks-7Q-j68" secondAttribute="top" constant="8" id="0Xz-rd-bSx"/>
+                    <constraint firstAttribute="bottom" secondItem="48J-DL-I4V" secondAttribute="bottom" constant="8" id="0jy-hk-5fb"/>
+                    <constraint firstItem="48J-DL-I4V" firstAttribute="leading" secondItem="1Ks-7Q-j68" secondAttribute="leading" constant="8" id="9aS-FY-x6e"/>
+                    <constraint firstAttribute="trailing" secondItem="48J-DL-I4V" secondAttribute="trailing" constant="8" id="dAY-tz-Prr"/>
+                </constraints>
+            </tableViewCellContentView>
+            <connections>
+                <outlet property="podcastImage" destination="47W-g0-v7Q" id="3RB-5x-Kuy"/>
+                <outlet property="rankingLabel" destination="X5a-sn-rnR" id="04s-86-iDj"/>
+                <outlet property="titleLabel" destination="6RJ-PK-Ffi" id="aOw-bp-W7y"/>
+            </connections>
+            <point key="canvasLocation" x="-27.5" y="-305"/>
+        </tableViewCell>
+    </objects>
+</document>

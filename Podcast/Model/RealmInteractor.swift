@@ -169,7 +169,13 @@ class RealmInteractor: NSObject {
     
     
     
-    
+    func fetchTopCharts() -> [Podcast] {
+        let realm = try! Realm()
+        let predicate = NSPredicate(format: "isTopChartResult == %@", NSNumber(value: true))
+        let allTopPodcast = Array(realm.objects(Podcast.self).filter(predicate))
+        let sortedTopPodcast = allTopPodcast.sorted{$0.ranking < $1.ranking}
+        return sortedTopPodcast
+    }
     
     
     
