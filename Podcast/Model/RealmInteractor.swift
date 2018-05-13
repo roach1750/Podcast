@@ -11,12 +11,28 @@ import RealmSwift
 
 class RealmInteractor: NSObject {
 
+    
     func savePodcast(podcast: Podcast) {
         let realm = try! Realm()
         try! realm.write {
             realm.create(Podcast.self, value: podcast, update: true)
         }
     }
+    
+    func saveTopPodcast(topPodcast: TopPodcast) {
+        let realm = try! Realm()
+        try! realm.write {
+            realm.create(TopPodcast.self, value: topPodcast, update: true)
+        }
+    }
+    
+    func saveEpisode(episode: Episode) {
+        let realm = try! Realm()
+        try! realm.write {
+            realm.create(Episode.self, value: episode, update: true)
+        }
+    }
+
     
     func updatePodcastArtwork(podcast:Podcast, artwork:Data, highRes: Bool) {
         
@@ -32,7 +48,14 @@ class RealmInteractor: NSObject {
             }
         }
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: "podcastArtworkDownloaded"), object: nil)
-
+    }
+    
+    func updatePodcastArtwork(topPodcast: TopPodcast, artwork:Data) {
+        let realm = try! Realm()
+        try! realm.write {
+            topPodcast.artwork100x100 = artwork
+        }
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "topPodcastArtworkDownloaded"), object: nil)
     }
     
     func fetchAllPodcast() -> [Podcast] {
@@ -52,6 +75,7 @@ class RealmInteractor: NSObject {
     }
     
     func checkIfPodcastEpisodeExists(guid: String) -> Bool {
+        
         let realm = try! Realm()
         let predicate = NSPredicate(format: "guid == %@", guid)
         let results = Array(realm.objects(Episode.self).filter(predicate))
@@ -131,7 +155,8 @@ class RealmInteractor: NSObject {
     
     
     func getFormattedLastUpdatedDateForPodcast(podcast:Podcast) -> String {
-        let result = podcast.episodesList.sorted{$0.publishedDate! > $1.publishedDate!}
+        let result = fetchEpisodesForPodcast(podcast: podcast)
+        
         if let date = result.first?.publishedDate {
             
             let realm = try! Realm()
@@ -169,10 +194,9 @@ class RealmInteractor: NSObject {
     
     
     
-    func fetchTopCharts() -> [Podcast] {
+    func fetchTopPodcast() -> [TopPodcast] {
         let realm = try! Realm()
-        let predicate = NSPredicate(format: "isTopChartResult == %@", NSNumber(value: true))
-        let allTopPodcast = Array(realm.objects(Podcast.self).filter(predicate))
+        let allTopPodcast = Array(realm.objects(TopPodcast.self))
         let sortedTopPodcast = allTopPodcast.sorted{$0.ranking < $1.ranking}
         return sortedTopPodcast
     }
@@ -250,11 +274,15 @@ class RealmInteractor: NSObject {
     }
     
     func deletePodcast(podcast: Podcast) {
+        let episodes = fetchEpisodesForPodcast(podcast: podcast)
         let realm = try! Realm()
         try! realm.write {
-            realm.delete(podcast.episodesList)
             realm.delete(podcast)
+            realm.delete(episodes)
         }
+        
+        
+        
     }
     
     
@@ -275,26 +303,22 @@ class RealmInteractor: NSObject {
             
         try! realm.write {
             for podcastToDelete in allUnsubscribedPodcast {
-                realm.delete(podcastToDelete.episodesList)
+                let episodes = fetchEpisodesForPodcast(podcast: podcastToDelete)
+                realm.delete(episodes)
             }
             realm.delete(allUnsubscribedPodcast)
         }
         }
     }
     
-    func saveEpisodeForPodcast(episode: Episode, podcast: Podcast) {
-        let realm = try! Realm()
-        try! realm.write {
-            let x = realm.create(Episode.self, value: episode, update: true)
-            podcast.episodesList.append(x)
-        }
-    }
-    
+
+
  
     
     func fetchEpisodesForPodcast(podcast:Podcast) -> [Episode] {
         let realm = try! Realm()
-        let results = Array(realm.objects(Episode.self).sorted(byKeyPath: "publishedDate", ascending: false))
+        let predicate = NSPredicate(format: "podcastID == %@", podcast.iD)
+        let results = Array(realm.objects(Episode.self).filter(predicate).sorted(byKeyPath: "publishedDate", ascending: false))
         return results
     }
     
@@ -348,8 +372,7 @@ class RealmInteractor: NSObject {
         let realm = try! Realm()
         let predicate = NSPredicate(format: "iD = %@",iD)
         let podcast = realm.objects(Podcast.self).filter(predicate).first!
-        _ = podcast.episodesList.sorted{$0.publishedDate! > $1.publishedDate!}
-        
+//        _ = podcast.episodesList.sorted{$0.publishedDate! > $1.publishedDate!}
         return podcast
     }
     

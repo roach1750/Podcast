@@ -7,51 +7,81 @@
 //
 
 import UIKit
+import RealmSwift
 
-class SearchViewController: UIViewController, UISearchBarDelegate, UITableViewDelegate, UITableViewDataSource   {
+class SearchViewController: UIViewController, UISearchBarDelegate, UITableViewDelegate, UITableViewDataSource    {
 
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var tableView: UITableView!
     
-    var results: [Podcast]?
+    var searchResults: [Podcast]?
+    var topChartsResults: [TopPodcast]?
+    
+    var searchNotificationToken: NotificationToken? = nil
+    var topPodcastNotificationToken: NotificationToken? = nil
+    
+    deinit {
+        searchNotificationToken?.invalidate()
+        topPodcastNotificationToken?.invalidate()
+    }
     
     var shouldDisplayingSearchResults = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.tableFooterView = UIView()
-        Downloader().downloadTopCharts()
+        Downloader().downloadTopPodcasts()
         tableView.contentInset = UIEdgeInsetsMake(0, 0, 50, 0)
+        configureNotificationTokens()
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        NotificationCenter.default.addObserver(self, selector: #selector(SearchViewController.searchResultsFound), name: NSNotification.Name(rawValue: "searchResultsFound"), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(SearchViewController.reloadData), name: NSNotification.Name(rawValue: "podcastArtworkDownloaded"), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(SearchViewController.noResultsFound), name: NSNotification.Name(rawValue: "noSearchResultsFound"), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(SearchViewController.reloadData), name: NSNotification.Name(rawValue: "topPodcastChartsDownloaded"), object: nil)
+    
+    func configureNotificationTokens() {
+        let realm = try! Realm()
+        let predicate = NSPredicate(format: "isSearchResult == %@", NSNumber(value: true))
+        let allSearchResultPodcast = realm.objects(Podcast.self).filter(predicate)
+        searchNotificationToken = allSearchResultPodcast.observe { (changes: RealmCollectionChange) in
+            switch changes {
+            case .initial:
+                // Results are now populated and can be accessed without blocking the UI
+                print("Search Object Creation")
+            case .update(_, let deletions, let insertions, let modifications):
+//                print("Deletions: \(deletions)")
+//                print("insertions: \(insertions)")
+//                print("modifications: \(modifications)")
+                self.reloadData()
+            case .error(let error):
+                // An error occurred while opening the Realm file on the background worker thread
+                fatalError("\(error)")
+            }
+        }
+        
+        let topPodcastResults = realm.objects(TopPodcast.self)
+        topPodcastNotificationToken = topPodcastResults.observe { (changes: RealmCollectionChange) in
+            switch changes {
+            case .initial:
+                // Results are now populated and can be accessed without blocking the UI
+                print("Top Podcast Object Creation")
+            case .update(_, let deletions, let insertions, let modifications):
+                //                print("Deletions: \(deletions)")
+                //                print("insertions: \(insertions)")
+                //                print("modifications: \(modifications)")
+                self.reloadData()
+            case .error(let error):
+                // An error occurred while opening the Realm file on the background worker thread
+                fatalError("\(error)")
+            }
+        }
+        
+        
+    }
 
-    }
-    
-    
-    
-    override func viewDidDisappear(_ animated: Bool) {
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: "searchResultsFound"), object: nil)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: "podcastArtworkDownloaded"), object: nil)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: "noSearchResultsFound"), object: nil)
-    }
-
-    func searchResultsFound() {
-        shouldDisplayingSearchResults = true
-        reloadData()
-    }
-    
-    
     func reloadData() {
         if shouldDisplayingSearchResults == true {
-            results = RealmInteractor().fetchAllSearchResultPodcast()
+            searchResults = RealmInteractor().fetchAllSearchResultPodcast()
         }
         else {
-            results = RealmInteractor().fetchTopCharts()
+            topChartsResults = RealmInteractor().fetchTopPodcast()
         }
         tableView.reloadData()
     }
@@ -64,45 +94,51 @@ class SearchViewController: UIViewController, UISearchBarDelegate, UITableViewDe
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if let results = results {
-            return results.count
+        if shouldDisplayingSearchResults == true {
+            return searchResults?.count ?? 0
         }
         else {
-            return 0
+            return topChartsResults?.count ?? 0
         }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let result = results![indexPath.row]
         
         if shouldDisplayingSearchResults == true {
+            let result = searchResults![indexPath.row]
             let nib = UINib(nibName: "PodcastCell", bundle: nil)
             tableView.register(nib, forCellReuseIdentifier: "podcastCell")
             let cell = tableView.dequeueReusableCell(withIdentifier: "podcastCell") as! PodcastTableViewCell
             cell.lastUpdatedLabel.text = ""
             cell.titleLabel.text = result.name!
+            cell.podcastImage?.image = nil
             if let imageData = result.artwork100x100 {
                 cell.podcastImage?.image = UIImage(data: imageData)
             }
             else {
                 if result.artworkLink100x100 != nil {
-                    Downloader().downloadImageForPodcast(podcastID: result.iD, highRes: false)
+                    Downloader().downloadImageForPodcast(podcast: result, highRes: false)
+                    cell.podcastImage?.image = UIImage(named: "noImagePodcastImage")
+
                 }
             }
             return cell
         }
         else {
+            let result = topChartsResults![indexPath.row]
             let nib = UINib(nibName: "TopChartPodcastCell", bundle: nil)
             tableView.register(nib, forCellReuseIdentifier: "topChartPodcastCell")
             let cell = tableView.dequeueReusableCell(withIdentifier: "topChartPodcastCell") as! TopChartPodcastTableViewCell
             cell.rankingLabel.text = String(result.ranking)
             cell.titleLabel.text = result.name!
+            cell.podcastImage?.image = nil
             if let imageData = result.artwork100x100 {
                 cell.podcastImage?.image = UIImage(data: imageData)
             }
             else {
                 if result.artworkLink100x100 != nil {
-                    Downloader().downloadImageForPodcast(podcastID: result.iD, highRes: false)
+                    Downloader().downloadImageForTopPodcast(topPodcast: result)
+                    cell.podcastImage?.image = UIImage(named: "noImagePodcastImage")
                 }
             }
             return cell
@@ -110,30 +146,33 @@ class SearchViewController: UIViewController, UISearchBarDelegate, UITableViewDe
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let result = results![indexPath.row]
         if shouldDisplayingSearchResults == true {
+            let result = searchResults![indexPath.row]
             Downloader().downloadPodcastData(podcast: result) {result in}
             performSegue(withIdentifier: "showEpisodes", sender: result)
         }
         else {
-            Downloader().convertTopPodcastToRealPodcast(topPodcast: result) { (podcastResult) in
-                Downloader().downloadPodcastData(podcast: podcastResult) {result in}
-                self.performSegue(withIdentifier: "showEpisodes", sender: result)
-            }
+            let result = topChartsResults![indexPath.row]
+            performSegue(withIdentifier: "showEpisodes", sender: result)
         }
     }
     
 
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
         searchBar.setShowsCancelButton(true, animated: true)
+        print("search clicked")
+        RealmInteractor().markAllPodcastAsNotSearchResults()
+        RealmInteractor().deleteUnsubscribedPodcast()
+        shouldDisplayingSearchResults = true
+        reloadData()
     }
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         if searchText.count == 0 {
             RealmInteractor().markAllPodcastAsNotSearchResults()
-            if let x = results?.count {
+            if let x = searchResults?.count {
                 if x > 0 {
-                    results = nil
+                    searchResults = nil
                     RealmInteractor().deleteUnsubscribedPodcast()
                     tableView.reloadData()
                 }
@@ -144,17 +183,17 @@ class SearchViewController: UIViewController, UISearchBarDelegate, UITableViewDe
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         RealmInteractor().markAllPodcastAsNotSearchResults()
-
-        if let x = results?.count {
+        if let x = searchResults?.count {
             if x > 0 {
-                results = nil
+                searchResults = nil
                 RealmInteractor().deleteUnsubscribedPodcast()
-                tableView.reloadData()
+                reloadData()
             }
         }
         Downloader().searchForPodcast(searchString: searchBar.text!)
         searchBar.resignFirstResponder()
         searchBar.setShowsCancelButton(false, animated: true)
+        shouldDisplayingSearchResults = true
     }
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
@@ -167,8 +206,14 @@ class SearchViewController: UIViewController, UISearchBarDelegate, UITableViewDe
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showEpisodes" {
+            if shouldDisplayingSearchResults == true {
                 let dV = segue.destination as! EpisodesListSearchViewController
                 dV.podcast = (sender as? Podcast)!
+        }
+            else {
+                let dV = segue.destination as! EpisodesListSearchViewController
+                dV.topPodcast = (sender as? TopPodcast)
+            }
         }
     
     }

@@ -10,15 +10,31 @@
 import UIKit
 
 class EpisodesListSearchViewController: UIViewController,UITableViewDataSource, UITableViewDelegate {
+    
     @IBOutlet weak var tableView: UITableView!
     
-    var podcast: Podcast?
+    var podcast: Podcast? {
+        didSet {
+            self.title = podcast?.name
+
+            if podcast?.isSubscribed == true {
+                changeButtonToSubcribedState()
+            }
+        }
+    }
+    
     var results: [Episode]?
+    
+    var topPodcast: TopPodcast?  {
+        didSet {
+            //Start the download
+            Downloader().convertTopPodcastToPodcast(podcastToConvert: topPodcast!)
+        }
+    }
     
     @IBOutlet weak var podcastImageView: UIImageView!
     
     @IBOutlet weak var podcastTitleLabel: UILabel!
-    
     
     @IBOutlet weak var subscribeButton: UIButton!
     
@@ -26,35 +42,44 @@ class EpisodesListSearchViewController: UIViewController,UITableViewDataSource, 
     override func viewDidLoad() {
         super.viewDidLoad()
         NotificationCenter.default.addObserver(self, selector: #selector(EpisodesListSearchViewController.reloadData), name: NSNotification.Name(rawValue: "newEpisodeListDownloaded"), object: nil)
-        if let art = podcast?.artwork100x100 {
-            podcastImageView.image = UIImage(data: art)
-        }
-        else {
-            Downloader().downloadImageForPodcast(podcastID: (podcast?.iD)!, highRes: false)
-        }
-        
-        podcastTitleLabel.text = podcast?.name
-        if podcast?.isSubscribed == true {
-            changeButtonToSubcribedState()
-        }
-        
+        NotificationCenter.default.addObserver(self, selector: #selector(EpisodesListSearchViewController.newPodcastDownloaded), name: NSNotification.Name(rawValue: "newPodcastDownloaded"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(EpisodesListSearchViewController.updateArtWork), name: NSNotification.Name(rawValue: "podcastArtworkDownloaded"), object: nil)
-        
-        self.title = podcast?.name
+        updateArtWork()
+        podcastTitleLabel.text = podcast?.name
+        podcastTitleLabel.isHidden = false
         self.tableView.addSubview(self.refreshControl)
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
         reloadData()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        podcastTitleLabel.isHidden = true
+    }
+    
+    func newPodcastDownloaded() {
+        self.podcast = RealmInteractor().fetchPodcast(withID: (topPodcast?.iD)!)
+        Downloader().downloadPodcastData(podcast: podcast!) {result in}
     }
     
     func updateArtWork() {
         if let art = podcast?.artwork100x100 {
             podcastImageView.image = UIImage(data: art)
         }
+        else {
+            Downloader().downloadImageForPodcast(podcast: podcast!, highRes: false)
+        }
+    }
+    
+    func updateEpisodes() {
+        Downloader().downloadPodcastData(podcast: podcast!) {result in}
     }
     
     @IBAction func subscribeButtonPressed(_ sender: UIButton) {
         if podcast?.isSubscribed == false {
             RealmInteractor().setPodcastToSubscribed(podcast: podcast!)
-            Downloader().downloadImageForPodcast(podcastID: (podcast?.iD)!, highRes: true)
+            Downloader().downloadImageForPodcast(podcast: podcast!, highRes: true)
             changeButtonToSubcribedState()
         }
     }
@@ -74,11 +99,11 @@ class EpisodesListSearchViewController: UIViewController,UITableViewDataSource, 
     }
     
     func reloadData() {
-        print("Reloading Table")
-        
-        let oldPodcastID = podcast!.iD
-        self.podcast = RealmInteractor().fetchPodcast(withID: oldPodcastID)
-        self.results = Array(podcast!.episodesList.sorted(byKeyPath: "publishedDate", ascending: false))
+        print("reloading table data")
+        if let podcastID = self.podcast?.iD {
+            self.podcast = RealmInteractor().fetchPodcast(withID: podcastID)
+            self.results = RealmInteractor().fetchEpisodesForPodcast(podcast: podcast!)
+        }
         refreshControl.endRefreshing()
         tableView.reloadData()
     }
@@ -89,16 +114,8 @@ class EpisodesListSearchViewController: UIViewController,UITableViewDataSource, 
         subscribeButton.setTitleColor(UIColor.purple, for: .normal)
     }
     
-
-    
-    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if let results = results {
-            return results.count
-        }
-        else {
-            return 0
-        }
+        return results?.count ?? 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {

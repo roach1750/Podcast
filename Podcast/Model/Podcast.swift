@@ -10,7 +10,7 @@ import UIKit
 import RealmSwift
 class Podcast: Object {
 
-    var episodesList = List<Episode>()
+//    var episodesList = List<Episode>()
     @objc dynamic var name: String?
     @objc dynamic var artworkLink100x100: String?
     @objc dynamic var artwork100x100: Data?

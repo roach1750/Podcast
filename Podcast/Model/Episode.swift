@@ -35,32 +35,20 @@ class Episode: Object {
     @objc dynamic var downloadProgress = 0.0
     
     @objc dynamic var podcast: Podcast?
-    
+    @objc dynamic var podcastID: String?
+
     
     override static func primaryKey() -> String? {
         return "guid"
     }
-    
-//    init(guid: String?, title: String?, descript: String?, publishedDate: Date?, duration: Double, downloadURL: String?, fileSize: Double, segmentNumber: Int , soundData: Data?, isPlayed:Bool ) {
-//
-//        self.guid = guid
-//        self.title = title
-//        self.descript = descript
-//        self.publishedDate = publishedDate
-//        self.duration = duration
-//        self.downloadURL = downloadURL
-//        self.fileSize = fileSize
-//        self.segmentNumber = segmentNumber
-//        self.soundData = soundData
-//        self.isPlayed = isPlayed
-//
-//    }
-    
-
-
-    
-    
-    
-    
-    
 }
+
+    
+
+
+    
+    
+    
+    
+    
+

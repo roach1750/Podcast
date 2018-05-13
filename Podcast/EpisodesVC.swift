@@ -33,11 +33,12 @@ class EpisodesVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     func reloadData() {
         let oldPodcastID = podcast!.iD
         self.podcast = RealmInteractor().fetchPodcast(withID: oldPodcastID)
+        let episodes = RealmInteractor().fetchEpisodesForPodcast(podcast: self.podcast!)
         switch sortSegmentControl.selectedSegmentIndex {
         case 0: //All
-            self.results = sortEpisodesIntoDictionary(data: Array(podcast!.episodesList.sorted(byKeyPath: "publishedDate", ascending: false)), unplayedOnly: false)
+            self.results = sortEpisodesIntoDictionary(data: episodes, unplayedOnly: false)
         case 1://Unplayed
-            self.results = sortEpisodesIntoDictionary(data: Array(podcast!.episodesList.sorted(byKeyPath: "publishedDate", ascending: false)), unplayedOnly: true)
+            self.results = sortEpisodesIntoDictionary(data: episodes, unplayedOnly: true)
         default:
             return
         }

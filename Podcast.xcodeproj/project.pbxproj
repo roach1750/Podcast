@@ -19,6 +19,9 @@
 		2129DD911FC25A380093D4E1 /* SingletonPlayerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2129DD901FC25A380093D4E1 /* SingletonPlayerDelegate.swift */; };
 		2149D6731F8D8FCC00F518D0 /* PodcastRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2149D6721F8D8FCC00F518D0 /* PodcastRow.swift */; };
 		2173736120240548007AD6E6 /* LatestEpisodesVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2173736020240548007AD6E6 /* LatestEpisodesVC.swift */; };
+		217DDEE7209FA10D00D8E835 /* JSONPodcast.swift in Sources */ = {isa = PBXBuildFile; fileRef = 217DDEE6209FA10D00D8E835 /* JSONPodcast.swift */; };
+		217DDEE9209FA92E00D8E835 /* TopPodcast.swift in Sources */ = {isa = PBXBuildFile; fileRef = 217DDEE8209FA92E00D8E835 /* TopPodcast.swift */; };
+		217DDEEA209FACA400D8E835 /* TopPodcast.swift in Sources */ = {isa = PBXBuildFile; fileRef = 217DDEE8209FA92E00D8E835 /* TopPodcast.swift */; };
 		219038831F8E72DE008BAED1 /* PodcastPlayerWKIC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 219038821F8E72DE008BAED1 /* PodcastPlayerWKIC.swift */; };
 		219038851F8EADDC008BAED1 /* EpisodeCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 219038841F8EADDC008BAED1 /* EpisodeCell.xib */; };
 		219038871F8EB01A008BAED1 /* EpisodeTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 219038861F8EB01A008BAED1 /* EpisodeTableViewCell.swift */; };
@@ -126,6 +129,8 @@
 		2146BCAA1F8D5800009B5C37 /* RealmSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RealmSwift.framework; path = "../../Downloads/realm-swift-2.10-2.2/watchos/swift-3.0/RealmSwift.framework"; sourceTree = "<group>"; };
 		2149D6721F8D8FCC00F518D0 /* PodcastRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PodcastRow.swift; sourceTree = "<group>"; };
 		2173736020240548007AD6E6 /* LatestEpisodesVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LatestEpisodesVC.swift; sourceTree = "<group>"; };
+		217DDEE6209FA10D00D8E835 /* JSONPodcast.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JSONPodcast.swift; sourceTree = "<group>"; };
+		217DDEE8209FA92E00D8E835 /* TopPodcast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopPodcast.swift; sourceTree = "<group>"; };
 		219038821F8E72DE008BAED1 /* PodcastPlayerWKIC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PodcastPlayerWKIC.swift; sourceTree = "<group>"; };
 		219038841F8EADDC008BAED1 /* EpisodeCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = EpisodeCell.xib; sourceTree = "<group>"; };
 		219038861F8EB01A008BAED1 /* EpisodeTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EpisodeTableViewCell.swift; sourceTree = "<group>"; };
@@ -209,6 +214,8 @@
 				21CDF0FA1F3BBDC400A6F4DC /* RealmInteractor.swift */,
 				21CDF1001F3BBF8900A6F4DC /* Downloader.swift */,
 				21CB11D61F943653009DC978 /* Podcast.swift */,
+				217DDEE8209FA92E00D8E835 /* TopPodcast.swift */,
+				217DDEE6209FA10D00D8E835 /* JSONPodcast.swift */,
 				21CDF0FC1F3BBDE000A6F4DC /* Episode.swift */,
 				21B66F991F8FBDBF009FC323 /* EpisodeData.swift */,
 				21B66FA01F8FF885009FC323 /* EpisodePlayer.swift */,
@@ -572,6 +579,7 @@
 				2122CDA01F8D1686009A0EB5 /* InterfaceController.swift in Sources */,
 				21CB11DC1F9591C4009DC978 /* Podcast.swift in Sources */,
 				2149D6731F8D8FCC00F518D0 /* PodcastRow.swift in Sources */,
+				217DDEEA209FACA400D8E835 /* TopPodcast.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -594,12 +602,14 @@
 				21D7517C1F8C05A6001B4AF7 /* EpisodeListVC.swift in Sources */,
 				21CB11D71F943653009DC978 /* Podcast.swift in Sources */,
 				21CB11DB1F958404009DC978 /* SearchViewController.swift in Sources */,
+				217DDEE7209FA10D00D8E835 /* JSONPodcast.swift in Sources */,
 				21CB11D91F943716009DC978 /* LibraryVC.swift in Sources */,
 				21B577901F99072400F5B4F1 /* PodcastTableViewCell.swift in Sources */,
 				21CDF1011F3BBF8900A6F4DC /* Downloader.swift in Sources */,
 				2129DD911FC25A380093D4E1 /* SingletonPlayerDelegate.swift in Sources */,
 				21B016791FCF9C630055512B /* PlayerRemoteVC.swift in Sources */,
 				21CDF0E91F32A70F00A6F4DC /* AppDelegate.swift in Sources */,
+				217DDEE9209FA92E00D8E835 /* TopPodcast.swift in Sources */,
 				21B016771FCF9C500055512B /* ContainerVC.swift in Sources */,
 				21D7517E1F8C0B65001B4AF7 /* PodcastPlayerVC.swift in Sources */,
 				21998A6C209E1A6500840188 /* TopChartPodcastTableViewCell.swift in Sources */,

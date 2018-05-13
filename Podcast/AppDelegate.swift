@@ -27,7 +27,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 //        self.window?.backgroundColor = UIColor.white
 
 
-        
+
         
         let audioSession = AVAudioSession.sharedInstance()
         
@@ -58,7 +58,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
         }
         
-        let configureationNumber = UInt64(5)
+        let configureationNumber = UInt64(8)
         
         let config = Realm.Configuration(
             // Set the new schema version. This must be greater than the previously used
