@@ -8,18 +8,24 @@
 //
 
 import UIKit
+import RealmSwift
 
 class EpisodesListSearchViewController: UIViewController,UITableViewDataSource, UITableViewDelegate {
     
     @IBOutlet weak var tableView: UITableView!
-    
+    @IBOutlet weak var podcastImageView: UIImageView!
+    @IBOutlet weak var podcastTitleLabel: UILabel!
+    @IBOutlet weak var subscribeButton: UIButton!
+
     var podcast: Podcast? {
         didSet {
-            self.title = podcast?.name
-
+            print("PodcastSet")
             if podcast?.isSubscribed == true {
                 changeButtonToSubcribedState()
             }
+            updateEpisodes()
+            NotificationCenter.default.addObserver(self, selector: #selector(EpisodesListSearchViewController.reloadData), name: NSNotification.Name(rawValue: "newEpisodeListDownloaded"), object: nil)
+
         }
     }
     
@@ -27,53 +33,63 @@ class EpisodesListSearchViewController: UIViewController,UITableViewDataSource, 
     
     var topPodcast: TopPodcast?  {
         didSet {
-            //Start the download
             Downloader().convertTopPodcastToPodcast(podcastToConvert: topPodcast!)
         }
     }
     
-    @IBOutlet weak var podcastImageView: UIImageView!
-    
-    @IBOutlet weak var podcastTitleLabel: UILabel!
-    
-    @IBOutlet weak var subscribeButton: UIButton!
-    
-    
     override func viewDidLoad() {
         super.viewDidLoad()
-        NotificationCenter.default.addObserver(self, selector: #selector(EpisodesListSearchViewController.reloadData), name: NSNotification.Name(rawValue: "newEpisodeListDownloaded"), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(EpisodesListSearchViewController.newPodcastDownloaded), name: NSNotification.Name(rawValue: "newPodcastDownloaded"), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(EpisodesListSearchViewController.updateArtWork), name: NSNotification.Name(rawValue: "podcastArtworkDownloaded"), object: nil)
-        updateArtWork()
-        podcastTitleLabel.text = podcast?.name
-        podcastTitleLabel.isHidden = false
         self.tableView.addSubview(self.refreshControl)
     }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        reloadData()
-    }
-    
     override func viewWillAppear(_ animated: Bool) {
-        podcastTitleLabel.isHidden = true
+        if topPodcast != nil {
+            podcastTitleLabel.text = topPodcast?.name
+            podcastTitleLabel.isHidden = false
+        }
+        else {
+            podcastTitleLabel.text = podcast?.name
+            podcastTitleLabel.isHidden = false
+        }
+
+        updateArtWork()
+        setUpToken()
     }
     
-    func newPodcastDownloaded() {
-        self.podcast = RealmInteractor().fetchPodcast(withID: (topPodcast?.iD)!)
-        Downloader().downloadPodcastData(podcast: podcast!) {result in}
+    deinit {
+        podcastNotificationToken?.invalidate()
+    }
+    
+    var podcastNotificationToken: NotificationToken? = nil
+    
+    func setUpToken() {
+        let realm = try! Realm()
+        podcastNotificationToken = realm.observe { notification, realm in
+            if self.topPodcast != nil {
+                if let potentialNewPodcast = RealmInteractor().fetchPodcast(withID: (self.topPodcast?.iD)!) {
+                if potentialNewPodcast.iD != self.podcast?.iD {
+                    self.podcast = potentialNewPodcast
+                    }
+                }
+            }
+        }
     }
     
     func updateArtWork() {
-        if let art = podcast?.artwork100x100 {
-            podcastImageView.image = UIImage(data: art)
+        if topPodcast != nil {
+            if let art = topPodcast?.artwork100x100 {
+                podcastImageView.image = UIImage(data: art)
+            }
         }
         else {
-            Downloader().downloadImageForPodcast(podcast: podcast!, highRes: false)
+            if let art = podcast?.artwork100x100 {
+                podcastImageView.image = UIImage(data: art)
+            }
         }
+
     }
     
     func updateEpisodes() {
-        Downloader().downloadPodcastData(podcast: podcast!) {result in}
+        Downloader().downloadPodcastData(podcast: podcast!)
     }
     
     @IBAction func subscribeButtonPressed(_ sender: UIButton) {
@@ -95,15 +111,12 @@ class EpisodesListSearchViewController: UIViewController,UITableViewDataSource, 
     }()
     
     func handleRefresh(_ refreshControl: UIRefreshControl) {
-        Downloader().downloadPodcastData(podcast: podcast!) {result in}
+        updateEpisodes()
     }
     
     func reloadData() {
         print("reloading table data")
-        if let podcastID = self.podcast?.iD {
-            self.podcast = RealmInteractor().fetchPodcast(withID: podcastID)
-            self.results = RealmInteractor().fetchEpisodesForPodcast(podcast: podcast!)
-        }
+        self.results = RealmInteractor().fetchEpisodesForPodcast(podcast: podcast!)
         refreshControl.endRefreshing()
         tableView.reloadData()
     }
@@ -114,6 +127,13 @@ class EpisodesListSearchViewController: UIViewController,UITableViewDataSource, 
         subscribeButton.setTitleColor(UIColor.purple, for: .normal)
     }
     
+
+
+    
+}
+
+//Tableview stuff
+extension EpisodesListSearchViewController {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return results?.count ?? 0
     }
@@ -145,10 +165,6 @@ class EpisodesListSearchViewController: UIViewController,UITableViewDataSource, 
         tableView.deselectRow(at: indexPath, animated: false)
     }
     
-    
-    
-    
-    
     func generateTimeString(duration: Int) -> String {
         
         let (h,m,s) = secondsToHoursMinutesSeconds(seconds: duration)
@@ -169,6 +185,5 @@ class EpisodesListSearchViewController: UIViewController,UITableViewDataSource, 
     func secondsToHoursMinutesSeconds (seconds : Int) -> (Int, Int, Int) {
         return (seconds / 3600, (seconds % 3600) / 60, (seconds % 3600) % 60)
     }
-    
     
 }

@@ -39,17 +39,24 @@ class PlayerRemoteVC: UIViewController {
     var smallActivityView: NVActivityIndicatorView?
     var largeActivityView: NVActivityIndicatorView?
     
+    var artworkNotificationToken: NotificationToken? = nil
+    
+    deinit {
+        artworkNotificationToken?.invalidate()
+    }
+
 //    @IBOutlet var smallVolumeIcon: UIImageView!
 //    @IBOutlet var largeVolumeIcon: UIImageView!
     
     var episode: Episode? {
         didSet{
             if SingletonPlayerDelegate.sharedInstance.player.state == .buffering {
-                    setUpSmallActivityView()
+                setUpSmallActivityView()
                 setUpLabelsForAudioPlayer()
                 setUpVolumeView()
                 setUpRouteButtonView()
                 setUpSeekSegmentedControl()
+                configureArtwork()
             }
         }
     }
@@ -85,14 +92,37 @@ class PlayerRemoteVC: UIViewController {
         
         NotificationCenter.default.addObserver(self, selector: #selector(PlayerRemoteVC.configureView), name: NSNotification.Name(rawValue: "showPlayerRemote"), object: nil)
         
-        
-
-        
         NotificationCenter.default.addObserver(self, selector: #selector(PlayerRemoteVC.airplayStatusChanged), name: .MPVolumeViewWirelessRouteActiveDidChange, object: nil)
         
         NotificationCenter.default.addObserver(self, selector: #selector(PlayerRemoteVC.airplayAvailableRoutesChanged), name: .MPVolumeViewWirelessRoutesAvailableDidChange, object: nil)
-
+    }
+    
+    fileprivate func configureArtwork() {
         
+        if SingletonPlayerDelegate.sharedInstance.nowPlayingPodcast?.artwork600x600 != nil {
+            podcastArtworkImageViewLarge.image = UIImage(data: (SingletonPlayerDelegate.sharedInstance.nowPlayingPodcast?.artwork600x600)!)
+        }
+        else {
+            let realm = try! Realm()
+            let predicate = NSPredicate(format: "iD == %@", SingletonPlayerDelegate.sharedInstance.nowPlayingPodcast!.iD)
+            let artworkPodcast = realm.objects(Podcast.self).filter(predicate)
+            artworkNotificationToken = artworkPodcast.observe({ change in
+                switch change {
+                case .initial:
+                    break
+                case .update(_, _, _, _):
+                    if let artwork = artworkPodcast.first!.artwork600x600  {
+                        SingletonPlayerDelegate.sharedInstance.nowPlayingPodcast?.artwork600x600 = artwork
+                        self.podcastArtworkImageViewLarge.image = UIImage(data:artwork)
+                    }
+                case .error(_):
+                    print("error")
+                }
+                
+            })
+            
+            
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -102,13 +132,6 @@ class PlayerRemoteVC: UIViewController {
         }
         configureView()
         setUpLabelsForAudioPlayer()
-        if SingletonPlayerDelegate.sharedInstance.nowPlayingPodcast?.artwork600x600 != nil {
-            podcastArtworkImageViewLarge.image = UIImage(data: (SingletonPlayerDelegate.sharedInstance.nowPlayingPodcast?.artwork600x600)!)
-        }
-        else {
-            
-            //            NotificationCenter.default.addObserver(self, selector: #selector(PodcastPlayerVC.reloadImage), name: NSNotification.Name(rawValue: "podcastArtworkDownloaded"), object: nil)
-        }
     }
     
     func setUpVolumeView() {
@@ -237,6 +260,7 @@ class PlayerRemoteVC: UIViewController {
     
     @objc func imageTapped(tapGestureRecognizer: UITapGestureRecognizer)
     {
+        
         self.view.layoutIfNeeded()
         if self.view.frame.size.height > 100 {
             goSmall()
@@ -250,7 +274,6 @@ class PlayerRemoteVC: UIViewController {
     var episodeDescriptionTextView = UITextView()
     
     func longPressOnLargeImage() {
-        
         if view.subviews.contains(episodeDescriptionTextView) != true {
             episodeDescriptionTextView = UITextView(frame: podcastArtworkImageViewLarge.frame)
             episodeDescriptionTextView.text = episode?.descript

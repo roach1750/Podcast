@@ -21,7 +21,13 @@ class SingletonPlayerDelegate: AudioPlayerDelegate {
             RealmInteractor().markEpisodeAsNowPlaying(episode: nowPlayingEpisode!)
         }
     }
-    var nowPlayingPodcast: Podcast?
+    var nowPlayingPodcast: Podcast? {
+        didSet {
+            if nowPlayingPodcast?.artwork600x600 == nil {
+                Downloader().downloadImageForPodcast(podcast: nowPlayingPodcast!, highRes: true)
+            }
+        }
+    }
     
     let player = AudioPlayer()
     var isPlaying = Bool()

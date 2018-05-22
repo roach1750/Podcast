@@ -98,7 +98,7 @@ class EpisodesVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     }()
 
     func handleRefresh(_ refreshControl: UIRefreshControl) {
-        Downloader().downloadPodcastData(podcast: podcast!) { result in }
+        Downloader().downloadPodcastData(podcast: podcast!)
     }
 
     

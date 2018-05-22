@@ -22,14 +22,14 @@ class Downloader: NSObject {
     }
     
     func downloadTopPodcasts() {
-        let link = "https://rss.itunes.apple.com/api/v1/us/podcasts/top-podcasts/all/50/explicit.json"
+        let link = "https://rss.itunes.apple.com/api/v1/us/podcasts/top-podcasts/all/10/explicit.json"
         downloadPodcast(link: link, podcastType: .Top)
     }
     
     let defaultSession = URLSession(configuration: .default)
     var dataTask: URLSessionDataTask?
     
-    func downloadPodcast(link: String, podcastType: PodcastType) {
+    fileprivate func downloadPodcast(link: String, podcastType: PodcastType) {
         dataTask?.cancel()
         guard let url = URL(string: link) else { return }
         dataTask = defaultSession.dataTask(with: url) { data, response, error in
@@ -68,31 +68,24 @@ class Downloader: NSObject {
         newPodcast.isSearchResult = true
         newPodcast.downloadLink = podcastToConvert.feedUrl
         RealmInteractor().savePodcast(podcast: newPodcast)
-        DispatchQueue.main.async {
-            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "newPodcastDownloaded"), object: nil)
-        }
     }
     
     //TOP
     fileprivate func decodeTopPodcast(_ data: Data) {
         let results = try! JSONDecoder().decode([String: iTunesTopPodcast].self, from: data)
         for (index, topPodcast) in (results["feed"]?.results)!.enumerated() {
-            
-            convertJSONTopPodcastToTopPodcast(podcastToConvert: topPodcast, rank: index)
+            let newTopPodcast = TopPodcast()
+            newTopPodcast.name = topPodcast.name
+            newTopPodcast.iD = topPodcast.id!
+            newTopPodcast.artworkLink100x100 = topPodcast.artworkUrl100
+            newTopPodcast.ranking = index + 1
+            RealmInteractor().saveTopPodcast(topPodcast: newTopPodcast)
+        }
+        DispatchQueue.main.async {
+            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "TopPodcastsDownloaded"), object: nil)
         }
     }
     
-    func convertJSONTopPodcastToTopPodcast(podcastToConvert: iTunesTopPodcast.TopPodcast, rank: Int) {
-        let newTopPodcast = TopPodcast()
-        newTopPodcast.name = podcastToConvert.name
-        newTopPodcast.iD = podcastToConvert.id!
-        newTopPodcast.artworkLink100x100 = podcastToConvert.artworkUrl100
-        newTopPodcast.ranking = rank + 1
-        RealmInteractor().saveTopPodcast(topPodcast: newTopPodcast)
-        DispatchQueue.main.async {
-            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "topPodcastChartsDownloaded"), object: nil)
-        }
-    }
     
     //CONVERSION OF TOPPODCAST TO PODCAST
     func convertTopPodcastToPodcast(podcastToConvert: TopPodcast) {
@@ -103,14 +96,14 @@ class Downloader: NSObject {
     //DOWNLOAD IMAGE FOR PODCAST
     func downloadImageForPodcast(podcast: Podcast, highRes: Bool) {
         if highRes == true {
-            downloadImage(imageLink: podcast.artworkLink100x100!) { (result) in
+            downloadImage(imageLink: podcast.artworkLink600x600!) { (result) in
                 DispatchQueue.main.async {
                     RealmInteractor().updatePodcastArtwork(podcast: podcast, artwork: result, highRes: true)
                 }
             }
         }
         else {
-            downloadImage(imageLink: podcast.artworkLink600x600!) { (result) in
+            downloadImage(imageLink: podcast.artworkLink100x100!) { (result) in
                 DispatchQueue.main.async {
                     RealmInteractor().updatePodcastArtwork(podcast: podcast, artwork: result, highRes: false)
                 }
@@ -137,21 +130,31 @@ class Downloader: NSObject {
     
     //Download Episodes for Podcast
     
-    func downloadPodcastData(podcast: Podcast, completion: @escaping(Bool) -> Void) {
-       
+    func downloadPodcastData(podcast: Podcast) {
+        print("downloading episodes called")
+        
         let RI = RealmInteractor()
         let link = podcast.downloadLink!
         let feedURL = URL(string: link)
         let parser = FeedParser(URL: feedURL!)
-        
+        let treadPodcastReference = ThreadSafeReference(to: podcast)
+//        print("⚡️: \(Thread.current)" + "🏭: \(OperationQueue.current?.underlyingQueue?.label ?? "None")")
+
         parser?.parseAsync(queue: DispatchQueue.global(qos: .userInitiated)) { (result) in
             print("Found \(String(describing: result.rssFeed?.items?.count)) episodes")
-            var newEpisodes = false
+            
+            let realm = try! Realm()
+            guard let podcast = realm.resolve(treadPodcastReference) else {
+                print("Tread Problem")
+                fatalError()
+            }
+            
+//            var newEpisodes = false
             for item in (result.rssFeed?.items)! {
                 let guid = item.guid!.value
                 if RealmInteractor().checkIfPodcastEpisodeExists(guid: guid!) == false {
                     let episode = Episode()
-                    newEpisodes = true
+//                    newEpisodes = true
                     episode.guid = item.guid!.value //Unique ID
                     episode.title = item.title //Title
                     episode.descript = self.trimEpisodeDescription(description: item.description!)
@@ -160,28 +163,19 @@ class Downloader: NSObject {
                         episode.estimatedDuration = duration  //duration in seconds
                     }
                     episode.downloadURL =  item.enclosure?.attributes?.url //this is the download URL
-                    episode.fileSize =  Double((item.enclosure?.attributes?.length)!) //size in bytes
-                    
-                    DispatchQueue.main.async {
-                        episode.podcast = podcast
-                        episode.podcastID = podcast.iD
-                        RI.saveEpisode(episode: episode)
+                    if let fileSize = item.enclosure?.attributes?.length  {
+                        episode.fileSize = Double(fileSize)
                     }
+                    episode.podcast = podcast
+                    episode.podcastID = podcast.iD
+                    RI.saveEpisode(episode: episode)
                 }
             }
             
             DispatchQueue.main.async {
+                print("Send Notification")
                 NotificationCenter.default.post(name: NSNotification.Name(rawValue: "newEpisodeListDownloaded"), object: nil)
             }
-            
-            if newEpisodes == true {
-                completion(true)
-            }
-            else {
-                completion(false)
-            }
-            
-            
         }
         
     }

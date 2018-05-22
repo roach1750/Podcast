@@ -35,7 +35,6 @@ class RealmInteractor: NSObject {
 
     
     func updatePodcastArtwork(podcast:Podcast, artwork:Data, highRes: Bool) {
-        
         let realm = try! Realm()
         if highRes == true {
             try! realm.write {
@@ -55,7 +54,7 @@ class RealmInteractor: NSObject {
         try! realm.write {
             topPodcast.artwork100x100 = artwork
         }
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "topPodcastArtworkDownloaded"), object: nil)
+//        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "topPodcastArtworkDownloaded"), object: nil)
     }
     
     func fetchAllPodcast() -> [Podcast] {
@@ -280,9 +279,14 @@ class RealmInteractor: NSObject {
             realm.delete(podcast)
             realm.delete(episodes)
         }
-        
-        
-        
+    }
+    
+    func deleteAllTopPodcast() {
+        let realm = try! Realm()
+        let topPodcast = realm.objects(TopPodcast.self)
+        try! realm.write {
+            realm.delete(topPodcast)
+        }
     }
     
     
@@ -368,10 +372,10 @@ class RealmInteractor: NSObject {
         return Array(latestEpisodes)
     }
     
-    func fetchPodcast(withID iD: String) -> Podcast {
+    func fetchPodcast(withID iD: String) -> Podcast? {
         let realm = try! Realm()
         let predicate = NSPredicate(format: "iD = %@",iD)
-        let podcast = realm.objects(Podcast.self).filter(predicate).first!
+        let podcast = realm.objects(Podcast.self).filter(predicate).first
 //        _ = podcast.episodesList.sorted{$0.publishedDate! > $1.publishedDate!}
         return podcast
     }

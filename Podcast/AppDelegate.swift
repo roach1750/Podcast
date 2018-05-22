@@ -106,11 +106,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         for podcast in podcasts{
             print("running loop")
             
-            
-            
-            Downloader().downloadPodcastData(podcast: podcast , completion: { (result) in
-                
-                if result == true {
+            Downloader().downloadPodcastData(podcast: podcast)
                 DispatchQueue.main.async {
                     let notification = UNMutableNotificationContent()
                     notification.title = "Podcast App"
@@ -124,17 +120,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                         completionHandler(.newData)
                         }
                     }
-                }
-                
-
-            })
-        
-        
         }
-        
-        
-
-
     }
     
     func applicationWillResignActive(_ application: UIApplication) {
