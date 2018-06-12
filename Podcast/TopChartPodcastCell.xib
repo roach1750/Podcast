@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14109" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14113" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
@@ -25,7 +25,7 @@
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="50" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="X5a-sn-rnR">
                                 <rect key="frame" x="0.0" y="39.5" width="23" height="20.5"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="23" id="yZw-g9-GTM"/>
+                                    <constraint firstAttribute="width" constant="23" identifier="rankingLabelWidth" id="yZw-g9-GTM" userLabel="Ranking Label Width "/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
                                 <nil key="textColor"/>
@@ -34,8 +34,8 @@
                             <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="47W-g0-v7Q">
                                 <rect key="frame" x="31" y="15" width="70" height="70"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="70" id="7AV-X3-pwv"/>
-                                    <constraint firstAttribute="width" secondItem="47W-g0-v7Q" secondAttribute="height" multiplier="1:1" id="RbE-Jt-Slq"/>
+                                    <constraint firstAttribute="width" constant="70" identifier="imageWidth" id="7AV-X3-pwv" userLabel="Image width"/>
+                                    <constraint firstAttribute="width" secondItem="47W-g0-v7Q" secondAttribute="height" multiplier="1:1" priority="750" identifier="imageAspectRatio" id="RbE-Jt-Slq" userLabel="Image aspect Ratio"/>
                                 </constraints>
                             </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="wordWrap" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6RJ-PK-Ffi">
@@ -48,10 +48,10 @@
                     </stackView>
                 </subviews>
                 <constraints>
-                    <constraint firstItem="48J-DL-I4V" firstAttribute="top" secondItem="1Ks-7Q-j68" secondAttribute="top" constant="8" id="0Xz-rd-bSx"/>
-                    <constraint firstAttribute="bottom" secondItem="48J-DL-I4V" secondAttribute="bottom" constant="8" id="0jy-hk-5fb"/>
-                    <constraint firstItem="48J-DL-I4V" firstAttribute="leading" secondItem="1Ks-7Q-j68" secondAttribute="leading" constant="8" id="9aS-FY-x6e"/>
-                    <constraint firstAttribute="trailing" secondItem="48J-DL-I4V" secondAttribute="trailing" constant="8" id="dAY-tz-Prr"/>
+                    <constraint firstItem="48J-DL-I4V" firstAttribute="top" secondItem="1Ks-7Q-j68" secondAttribute="top" constant="8" identifier="stackViewTopLock" id="0Xz-rd-bSx" userLabel="Stack View Top Lock"/>
+                    <constraint firstAttribute="bottom" secondItem="48J-DL-I4V" secondAttribute="bottom" constant="8" identifier="stackViewBottomLock" id="0jy-hk-5fb" userLabel="Stack View Bottom Lock"/>
+                    <constraint firstItem="48J-DL-I4V" firstAttribute="leading" secondItem="1Ks-7Q-j68" secondAttribute="leading" constant="8" identifier="stackViewLeftLock" id="9aS-FY-x6e" userLabel="Stack View Left Lock"/>
+                    <constraint firstAttribute="trailing" secondItem="48J-DL-I4V" secondAttribute="trailing" constant="8" identifier="stackViewRightLock" id="dAY-tz-Prr" userLabel="Stack View Right Lock"/>
                 </constraints>
             </tableViewCellContentView>
             <connections>

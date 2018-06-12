@@ -12,9 +12,11 @@ import FeedKit
 import AVFoundation
 import RealmSwift
 
+
+
 class Downloader: NSObject {
     
-    
+
     func searchForPodcast(searchString: String) {
         let correctedSearchString = searchString.replacingOccurrences(of: " ", with: "+")
         let link = "https://itunes.apple.com/search?term=+" + correctedSearchString + "+&entity=podcast"
@@ -22,7 +24,7 @@ class Downloader: NSObject {
     }
     
     func downloadTopPodcasts() {
-        let link = "https://rss.itunes.apple.com/api/v1/us/podcasts/top-podcasts/all/10/explicit.json"
+        let link = "https://rss.itunes.apple.com/api/v1/us/podcasts/top-podcasts/all/50/explicit.json"
         downloadPodcast(link: link, podcastType: .Top)
     }
     
@@ -70,8 +72,11 @@ class Downloader: NSObject {
         RealmInteractor().savePodcast(podcast: newPodcast)
     }
     
+    var topPodcasts: [TopPodcast]?
+    
     //TOP
     fileprivate func decodeTopPodcast(_ data: Data) {
+        topPodcasts = [TopPodcast]()
         let results = try! JSONDecoder().decode([String: iTunesTopPodcast].self, from: data)
         for (index, topPodcast) in (results["feed"]?.results)!.enumerated() {
             let newTopPodcast = TopPodcast()
@@ -79,11 +84,10 @@ class Downloader: NSObject {
             newTopPodcast.iD = topPodcast.id!
             newTopPodcast.artworkLink100x100 = topPodcast.artworkUrl100
             newTopPodcast.ranking = index + 1
-            RealmInteractor().saveTopPodcast(topPodcast: newTopPodcast)
+            topPodcasts?.append(newTopPodcast)
+            
         }
-        DispatchQueue.main.async {
-            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "TopPodcastsDownloaded"), object: nil)
-        }
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "TopPodcastsDownloaded"), object: nil)
     }
     
     
@@ -111,11 +115,10 @@ class Downloader: NSObject {
         }
     }
     
-    func downloadImageForTopPodcast(topPodcast: TopPodcast) {
+    //DOWNLOAD IMAGE FOR TOP PODCAST
+    func downloadImageForTopPodcast(topPodcast: TopPodcast, completion: @escaping(Data) -> Void) {
         downloadImage(imageLink: topPodcast.artworkLink100x100!) { (result) in
-            DispatchQueue.main.async {
-                RealmInteractor().updatePodcastArtwork(topPodcast: topPodcast, artwork: result)
-            }
+            completion(result)
         }
     }
     
@@ -129,12 +132,11 @@ class Downloader: NSObject {
     }
     
     //Download Episodes for Podcast
-    
     func downloadPodcastData(podcast: Podcast) {
         print("downloading episodes called")
         
         let RI = RealmInteractor()
-        let link = podcast.downloadLink!
+        let link = podcast.downloadLink! //NEED TO CHECK IF THIS IS NIL 
         let feedURL = URL(string: link)
         let parser = FeedParser(URL: feedURL!)
         let treadPodcastReference = ThreadSafeReference(to: podcast)
@@ -149,12 +151,10 @@ class Downloader: NSObject {
                 fatalError()
             }
             
-//            var newEpisodes = false
             for item in (result.rssFeed?.items)! {
                 let guid = item.guid!.value
                 if RealmInteractor().checkIfPodcastEpisodeExists(guid: guid!) == false {
                     let episode = Episode()
-//                    newEpisodes = true
                     episode.guid = item.guid!.value //Unique ID
                     episode.title = item.title //Title
                     episode.descript = self.trimEpisodeDescription(description: item.description!)
@@ -187,19 +187,6 @@ class Downloader: NSObject {
     
     
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     ///////OLD STUFF
 
     
@@ -214,93 +201,7 @@ class Downloader: NSObject {
         }
     }
     
-    
-    ///need to fix this for apostrophe
-//    func searchForPodcast(searchString: String) {
-//        let correctedSearchString = searchString.replacingOccurrences(of: " ", with: "+")
-//        let link = "https://itunes.apple.com/search?term=+" + correctedSearchString + "+&entity=podcast"
-//        let url = URL(string: link)
-//
-//        Alamofire.request(url!, method: .post, parameters: nil, encoding: JSONEncoding.default)
-//            .responseJSON { response in
-//                //to get status code
-//                if let status = response.response?.statusCode {
-//                    switch(status){
-//                    case 201:
-//                        print("example success")
-//                    default:
-//                        print("error with response status: \(status)")
-//                    }
-//                }
-//                //to get JSON return value
-//                if let result = response.result.value {
-//                    let JSON = result as! NSDictionary
-//                    print("Found: " + String(describing: JSON["resultCount"]!) + " results")
-//                    let resultCount = JSON["resultCount"] as! Int
-//                    if resultCount == 0 {
-//                        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "noSearchResultsFound"), object: nil)
-//                        return
-//                    }
-//                    else {
-//                    for result in JSON.value(forKey: "results") as! [NSDictionary] {
-//                        print(result)
-//                        let id = String(result["collectionId"] as! Int)
-//                        if RealmInteractor().checkIfPodcastExists(id: id) == false {
-//                            let podcast = Podcast()
-//                            podcast.name = result["collectionName"] as? String
-//                            podcast.artworkLink100x100 = result["artworkUrl100"] as? String
-//                            podcast.artworkLink600x600 = result["artworkUrl600"] as? String
-//                            podcast.iD = String(result["collectionId"] as! Int)
-//                            podcast.isSubscribed = false
-//                            podcast.isSearchResult = true
-//                            podcast.downloadLink = result["feedUrl"] as? String
-//                            let RI = RealmInteractor()
-//                            RI.savePodcast(podcast: podcast)
-//                        }
-//                        else {
-//                            RealmInteractor().setPodcastToSearchResult(id: id)
-//                        }
-//                    }
-//                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: "searchResultsFound"), object: nil)
-//                }
-//            }
-//        }
-//    }
-    
-//    func downloadImageForPodcast(podcastID: String, highRes: Bool) {
-//
-//        let podcast = RealmInteractor().fetchPodcast(withID: podcastID)
-//        let destination: DownloadRequest.DownloadFileDestination = { _, _ in
-//            let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-//            let fileURL = documentsURL.appendingPathComponent(podcastID+".png")
-//            return (fileURL, [.removePreviousFile, .createIntermediateDirectories])
-//        }
-//
-//        let link = highRes == true ? podcast.artworkLink600x600 : podcast.artworkLink100x100
-//        Alamofire.download(link!, to: destination)
-//            .downloadProgress(closure: { (progress) in
-//
-//            })
-//            .response { response in
-//                if response.error == nil {
-//                    if let dataPath = response.destinationURL {
-//                        do {
-//                            let imageData = try Data(contentsOf: dataPath)
-//                            if highRes == true {
-//                                RealmInteractor().updatePodcastArtwork(podcast: podcast, artwork: imageData, highRes: true)
-//                            }
-//                            else {
-//                                RealmInteractor().updatePodcastArtwork(podcast: podcast, artwork: imageData, highRes: false)
-//                            }
-//                            self.deleteTempImageFileForPodcast(podcast: podcast)
-//                        }
-//                        catch let error {
-//                            print("Error in downloading artwork: \(error.localizedDescription)")
-//                        }
-//                    }
-//                }
-//        }
-//    }
+
     
     func deleteTempImageFileForPodcast(podcast: Podcast) {
         let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]

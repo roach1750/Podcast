@@ -19,13 +19,6 @@ class RealmInteractor: NSObject {
         }
     }
     
-    func saveTopPodcast(topPodcast: TopPodcast) {
-        let realm = try! Realm()
-        try! realm.write {
-            realm.create(TopPodcast.self, value: topPodcast, update: true)
-        }
-    }
-    
     func saveEpisode(episode: Episode) {
         let realm = try! Realm()
         try! realm.write {
@@ -47,14 +40,6 @@ class RealmInteractor: NSObject {
             }
         }
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: "podcastArtworkDownloaded"), object: nil)
-    }
-    
-    func updatePodcastArtwork(topPodcast: TopPodcast, artwork:Data) {
-        let realm = try! Realm()
-        try! realm.write {
-            topPodcast.artwork100x100 = artwork
-        }
-//        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "topPodcastArtworkDownloaded"), object: nil)
     }
     
     func fetchAllPodcast() -> [Podcast] {
@@ -193,19 +178,20 @@ class RealmInteractor: NSObject {
     
     
     
-    func fetchTopPodcast() -> [TopPodcast] {
-        let realm = try! Realm()
-        let allTopPodcast = Array(realm.objects(TopPodcast.self))
-        let sortedTopPodcast = allTopPodcast.sorted{$0.ranking < $1.ranking}
-        return sortedTopPodcast
-    }
-    
+//    func fetchTopPodcast() -> [TopPodcast] {
+//        let realm = try! Realm()
+//        let allTopPodcast = Array(realm.objects(TopPodcast.self))
+//        let sortedTopPodcast = allTopPodcast.sorted{$0.ranking < $1.ranking}
+//        return sortedTopPodcast
+//    }
     
     
     func fetchAllSearchResultPodcast() -> [Podcast] {
+        print("fetching Search Results")
         let realm = try! Realm()
         let predicate = NSPredicate(format: "isSearchResult == %@", NSNumber(value: true))
         let allSubscribedPodcast = Array(realm.objects(Podcast.self).filter(predicate))
+        print("done fetching search results")
         return allSubscribedPodcast
     }
     
@@ -281,15 +267,6 @@ class RealmInteractor: NSObject {
         }
     }
     
-    func deleteAllTopPodcast() {
-        let realm = try! Realm()
-        let topPodcast = realm.objects(TopPodcast.self)
-        try! realm.write {
-            realm.delete(topPodcast)
-        }
-    }
-    
-    
     func deleteUnsubscribedPodcast() {
         let realm = try! Realm()
         let predicate = NSPredicate(format: "isSubscribed == %@", NSNumber(value: false))
@@ -304,15 +281,16 @@ class RealmInteractor: NSObject {
                 }
             }
             
-            
         try! realm.write {
             for podcastToDelete in allUnsubscribedPodcast {
                 let episodes = fetchEpisodesForPodcast(podcast: podcastToDelete)
                 realm.delete(episodes)
             }
             realm.delete(allUnsubscribedPodcast)
+            }
         }
-        }
+        
+
     }
     
 
@@ -320,7 +298,11 @@ class RealmInteractor: NSObject {
  
     
     func fetchEpisodesForPodcast(podcast:Podcast) -> [Episode] {
+        if podcast.isInvalidated {
+            return [Episode]()
+        }
         let realm = try! Realm()
+        
         let predicate = NSPredicate(format: "podcastID == %@", podcast.iD)
         let results = Array(realm.objects(Episode.self).filter(predicate).sorted(byKeyPath: "publishedDate", ascending: false))
         return results
@@ -434,3 +416,14 @@ class RealmInteractor: NSObject {
     }
     
 }
+
+
+
+
+
+
+
+
+
+
+

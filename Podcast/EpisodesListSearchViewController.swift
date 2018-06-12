@@ -40,6 +40,8 @@ class EpisodesListSearchViewController: UIViewController,UITableViewDataSource, 
     override func viewDidLoad() {
         super.viewDidLoad()
         self.tableView.addSubview(self.refreshControl)
+        tableView.contentInset = UIEdgeInsetsMake(0, 0, 50, 0)
+
     }
     override func viewWillAppear(_ animated: Bool) {
         if topPodcast != nil {

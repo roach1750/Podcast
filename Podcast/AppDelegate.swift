@@ -58,7 +58,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
         }
         
-        let configureationNumber = UInt64(8)
+        let configureationNumber = UInt64(10)
         
         let config = Realm.Configuration(
             // Set the new schema version. This must be greater than the previously used

@@ -7,22 +7,13 @@
 //
 
 import UIKit
-import RealmSwift
 
-class TopPodcast: Object {
+class TopPodcast: NSObject {
 
-    @objc dynamic var name: String?
-    @objc dynamic var artistName: String?
-
-    @objc dynamic var artworkLink100x100: String?
-    @objc dynamic var artwork100x100: Data?
-    
-    @objc dynamic var iD = ""
-    
-    @objc dynamic var ranking = 0
-    
-    override static func primaryKey() -> String? {
-        return "iD"
-    }
-    
+    var name: String?
+    var artistName: String?
+    var artworkLink100x100: String?
+    var artwork100x100: Data?
+    var iD = ""
+    var ranking = 0
 }

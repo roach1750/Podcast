@@ -22,7 +22,7 @@ class Podcast: Object {
     @objc dynamic var descript: String?
     @objc dynamic var isSubscribed = false
     @objc dynamic var isSearchResult = false
-    @objc dynamic var isTopChartResult = false
+    @objc dynamic var havePlayedEpisode = false
 
     @objc dynamic var downloadLink: String?
     @objc dynamic var lastUpdated: Date?

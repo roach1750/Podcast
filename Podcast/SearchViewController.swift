@@ -15,14 +15,15 @@ class SearchViewController: UIViewController, UISearchBarDelegate, UITableViewDe
     @IBOutlet weak var tableView: UITableView!
     
     var searchResults: [Podcast]?
-    var topChartsResults: [TopPodcast]?
+    var topPodcastResults: [TopPodcast]?
+    
+    var downloader = Downloader()
     
     var searchNotificationToken: NotificationToken? = nil
-    var topPodcastNotificationToken: NotificationToken? = nil
+//    var topPodcastNotificationToken: NotificationToken? = nil
     
     deinit {
         searchNotificationToken?.invalidate()
-        topPodcastNotificationToken?.invalidate()
     }
     
     var shouldDisplayingSearchResults = false
@@ -30,12 +31,12 @@ class SearchViewController: UIViewController, UISearchBarDelegate, UITableViewDe
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.tableFooterView = UIView()
-        Downloader().downloadTopPodcasts()
+        downloader.downloadTopPodcasts()
         tableView.contentInset = UIEdgeInsetsMake(0, 0, 50, 0)
         configureNotificationTokens()
         tableView.delegate = self
         tableView.dataSource = self
-        configureTopPodcastNotificaitonToken()
+        tableView.rowHeight = UITableViewAutomaticDimension
         NotificationCenter.default.addObserver(self, selector: #selector(SearchViewController.reloadData), name: NSNotification.Name(rawValue: "TopPodcastsDownloaded"), object: nil)
     }
     
@@ -65,46 +66,19 @@ class SearchViewController: UIViewController, UISearchBarDelegate, UITableViewDe
         }
     }
     
-    func configureTopPodcastNotificaitonToken() {
-        let realm = try! Realm()
-        let topPodcastResults = realm.objects(TopPodcast.self)
-        topPodcastNotificationToken = topPodcastResults.observe { [weak self] (changes: RealmCollectionChange) in
-            guard let tableView = self?.tableView else { return }
-            switch changes {
-            case .initial:
-                break
-            case .update(_, _, _, let modifications):
-//                print("Deletions: \(deletions)")
-//                print("insertions: \(insertions)")
-//                print("modifications: \(modifications)")
-                self?.topChartsResults = RealmInteractor().fetchTopPodcast()
-                if let modificationRow = modifications.first {
-                    if let updatedResult = self?.topChartsResults![modifications.first!] {
-                        let indexPathForModification = IndexPath(row: modificationRow, section: 0)
-                        if let cell = tableView.cellForRow(at: indexPathForModification) as? TopChartPodcastTableViewCell {
-                            if let imageData = updatedResult.artwork100x100 {
-                                cell.podcastImage.image = UIImage(data:imageData)
-                            }
-                        }
-                    }
-                }
-            case .error(let error):
-                // An error occurred while opening the Realm file on the background worker thread
-                fatalError("\(error)")
-            }
-        }
-    }
-    
-    
     
     func reloadData() {
         if shouldDisplayingSearchResults == true {
+            
             searchResults = RealmInteractor().fetchAllSearchResultPodcast()
         }
         else {
-            topChartsResults = RealmInteractor().fetchTopPodcast()
+            topPodcastResults = downloader.topPodcasts
         }
-        tableView.reloadData()
+        
+        DispatchQueue.main.async {
+            self.tableView.reloadData()
+        }
     }
     
     func noResultsFound() {
@@ -119,7 +93,7 @@ class SearchViewController: UIViewController, UISearchBarDelegate, UITableViewDe
             return searchResults?.count ?? 0
         }
         else {
-            return topChartsResults?.count ?? 0
+            return topPodcastResults?.count ?? 0
         }
     }
     
@@ -129,7 +103,7 @@ class SearchViewController: UIViewController, UISearchBarDelegate, UITableViewDe
             let nib = UINib(nibName: "PodcastCell", bundle: nil)
             tableView.register(nib, forCellReuseIdentifier: "podcastCell")
             let cell = tableView.dequeueReusableCell(withIdentifier: "podcastCell") as! PodcastTableViewCell
-            cell.lastUpdatedLabel.text = ""
+            cell.lastUpdatedLabel.isHidden = true 
             cell.titleLabel.text = result.name!
             cell.podcastImage?.image = nil
             if let imageData = result.artwork100x100 {
@@ -145,7 +119,7 @@ class SearchViewController: UIViewController, UISearchBarDelegate, UITableViewDe
             return cell
         }
         else {
-            let result = topChartsResults![indexPath.row]
+            let result = topPodcastResults![indexPath.row]
             let nib = UINib(nibName: "TopChartPodcastCell", bundle: nil)
             tableView.register(nib, forCellReuseIdentifier: "topChartPodcastCell")
             let cell = tableView.dequeueReusableCell(withIdentifier: "topChartPodcastCell") as! TopChartPodcastTableViewCell
@@ -160,7 +134,13 @@ class SearchViewController: UIViewController, UISearchBarDelegate, UITableViewDe
             }
             else {
                 if result.artworkLink100x100 != nil {
-                    Downloader().downloadImageForTopPodcast(topPodcast: result)
+                    Downloader().downloadImageForTopPodcast(topPodcast: result) { imageData in
+                        
+                        DispatchQueue.main.async {
+                            cell.podcastImage?.image = UIImage(data: imageData)
+                        }
+                        result.artwork100x100 = imageData
+                    }
                     cell.podcastImage?.image = UIImage(named: "noImagePodcastImage")
                 }
             }
@@ -176,7 +156,7 @@ class SearchViewController: UIViewController, UISearchBarDelegate, UITableViewDe
             performSegue(withIdentifier: "showEpisodes", sender: result)
         }
         else {
-            let result = topChartsResults![indexPath.row]
+            let result = topPodcastResults![indexPath.row]
             performSegue(withIdentifier: "showEpisodes", sender: result)
         }
     }
