@@ -135,28 +135,34 @@ class PlayerRemoteVC: UIViewController {
     }
     
     func setUpVolumeView() {
-        print("set up volume view called")
+        for volumeViewSubview in volumeView.subviews {
+            if volumeViewSubview.isKind(of: MPVolumeView.self) {
+                return
+            }
+        }
         volumeView.backgroundColor = UIColor.clear
         let myVolumeView = MPVolumeView(frame: volumeView.bounds)
         myVolumeView.showsRouteButton = false
-        
-        //WTF is all this for?
-        volumeView.addSubview(myVolumeView)
-        volumeView.willMove(toWindow: self.view.window)
-        volumeView.didMoveToSuperview()
-        
+            
         if let volumeSliderView = myVolumeView.subviews.first as? UISlider {
             volumeSliderView.minimumValueImage = UIImage(named: "SmallVolume")?.withRenderingMode(.alwaysTemplate)
             volumeSliderView.maximumValueImage = UIImage(named: "LargeVolume")?.withRenderingMode(.alwaysTemplate)
-            volumeSliderView.tintColor = #colorLiteral(red: 0.01864526048, green: 0.4776622653, blue: 1, alpha: 1)
-            volumeSliderView.minimumTrackTintColor = #colorLiteral(red: 0.01864526048, green: 0.4776622653, blue: 1, alpha: 1)
-        }
+            volumeSliderView.tintColor =  _ColorLiteralType(red: 0.01864526048, green: 0.4776622653, blue: 1, alpha: 1)
+            volumeSliderView.minimumTrackTintColor =  _ColorLiteralType(red: 0.01864526048, green: 0.4776622653, blue: 1, alpha: 1)
+            }
+        volumeView.addSubview(myVolumeView)
 
     }
     
     var routeView = MPVolumeView()
     
     func setUpRouteButtonView() {
+        for volumeViewSubview in routeButtonView.subviews {
+            if volumeViewSubview.isKind(of: MPVolumeView.self) {
+                return
+            }
+        }
+        
         routeView = MPVolumeView(frame: routeButtonView.bounds)
         routeView.showsVolumeSlider = false
         routeButtonView.addSubview(routeView)
@@ -190,7 +196,7 @@ class PlayerRemoteVC: UIViewController {
     
     
     func airplayStatusChanged(_ n:Notification) {
-        print("Airplay Playing: \(routeView.isWirelessRouteActive)")
+//        print("Airplay Playing: \(routeView.isWirelessRouteActive)")
         if routeView.isWirelessRouteActive == true {
             changeRouteButtonColor(color: .blue)
         }
@@ -201,8 +207,8 @@ class PlayerRemoteVC: UIViewController {
     }
     
     func airplayAvailableRoutesChanged(_ n: Notification) {
-        print("wireless routes changed")
-        print("Are wireless routes available: \(routeView.areWirelessRoutesAvailable)")
+//        print("wireless routes changed")
+//        print("Are wireless routes available: \(routeView.areWirelessRoutesAvailable)")
     }
     
     func changeRouteButtonColor(color: UIColor) {
@@ -324,7 +330,7 @@ class PlayerRemoteVC: UIViewController {
             setUpSeekSegmentedControl() 
         }
         
-        
+        setUpVolumeView()
     }
     
     

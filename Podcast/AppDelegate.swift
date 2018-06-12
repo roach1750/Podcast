@@ -54,7 +54,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             if success {
                 print("Permission Granted")
             } else {
-                print("There was a problem!")
+                print("Denied notification access")
             }
         }
         
