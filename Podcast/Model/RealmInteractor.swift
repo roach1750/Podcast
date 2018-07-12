@@ -27,7 +27,7 @@ class RealmInteractor: NSObject {
     }
 
     
-    func updatePodcastArtwork(podcast:Podcast, artwork:Data, highRes: Bool) {
+    func updatePodcastArtwork(podcast:Podcast, artwork:Data, highRes: Bool) {        
         let realm = try! Realm()
         if highRes == true {
             try! realm.write {
@@ -40,6 +40,7 @@ class RealmInteractor: NSObject {
             }
         }
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: "podcastArtworkDownloaded"), object: nil)
+        print("new artwork is saved to realm")
     }
     
     func fetchAllPodcast() -> [Podcast] {
@@ -83,17 +84,23 @@ class RealmInteractor: NSObject {
     
     func markEpisodeAsNowPlaying(episode: Episode) {
         let realm = try! Realm()
-        let results = Array(realm.objects(Episode.self))
-        for episode in results {
-            if episode.isNowPlayingEpisode == true {
-                try! realm.write {
-                    episode.isNowPlayingEpisode = false
-                }
-            }
-        }
+//        let results = Array(realm.objects(Episode.self))
+//        for episode in results {
+//            if episode.isNowPlayingEpisode == true {
+//
+//                try! realm.write {
+//                    episode.isNowPlayingEpisode = false
+//                }
+//            }
+//        }
+        
         try! realm.write {
             episode.isNowPlayingEpisode = true
         }
+        
+        
+        
+        
     }
     
     func markAllEpisodesAsNotPlaying() {

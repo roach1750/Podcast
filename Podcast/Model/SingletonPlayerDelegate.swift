@@ -23,6 +23,9 @@ class SingletonPlayerDelegate: AudioPlayerDelegate {
     }
     var nowPlayingPodcast: Podcast? {
         didSet {
+            if nowPlayingPodcast?.artwork100x100 == nil {
+                Downloader().downloadImageForPodcast(podcast: nowPlayingPodcast!, highRes: false)
+            }
             if nowPlayingPodcast?.artwork600x600 == nil {
                 Downloader().downloadImageForPodcast(podcast: nowPlayingPodcast!, highRes: true)
             }

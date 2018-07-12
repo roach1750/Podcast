@@ -99,6 +99,7 @@ class Downloader: NSObject {
 
     //DOWNLOAD IMAGE FOR PODCAST
     func downloadImageForPodcast(podcast: Podcast, highRes: Bool) {
+        
         if highRes == true {
             downloadImage(imageLink: podcast.artworkLink600x600!) { (result) in
                 DispatchQueue.main.async {

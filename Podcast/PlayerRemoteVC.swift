@@ -95,33 +95,17 @@ class PlayerRemoteVC: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(PlayerRemoteVC.airplayStatusChanged), name: .MPVolumeViewWirelessRouteActiveDidChange, object: nil)
         
         NotificationCenter.default.addObserver(self, selector: #selector(PlayerRemoteVC.airplayAvailableRoutesChanged), name: .MPVolumeViewWirelessRoutesAvailableDidChange, object: nil)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(PlayerRemoteVC.configureArtwork), name: NSNotification.Name(rawValue: "podcastArtworkDownloaded"), object: nil)
+
     }
     
-    fileprivate func configureArtwork() {
-        
+    @objc fileprivate func configureArtwork() {
         if SingletonPlayerDelegate.sharedInstance.nowPlayingPodcast?.artwork600x600 != nil {
             podcastArtworkImageViewLarge.image = UIImage(data: (SingletonPlayerDelegate.sharedInstance.nowPlayingPodcast?.artwork600x600)!)
         }
-        else {
-            let realm = try! Realm()
-            let predicate = NSPredicate(format: "iD == %@", SingletonPlayerDelegate.sharedInstance.nowPlayingPodcast!.iD)
-            let artworkPodcast = realm.objects(Podcast.self).filter(predicate)
-            artworkNotificationToken = artworkPodcast.observe({ change in
-                switch change {
-                case .initial:
-                    break
-                case .update(_, _, _, _):
-                    if let artwork = artworkPodcast.first!.artwork600x600  {
-                        SingletonPlayerDelegate.sharedInstance.nowPlayingPodcast?.artwork600x600 = artwork
-                        self.podcastArtworkImageViewLarge.image = UIImage(data:artwork)
-                    }
-                case .error(_):
-                    print("error")
-                }
-                
-            })
-            
-            
+        if SingletonPlayerDelegate.sharedInstance.nowPlayingPodcast?.artwork100x100 != nil {
+            podcastArtworkImageViewSmall.image = UIImage(data: (SingletonPlayerDelegate.sharedInstance.nowPlayingPodcast?.artwork100x100)!)
         }
     }
     
