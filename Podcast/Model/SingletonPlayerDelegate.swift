@@ -50,7 +50,6 @@ class SingletonPlayerDelegate: AudioPlayerDelegate {
         }
     }
     
-    
     func playEpisodeFromStream(episode: Episode, startPlaying: Bool) {
         let url = URL(string: episode.downloadURL!)
         let item = AudioItem(mediumQualitySoundURL: url)
