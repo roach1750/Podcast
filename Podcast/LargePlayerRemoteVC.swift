@@ -39,7 +39,7 @@ class LargePlayerRemoteVC: UIViewController {
         
         
         seekSegmentedControl.isHidden = true
-        
+        SingletonPlayerDelegate.sharedInstance.player.delegate = self
         configureView()
         super.viewDidLoad()
     }
@@ -52,7 +52,6 @@ class LargePlayerRemoteVC: UIViewController {
         configureArtwork()
         configurePlayPauseButton()
         setUpRouteButtonView()
-        SingletonPlayerDelegate.sharedInstance.player.delegate = self
     }
     
     override func viewDidAppear(_ animated: Bool) {

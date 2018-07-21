@@ -117,6 +117,14 @@ extension SmallPlayerRemoteVC: AudioPlayerDelegate {
         }
         configurePlayPauseButton()
     }
+    
+    func audioPlayer(_ audioPlayer: AudioPlayer, didFindDuration duration: TimeInterval, for item: AudioItem) {
+        print("did find duration of: \(duration)")
+        let episode = SingletonPlayerDelegate.sharedInstance.nowPlayingEpisode
+        if episode?.duration == 0 {
+            RealmInteractor().setEpisodeDuration(episode: episode!, duration: duration)
+        }
+    }
 }
 
 

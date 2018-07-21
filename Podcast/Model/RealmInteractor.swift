@@ -84,15 +84,15 @@ class RealmInteractor: NSObject {
     
     func markEpisodeAsNowPlaying(episode: Episode) {
         let realm = try! Realm()
-//        let results = Array(realm.objects(Episode.self))
-//        for episode in results {
-//            if episode.isNowPlayingEpisode == true {
-//
-//                try! realm.write {
-//                    episode.isNowPlayingEpisode = false
-//                }
-//            }
-//        }
+        
+        let predicate = NSPredicate(format: "isNowPlayingEpisode == true")
+        let results = Array(realm.objects(Episode.self).filter(predicate))
+        for object in results {
+            try! realm.write {
+                object.isNowPlayingEpisode = false 
+            }
+        }
+        
         
         try! realm.write {
             episode.isNowPlayingEpisode = true
