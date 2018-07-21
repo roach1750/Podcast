@@ -146,6 +146,7 @@ class Downloader: NSObject {
         parser?.parseAsync(queue: DispatchQueue.global(qos: .userInitiated)) { (result) in
             print("Found \(String(describing: result.rssFeed?.items?.count)) episodes")
             
+            let startTime = Date()
             let realm = try! Realm()
             guard let podcast = realm.resolve(treadPodcastReference) else {
                 print("Tread Problem")
@@ -172,6 +173,8 @@ class Downloader: NSObject {
                     RI.saveEpisode(episode: episode)
                 }
             }
+            let endTime = Date()
+            print("It took: \(endTime.timeIntervalSince(startTime)) seconds to save the episodes")
             
             DispatchQueue.main.async {
                 print("Send Notification")

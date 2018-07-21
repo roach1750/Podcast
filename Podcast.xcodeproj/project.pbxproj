@@ -17,6 +17,8 @@
 		2122CDA41F8D1686009A0EB5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2122CDA31F8D1686009A0EB5 /* Assets.xcassets */; };
 		2122CDA81F8D1686009A0EB5 /* Watch Podcast.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 2122CD8E1F8D1686009A0EB5 /* Watch Podcast.app */; };
 		2129DD911FC25A380093D4E1 /* SingletonPlayerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2129DD901FC25A380093D4E1 /* SingletonPlayerDelegate.swift */; };
+		2144359820F83A8500AF75F9 /* SmallPlayerRemoteVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2144359720F83A8500AF75F9 /* SmallPlayerRemoteVC.swift */; };
+		2144359A20F8437C00AF75F9 /* LargePlayerRemoteVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2144359920F8437C00AF75F9 /* LargePlayerRemoteVC.swift */; };
 		2149D6731F8D8FCC00F518D0 /* PodcastRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2149D6721F8D8FCC00F518D0 /* PodcastRow.swift */; };
 		2173736120240548007AD6E6 /* LatestEpisodesVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2173736020240548007AD6E6 /* LatestEpisodesVC.swift */; };
 		217DDEE7209FA10D00D8E835 /* JSONPodcast.swift in Sources */ = {isa = PBXBuildFile; fileRef = 217DDEE6209FA10D00D8E835 /* JSONPodcast.swift */; };
@@ -130,6 +132,8 @@
 		2122CDA51F8D1686009A0EB5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2122CDB21F8D2846009A0EB5 /* Podcast.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Podcast.entitlements; sourceTree = "<group>"; };
 		2129DD901FC25A380093D4E1 /* SingletonPlayerDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingletonPlayerDelegate.swift; sourceTree = "<group>"; };
+		2144359720F83A8500AF75F9 /* SmallPlayerRemoteVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmallPlayerRemoteVC.swift; sourceTree = "<group>"; };
+		2144359920F8437C00AF75F9 /* LargePlayerRemoteVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LargePlayerRemoteVC.swift; sourceTree = "<group>"; };
 		2146BCA31F8D56CA009B5C37 /* Pods_Watch_Podcast.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Pods_Watch_Podcast.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		2146BCA61F8D5768009B5C37 /* Pods_Watch_Podcast.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Pods_Watch_Podcast.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		2146BCA71F8D57E4009B5C37 /* Documents */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Documents; path = "../../Library/Mobile Documents/com~apple~CloudDocs/Documents"; sourceTree = "<group>"; };
@@ -307,8 +311,9 @@
 				21B016761FCF9C500055512B /* ContainerVC.swift */,
 				21B0167A1FCF9FFE0055512B /* TabBarVC.swift */,
 				21CDF0EC1F32A70F00A6F4DC /* Main.storyboard */,
+				2144359720F83A8500AF75F9 /* SmallPlayerRemoteVC.swift */,
+				2144359920F8437C00AF75F9 /* LargePlayerRemoteVC.swift */,
 				2173736020240548007AD6E6 /* LatestEpisodesVC.swift */,
-				21B016781FCF9C630055512B /* PlayerRemoteVC.swift */,
 				21CB11DA1F958404009DC978 /* SearchViewController.swift */,
 				21B577911F99877400F5B4F1 /* EpisodesListSearchViewController.swift */,
 				21CB11D81F943716009DC978 /* LibraryVC.swift */,
@@ -332,6 +337,7 @@
 		21EBD9EE1F9EDC7F0052738E /* Old */ = {
 			isa = PBXGroup;
 			children = (
+				21B016781FCF9C630055512B /* PlayerRemoteVC.swift */,
 				21D7517D1F8C0B65001B4AF7 /* PodcastPlayerVC.swift */,
 				21D7517B1F8C05A6001B4AF7 /* EpisodeListVC.swift */,
 				21D9016C1F8E6219001F2265 /* SendToWatchVC.swift */,
@@ -659,6 +665,7 @@
 				21EBD9F01F9EDCFE0052738E /* EpisodesVC.swift in Sources */,
 				21B66FA11F8FF885009FC323 /* EpisodePlayer.swift in Sources */,
 				21B0167B1FCF9FFE0055512B /* TabBarVC.swift in Sources */,
+				2144359820F83A8500AF75F9 /* SmallPlayerRemoteVC.swift in Sources */,
 				219038871F8EB01A008BAED1 /* EpisodeTableViewCell.swift in Sources */,
 				21BF43DB208D514900237770 /* TimeSeekData.swift in Sources */,
 				21CDF0FB1F3BBDC400A6F4DC /* RealmInteractor.swift in Sources */,
@@ -668,6 +675,7 @@
 				21B577921F99877400F5B4F1 /* EpisodesListSearchViewController.swift in Sources */,
 				21B66F9A1F8FBDBF009FC323 /* EpisodeData.swift in Sources */,
 				21D9016D1F8E6219001F2265 /* SendToWatchVC.swift in Sources */,
+				2144359A20F8437C00AF75F9 /* LargePlayerRemoteVC.swift in Sources */,
 				21D7517C1F8C05A6001B4AF7 /* EpisodeListVC.swift in Sources */,
 				21CB11D71F943653009DC978 /* Podcast.swift in Sources */,
 				21CB11DB1F958404009DC978 /* SearchViewController.swift in Sources */,

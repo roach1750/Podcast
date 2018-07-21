@@ -19,6 +19,8 @@ class SingletonPlayerDelegate: AudioPlayerDelegate {
     var nowPlayingEpisode: Episode? {
         didSet {
             RealmInteractor().markEpisodeAsNowPlaying(episode: nowPlayingEpisode!)
+            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "nowPlayingEpisodeSet"), object: nil)
+
         }
     }
     var nowPlayingPodcast: Podcast? {
@@ -29,6 +31,8 @@ class SingletonPlayerDelegate: AudioPlayerDelegate {
             if nowPlayingPodcast?.artwork600x600 == nil {
                 Downloader().downloadImageForPodcast(podcast: nowPlayingPodcast!, highRes: true)
             }
+            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "nowPlayingPodcastSet"), object: nil)
+
         }
     }
     
@@ -51,8 +55,10 @@ class SingletonPlayerDelegate: AudioPlayerDelegate {
         let url = URL(string: episode.downloadURL!)
         let item = AudioItem(mediumQualitySoundURL: url)
         setUpRemoteCommandCenter(item: item)
+        
         if episode.currentPlaybackDuration != 0 {
             player.seek(to: episode.currentPlaybackDuration)
+            print("seeking to: \(episode.currentPlaybackDuration)")
         }
         if startPlaying == true {
             player.play(item: item!)
