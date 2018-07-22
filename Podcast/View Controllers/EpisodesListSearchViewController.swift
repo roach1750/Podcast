@@ -160,9 +160,9 @@ extension EpisodesListSearchViewController {
         let episode = results![indexPath.row]
         
         //If the selected episode isn't the one playing:
-        if episode != SingletonPlayerDelegate.sharedInstance.nowPlayingEpisode {
-            SingletonPlayerDelegate.sharedInstance.nowPlayingPodcast = podcast
-            SingletonPlayerDelegate.sharedInstance.initalizeViewAndHandleEpisode(episode: episode, startPlaying: true)
+        if episode != ARAudioPlayer.sharedInstance.nowPlayingEpisode {
+            ARAudioPlayer.sharedInstance.nowPlayingPodcast = podcast
+            ARAudioPlayer.sharedInstance.nowPlayingEpisode = episode
         }
         tableView.deselectRow(at: indexPath, animated: false)
     }

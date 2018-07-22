@@ -29,43 +29,47 @@ class SmallPlayerRemoteVC: UIViewController {
         let inset = CGFloat(7)
         self.playPauseButton.imageEdgeInsets = UIEdgeInsets(top: inset, left: inset, bottom: inset, right: inset)
         self.skipForwardButton.imageEdgeInsets = UIEdgeInsets(top: inset, left: inset, bottom: inset, right: inset)
+        
+        ARAudioPlayer.sharedInstance.delegate = self
+
+        if ARAudioPlayer.sharedInstance.nowPlayingEpisode == nil {
+            ARAudioPlayer.sharedInstance.nowPlayingEpisode = RealmInteractor().getNowPlayingEpisode()
+            ARAudioPlayer.sharedInstance.nowPlayingPodcast = ARAudioPlayer.sharedInstance.nowPlayingEpisode?.podcast
+            
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
         NotificationCenter.default.addObserver(self, selector: #selector(SmallPlayerRemoteVC.nowPlayingEpisodeSet), name: NSNotification.Name(rawValue: "nowPlayingEpisodeSet"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(SmallPlayerRemoteVC.configureArtwork), name: NSNotification.Name(rawValue: "podcastArtworkDownloaded"), object: nil)
-        SingletonPlayerDelegate.sharedInstance.player.delegate = self
+        ARAudioPlayer.sharedInstance.delegate = self
         configurePlayPauseButton()
     }
     
 
     
     @IBAction func playPauseButtonPressed(_ sender: UIButton) {
-        if SingletonPlayerDelegate.sharedInstance.isPlaying {
-            SingletonPlayerDelegate.sharedInstance.pause()
-        }
-        else {
-            SingletonPlayerDelegate.sharedInstance.play()
-        }
+        ARAudioPlayer.sharedInstance.changePausePlay()
     }
     
     @IBAction func skipForwardButtonPressed(_ sender: UIButton) {
-        SingletonPlayerDelegate.sharedInstance.skipForward()
+        ARAudioPlayer.sharedInstance.skipForward()
     }
     
     func nowPlayingEpisodeSet() {
-        episodeTitleLabel.text = SingletonPlayerDelegate.sharedInstance.nowPlayingEpisode?.title!
+        episodeTitleLabel.text = ARAudioPlayer.sharedInstance.nowPlayingEpisode?.title!
         configureArtwork()
     }
     
     func configureArtwork() {
-        if SingletonPlayerDelegate.sharedInstance.nowPlayingPodcast?.artwork100x100 != nil {
-            podcastImageView.image = UIImage(data: (SingletonPlayerDelegate.sharedInstance.nowPlayingPodcast?.artwork100x100)!)
+        if ARAudioPlayer.sharedInstance.nowPlayingPodcast?.artwork100x100 != nil {
+            podcastImageView.image = UIImage(data: (ARAudioPlayer.sharedInstance.nowPlayingPodcast?.artwork100x100)!)
         }
     }
     
     func configurePlayPauseButton() {
-        if SingletonPlayerDelegate.sharedInstance.isPlaying == true {
+        
+        if ARAudioPlayer.sharedInstance.playerState == .playing {
             self.playPauseButton.setImage(UIImage(named: "Pause Button"), for: .normal)
         }
         else {
@@ -91,38 +95,40 @@ class SmallPlayerRemoteVC: UIViewController {
 }
 
 
-extension SmallPlayerRemoteVC: AudioPlayerDelegate {
-    
-    func audioPlayer(_ audioPlayer: AudioPlayer, didChangeStateFrom from: AudioPlayerState, to state: AudioPlayerState) {
+extension SmallPlayerRemoteVC: ARAudioPlayerDelegate {
+
+
+
+    func progressUpdated(_sender: ARAudioPlayer, timeUpdated: Float) {
         
-        print("\nDid change state called from: \(from) to: \(state)")
-        
-        switch state {
+    }
+
+    func didChangeState(_sender: ARAudioPlayer, oldState: AudioPlayerState, newState: AudioPlayerState) {
+
+        print("Old State: \(oldState) New State: \(newState)")
+        configurePlayPauseButton()
+
+        switch newState {
         case .playing:
             if self.activityView != nil && self.activityView?.isHidden == false {
                 self.activityView?.stopAnimating()
                 self.activityView?.isHidden = true
             }
-            SingletonPlayerDelegate.sharedInstance.isPlaying = true
-        case .paused:
-            DispatchQueue.main.async {}
-            SingletonPlayerDelegate.sharedInstance.isPlaying = false
         case .buffering:
             setUpactivityView()
         case .stopped:
             //reached the end of the episode:
-            RealmInteractor().setEpisodeToPlayed(episode: SingletonPlayerDelegate.sharedInstance.nowPlayingEpisode!)
+            RealmInteractor().setEpisodeToPlayed(episode: ARAudioPlayer.sharedInstance.nowPlayingEpisode!)
         default:
             return
         }
-        configurePlayPauseButton()
     }
     
-    func audioPlayer(_ audioPlayer: AudioPlayer, didFindDuration duration: TimeInterval, for item: AudioItem) {
+    func didFindDuration(_sender: ARAudioPlayer, duration: Float) {
         print("did find duration of: \(duration)")
-        let episode = SingletonPlayerDelegate.sharedInstance.nowPlayingEpisode
+        let episode = ARAudioPlayer.sharedInstance.nowPlayingEpisode
         if episode?.duration == 0 {
-            RealmInteractor().setEpisodeDuration(episode: episode!, duration: duration)
+            RealmInteractor().setEpisodeDuration(episode: episode!, duration: Double(duration))
         }
     }
 }

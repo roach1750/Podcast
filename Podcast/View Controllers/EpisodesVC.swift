@@ -196,13 +196,13 @@ class EpisodesVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let date = dates![indexPath.section]
         let episode = results![date]![indexPath.row]
-        
-        //If the selected episode isn't the one playing:
-        if episode != SingletonPlayerDelegate.sharedInstance.nowPlayingEpisode {
-            SingletonPlayerDelegate.sharedInstance.nowPlayingPodcast = podcast
-            SingletonPlayerDelegate.sharedInstance.initalizeViewAndHandleEpisode(episode: episode, startPlaying: true)
-        }
         tableView.deselectRow(at: indexPath, animated: false)
+
+        //If the selected episode isn't the one playing:
+        if episode != ARAudioPlayer.sharedInstance.nowPlayingEpisode {
+            ARAudioPlayer.sharedInstance.nowPlayingPodcast = podcast
+            ARAudioPlayer.sharedInstance.nowPlayingEpisode = episode
+        }
     }
     
     func generateTimeString(duration: Int) -> String {

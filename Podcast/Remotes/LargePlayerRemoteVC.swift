@@ -39,7 +39,6 @@ class LargePlayerRemoteVC: UIViewController {
         
         
         seekSegmentedControl.isHidden = true
-        SingletonPlayerDelegate.sharedInstance.player.delegate = self
         configureView()
         super.viewDidLoad()
     }
@@ -52,6 +51,7 @@ class LargePlayerRemoteVC: UIViewController {
         configureArtwork()
         configurePlayPauseButton()
         setUpRouteButtonView()
+        ARAudioPlayer.sharedInstance.delegate = self
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -73,47 +73,42 @@ class LargePlayerRemoteVC: UIViewController {
     }
     
     @IBAction func playPauseButtonPressed(_ sender: UIButton) {
-        if SingletonPlayerDelegate.sharedInstance.isPlaying {
-            SingletonPlayerDelegate.sharedInstance.pause()
-        }
-        else {
-            SingletonPlayerDelegate.sharedInstance.play()
-        }
+        ARAudioPlayer.sharedInstance.changePausePlay()
     }
     
     @IBAction func seekSliderAdjusted(_ sender: UISlider) {
-        SingletonPlayerDelegate.sharedInstance.player.seek(to: TimeInterval(sender.value))
+        ARAudioPlayer.sharedInstance.seekToDuration(duration: Double(sender.value))
     }
     
     @IBAction func skipForwardButtonPressed(_ sender: UIButton) {
-        SingletonPlayerDelegate.sharedInstance.skipForward()
+        ARAudioPlayer.sharedInstance.skipForward()
     }
     
     @IBAction func skipBackwardButtonPressed(_ sender: UIButton) {
-        SingletonPlayerDelegate.sharedInstance.skipBackward()
+        ARAudioPlayer.sharedInstance.skipBackward()
         
     }
     
     @IBAction func seekSegmentedControlPress(_ sender: UISegmentedControl) {
         let title = sender.titleForSegment(at: sender.selectedSegmentIndex)
         let timeInSeconds = TimeSeekData().timeStringToSeconds(timeString: title!)
-        SingletonPlayerDelegate.sharedInstance.player.seek(to: (TimeInterval(timeInSeconds)))
+        ARAudioPlayer.sharedInstance.seekToDuration(duration: Double(timeInSeconds))
         
         print(timeInSeconds)
         
     }
     
     func configureArtwork() {
-        if SingletonPlayerDelegate.sharedInstance.nowPlayingPodcast?.artwork600x600 != nil {
-            podcastArtworkImageView.image = UIImage(data: (SingletonPlayerDelegate.sharedInstance.nowPlayingPodcast?.artwork600x600)!)
+        if ARAudioPlayer.sharedInstance.nowPlayingPodcast?.artwork600x600 != nil {
+            podcastArtworkImageView.image = UIImage(data: (ARAudioPlayer.sharedInstance.nowPlayingPodcast?.artwork600x600)!)
         }
     }
     
     func configureView() {
-        titleLabel.text = SingletonPlayerDelegate.sharedInstance.nowPlayingEpisode?.title!
+        titleLabel.text = ARAudioPlayer.sharedInstance.nowPlayingEpisode?.title!
         setUpVolumeView()
         setUpSeekSegmentedControl()
-        if let episode = SingletonPlayerDelegate.sharedInstance.nowPlayingEpisode {
+        if let episode = ARAudioPlayer.sharedInstance.nowPlayingEpisode {
             if episode.duration != 0 {
                 let timeRemaining = episode.duration - episode.currentPlaybackDuration
                 self.adjustTimeLabel(label: self.currentTimeLabel, duration: Int(episode.currentPlaybackDuration))
@@ -131,7 +126,7 @@ class LargePlayerRemoteVC: UIViewController {
     }
     
     func configurePlayPauseButton() {
-        if SingletonPlayerDelegate.sharedInstance.isPlaying == true {
+        if ARAudioPlayer.sharedInstance.playerState == .playing {
             self.playPauseButton.setImage(UIImage(named: "Pause Button"), for: .normal)
         }
         else {
@@ -193,7 +188,7 @@ class LargePlayerRemoteVC: UIViewController {
     func setUpSeekSegmentedControl() {
         
         seekSegmentedControl.removeAllSegments()
-        let seconds = TimeSeekData().descriptionToTimeObjects(descript: SingletonPlayerDelegate.sharedInstance.nowPlayingEpisode!.descript!)
+        let seconds = TimeSeekData().descriptionToTimeObjects(descript: ARAudioPlayer.sharedInstance.nowPlayingEpisode!.descript!)
         
         for (index, second) in seconds.enumerated() {
             seekSegmentedControl.insertSegment(withTitle: TimeSeekData().secondsToString(seconds: second), at: index, animated: false)
@@ -230,7 +225,7 @@ class LargePlayerRemoteVC: UIViewController {
     func longPressOnImage() {
         if view.subviews.contains(episodeDescriptionTextView) != true {
             episodeDescriptionTextView = UITextView(frame: podcastArtworkImageView.frame)
-            episodeDescriptionTextView.text = SingletonPlayerDelegate.sharedInstance.nowPlayingEpisode?.descript
+            episodeDescriptionTextView.text = ARAudioPlayer.sharedInstance.nowPlayingEpisode?.descript
             episodeDescriptionTextView.textColor = UIColor.white
             episodeDescriptionTextView.font = UIFont.systemFont(ofSize: 16)
             episodeDescriptionTextView.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.8)
@@ -250,53 +245,50 @@ class LargePlayerRemoteVC: UIViewController {
 }
 
 //audio delegate
-extension LargePlayerRemoteVC: AudioPlayerDelegate {
-    func audioPlayer(_ audioPlayer: AudioPlayer, didChangeStateFrom from: AudioPlayerState, to state: AudioPlayerState) {
-        
-        print("\nDid change state called from: \(from) to: \(state)")
-        
-        switch state {
-        case .playing:
-            if self.activityView != nil && self.activityView?.isHidden == false {
-                self.activityView?.stopAnimating()
-                self.activityView?.isHidden = true
-            }
-            SingletonPlayerDelegate.sharedInstance.isPlaying = true
-        case .paused:
-            DispatchQueue.main.async {}
-            SingletonPlayerDelegate.sharedInstance.isPlaying = false
-        case .buffering:
-            self.setupActivityView()
-        case .stopped:
-            //reached the end of the episode:
-            RealmInteractor().setEpisodeToPlayed(episode: SingletonPlayerDelegate.sharedInstance.nowPlayingEpisode!)
-        default:
-            return
-        }
-        configurePlayPauseButton()
-    }
+extension LargePlayerRemoteVC: ARAudioPlayerDelegate {
     
-    func audioPlayer(_ audioPlayer: AudioPlayer, didFindDuration duration: TimeInterval, for item: AudioItem) {
-        print("did find duration of: \(duration)")
-        let episode = SingletonPlayerDelegate.sharedInstance.nowPlayingEpisode
-        if episode?.duration == 0 {
-            RealmInteractor().setEpisodeDuration(episode: episode!, duration: duration)
-        }
-        seekSlider.maximumValue = Float(duration)
-        self.adjustTimeLabel(label: self.currentTimeLabel, duration: 0)
-        self.adjustTimeLabel(label: self.timeRemainingLabel, duration: Int(duration))
-    }
-    
-    func audioPlayer(_ audioPlayer: AudioPlayer, didUpdateProgressionTo time: TimeInterval, percentageRead: Float) {
-        seekSlider.setValue(Float(time), animated: true)
-        let currentTime = Double(time)
-        let episode = SingletonPlayerDelegate.sharedInstance.nowPlayingEpisode
+    func progressUpdated(_sender: ARAudioPlayer, timeUpdated: Float) {
+        seekSlider.setValue(Float(timeUpdated), animated: true)
+        let currentTime = Double(timeUpdated)
+        let episode = ARAudioPlayer.sharedInstance.nowPlayingEpisode
         RealmInteractor().setEpisodeCurrentPlaybackDuration(episode: episode!, currentPlaybackDuration: Double(currentTime))
         let duration  = episode?.duration
         let timeRemaining = duration! - currentTime
         self.adjustTimeLabel(label: self.currentTimeLabel, duration: Int(currentTime))
         self.adjustTimeLabel(label: self.timeRemainingLabel, duration: Int(timeRemaining))
     }
+    
+    func didChangeState(_sender: ARAudioPlayer, oldState: AudioPlayerState, newState: AudioPlayerState) {
+        configurePlayPauseButton()
+        switch newState {
+        case .playing:
+            if self.activityView != nil && self.activityView?.isHidden == false {
+                self.activityView?.stopAnimating()
+                self.activityView?.isHidden = true
+            }
+        case .paused:
+            DispatchQueue.main.async {}
+        case .buffering:
+            self.setupActivityView()
+        case .stopped:
+            //reached the end of the episode:
+            RealmInteractor().setEpisodeToPlayed(episode: ARAudioPlayer.sharedInstance.nowPlayingEpisode!)
+        default:
+            return
+        }
+    }
+    
+    func didFindDuration(_sender: ARAudioPlayer, duration: Float) {
+        print("did find duration of: \(duration)")
+        let episode = ARAudioPlayer.sharedInstance.nowPlayingEpisode
+        if episode?.duration == 0 {
+            RealmInteractor().setEpisodeDuration(episode: episode!, duration: Double(duration))
+        }
+        seekSlider.maximumValue = Float(duration)
+        self.adjustTimeLabel(label: self.currentTimeLabel, duration: 0)
+        self.adjustTimeLabel(label: self.timeRemainingLabel, duration: Int(duration))
+    }
+    
 }
 
 
