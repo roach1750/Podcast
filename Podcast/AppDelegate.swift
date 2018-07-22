@@ -87,11 +87,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     }
     
-    override func remoteControlReceived(with event: UIEvent?) {
-        if let event = event {
-            SingletonPlayerDelegate.sharedInstance.player.remoteControlReceived(with: event)
-        }
-    }
+//    override func remoteControlReceived(with event: UIEvent?) {
+//        if let event = event {
+//            SingletonPlayerDelegate.sharedInstance.player.remoteControlReceived(with: event)
+//        }
+//    }
     
     func application(_ application: UIApplication, performFetchWithCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
         

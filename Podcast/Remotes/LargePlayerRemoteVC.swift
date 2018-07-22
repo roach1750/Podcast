@@ -54,12 +54,15 @@ class LargePlayerRemoteVC: UIViewController {
         ARAudioPlayer.sharedInstance.delegate = self
     }
     
+
+    
     override func viewDidAppear(_ animated: Bool) {
         UIApplication.shared.statusBarStyle = .lightContent
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         UIApplication.shared.statusBarStyle = .default
+        ARAudioPlayer.sharedInstance.delegate = nil
     }
     
     func newEpisodeSet() {
@@ -248,7 +251,8 @@ class LargePlayerRemoteVC: UIViewController {
 extension LargePlayerRemoteVC: ARAudioPlayerDelegate {
     
     func progressUpdated(_sender: ARAudioPlayer, timeUpdated: Float) {
-        seekSlider.setValue(Float(timeUpdated), animated: true)
+        
+        seekSlider.setValue(timeUpdated, animated: true)
         let currentTime = Double(timeUpdated)
         let episode = ARAudioPlayer.sharedInstance.nowPlayingEpisode
         RealmInteractor().setEpisodeCurrentPlaybackDuration(episode: episode!, currentPlaybackDuration: Double(currentTime))
@@ -256,6 +260,8 @@ extension LargePlayerRemoteVC: ARAudioPlayerDelegate {
         let timeRemaining = duration! - currentTime
         self.adjustTimeLabel(label: self.currentTimeLabel, duration: Int(currentTime))
         self.adjustTimeLabel(label: self.timeRemainingLabel, duration: Int(timeRemaining))
+        
+        
     }
     
     func didChangeState(_sender: ARAudioPlayer, oldState: AudioPlayerState, newState: AudioPlayerState) {

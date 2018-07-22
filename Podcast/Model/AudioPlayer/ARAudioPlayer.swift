@@ -26,9 +26,10 @@ class ARAudioPlayer: NSObject {
             if oldValue != nil {
                 prepareToPlay(url: URL(string: nowPlayingEpisode!.downloadURL!)!)
             }
+            nowPlayingPodcast = nowPlayingEpisode?.podcast
+            self.configureCommandCenter()
         }
     }
-    
     var nowPlayingPodcast: Podcast? {
         didSet {
             if nowPlayingPodcast?.artwork100x100 == nil {
@@ -70,6 +71,10 @@ class ARAudioPlayer: NSObject {
     ]
     
     func prepareToPlay(url: URL) {
+        if player != nil {
+            removePeriodicTimeObserver()
+        }
+        
         // Create the asset to play
         playerState = .waitingForConnection
         asset = AVAsset(url: url)
@@ -78,27 +83,27 @@ class ARAudioPlayer: NSObject {
         // array of asset keys to be automatically loaded
         
         
-        if let episodeData = FileSystemInteractor().openFileWithFileName(fileName: fileName) {
-            playerItem = CachingPlayerItem(data: episodeData, mimeType:  "audio/mpeg", fileExtension: "mp3")
-        }
-        else {
+//        if let episodeData = FileSystemInteractor().openFileWithFileName(fileName: fileName) {
+//            playerItem = CachingPlayerItem(data: episodeData, mimeType:  "audio/mpeg", fileExtension: "mp3")
+//        }
+//        else {
             playerItem = CachingPlayerItem(url: url)
-        }
+//        }
+        
         
         playerItem.delegate = self
-        
         
         // Register as an observer of the player item's status property
         playerItem.addObserver(self,forKeyPath: #keyPath(AVPlayerItem.status),options: [.old, .new],context: &playerItemContext)
         
         // Associate the player item with the player
         player = AVPlayer(playerItem: playerItem)
+        
         playerItem.addObserver(self, forKeyPath: "playbackBufferEmpty", options: .new, context: nil)
         playerItem.addObserver(self, forKeyPath: "playbackLikelyToKeepUp", options: .new, context: nil)
         playerItem.addObserver(self, forKeyPath: "playbackBufferFull", options: .new, context: nil)
         player.automaticallyWaitsToMinimizeStalling = false
         delegate.didFindDuration(_sender: self, duration: Float(CMTimeGetSeconds(self.asset.duration)))
-        setupNowPlayingInfoCenter()
     }
     
     
@@ -114,9 +119,9 @@ class ARAudioPlayer: NSObject {
             
             switch status {
             case .readyToPlay:
-                print("readyToPlay")
                 addPeriodicTimeObserver()
                 player.play()
+                print("starting to play")
                 playerState = .playing
             case .failed:
                 print("failed")
@@ -126,15 +131,9 @@ class ARAudioPlayer: NSObject {
         }
             
         else if object is AVPlayerItem {
-            //            print(playerItem.loadedTimeRanges)
             switch keyPath {
             case "playbackBufferEmpty":
-                //                print("buffering")
                 playerState = .buffering
-                //            case "playbackLikelyToKeepUp":
-                //                print("likely to keep up")
-                //            case "playbackBufferFull":
-            //                print("playbackBuffer Full")
             default:
                 break
             }
@@ -157,6 +156,7 @@ class ARAudioPlayer: NSObject {
         else {
             prepareToPlay(url: URL(string: nowPlayingEpisode!.downloadURL!)!)
         }
+        self.updateNowPlayingInfoForCurrentPlaybackItem()
     }
     
     fileprivate let seekDuration: Float64 = 15
@@ -187,11 +187,14 @@ class ARAudioPlayer: NSObject {
     }
     
     func seekToDuration(duration: Double) {
+        
+        
         player.seek(to:CMTimeMake(Int64(duration), 1))
         
     }
     
     var timeObserverToken: Any?
+    
     
     func addPeriodicTimeObserver() {
         // Notify every half second
@@ -199,6 +202,7 @@ class ARAudioPlayer: NSObject {
         let time = CMTime(seconds: 0.5, preferredTimescale: timeScale)
         timeObserverToken = player.addPeriodicTimeObserver(forInterval: time, queue: .main) { [weak self] time in
             self?.delegate.progressUpdated(_sender: self!, timeUpdated: Float(CMTimeGetSeconds(time)))
+            print(CMTimeGetSeconds(time))
         }
     }
     
@@ -208,46 +212,87 @@ class ARAudioPlayer: NSObject {
             self.timeObserverToken = nil
         }
     }
-}
+
 
 //Info Center
-extension ARAudioPlayer {
-    func setupNowPlayingInfoCenter() {
-        UIApplication.shared.beginReceivingRemoteControlEvents()
-        MPRemoteCommandCenter.shared().playCommand.isEnabled = true
-        MPRemoteCommandCenter.shared().playCommand.addTarget { (event) -> MPRemoteCommandHandlerStatus in
-            self.changePausePlay()
-            //            self.updateNowPlayingInfoCenter()
+    
+    let commandCenter = MPRemoteCommandCenter.shared()
+    
+    func configureCommandCenter() {
+        self.commandCenter.playCommand.addTarget (handler: { [weak self] event -> MPRemoteCommandHandlerStatus in
+            guard let sself = self else { return .commandFailed }
+            sself.player.play()
+            sself.playerState = .playing
             return .success
-        }
+        })
         
-        MPRemoteCommandCenter.shared().pauseCommand.isEnabled = true
-        MPRemoteCommandCenter.shared().pauseCommand.addTarget { (event) -> MPRemoteCommandHandlerStatus in
-            self.changePausePlay()
-            //            self.updateNowPlayingInfoCenter()
+        self.commandCenter.pauseCommand.addTarget (handler: { [weak self] event -> MPRemoteCommandHandlerStatus in
+            guard let sself = self else { return .commandFailed }
+            sself.player.pause()
+            sself.playerState = .paused
             return .success
-        }
+        })
         
-        MPRemoteCommandCenter.shared().skipForwardCommand.isEnabled = true
-        MPRemoteCommandCenter.shared().skipForwardCommand.addTarget { (event) -> MPRemoteCommandHandlerStatus in
-            self.skipForward()
+        self.commandCenter.skipForwardCommand.addTarget (handler: { [weak self] event -> MPRemoteCommandHandlerStatus in
+            guard let sself = self else { return .commandFailed }
+            sself.skipForward()
             return .success
-        }
+        })
         
-        MPRemoteCommandCenter.shared().skipBackwardCommand.isEnabled = true
-        MPRemoteCommandCenter.shared().skipBackwardCommand.addTarget { (event) -> MPRemoteCommandHandlerStatus in
-            self.skipBackward()
+        self.commandCenter.skipBackwardCommand.addTarget (handler: { [weak self] event -> MPRemoteCommandHandlerStatus in
+            guard let sself = self else { return .commandFailed }
+            sself.skipBackward()
             return .success
-        }
+        })
         
     }
     
-    func updateNowPlayingInfoCenter() {
+    //MARK: - Now Playing Info
+    
+    var nowPlayingInfo: [String : AnyObject]?
+
+    
+    func updateNowPlayingInfoForCurrentPlaybackItem() {
+        guard let currentPlaybackItem = self.nowPlayingEpisode, let currentPlaybackPodcast = self.nowPlayingPodcast else {
+            self.configureNowPlayingInfo(nil)
+            return
+        }
         
+        var nowPlayingInfo = [MPMediaItemPropertyTitle: currentPlaybackItem.title!,
+                              MPMediaItemPropertyArtist: currentPlaybackPodcast.name!,
+//                              MPMediaItemPropertyPlaybackDuration: playerItem.duration,
+                              MPNowPlayingInfoPropertyPlaybackRate: NSNumber(value: 1.0 as Float)] as [String : Any]
+        
+        let artworkData = nowPlayingPodcast!.artwork100x100
+        let image = UIImage(data: artworkData!) ?? UIImage()
+        let artwork = MPMediaItemArtwork(boundsSize: image.size, requestHandler: {  (_) -> UIImage in
+            return image
+        })
+        nowPlayingInfo[MPMediaItemPropertyArtwork] = artwork
+
+        
+        self.configureNowPlayingInfo(nowPlayingInfo as [String : AnyObject]?)
+        
+        self.updateNowPlayingInfoElapsedTime()
     }
+    
+    func updateNowPlayingInfoElapsedTime() {
+//        guard var nowPlayingInfo = self.nowPlayingInfo else { return }
+//
+//
+//        nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = NSNumber(value: Float(CMTimeGetSeconds(player.currentTime())))
+//
+//        self.configureNowPlayingInfo(nowPlayingInfo)
+    }
+    
+    func configureNowPlayingInfo(_ nowPlayingInfo: [String: AnyObject]?) {
+        MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
+        self.nowPlayingInfo = nowPlayingInfo
+    }
+    
+    
 }
-
-
+    
 extension ARAudioPlayer: CachingPlayerItemDelegate {
     
     func playerItem(_ playerItem: CachingPlayerItem, didFinishDownloadingData data: Data) {

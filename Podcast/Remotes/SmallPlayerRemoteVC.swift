@@ -46,6 +46,9 @@ class SmallPlayerRemoteVC: UIViewController {
         configurePlayPauseButton()
     }
     
+    override func viewWillDisappear(_ animated: Bool) {
+        ARAudioPlayer.sharedInstance.delegate = nil 
+    }
 
     
     @IBAction func playPauseButtonPressed(_ sender: UIButton) {

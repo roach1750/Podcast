@@ -29,8 +29,8 @@ class LibraryVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
     func checkIfNowPlayingEpisode() {
         if let nowPlayingEpisode = RealmInteractor().getNowPlayingEpisode() {
-            SingletonPlayerDelegate.sharedInstance.nowPlayingPodcast = nowPlayingEpisode.podcast!
-            SingletonPlayerDelegate.sharedInstance.initalizeViewAndHandleEpisode(episode: nowPlayingEpisode, startPlaying: false)
+            ARAudioPlayer.sharedInstance.nowPlayingPodcast = nowPlayingEpisode.podcast!
+            ARAudioPlayer.sharedInstance.nowPlayingEpisode = nowPlayingEpisode
         }
     }
     

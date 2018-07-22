@@ -106,7 +106,7 @@ class EpisodesListSearchViewController: UIViewController,UITableViewDataSource, 
     lazy var refreshControl: UIRefreshControl = {
         let refreshControl = UIRefreshControl()
         refreshControl.addTarget(self, action:
-            #selector(EpisodeListVC.handleRefresh(_:)),
+            #selector(EpisodesListSearchViewController.handleRefresh(_:)),
                                  for: UIControlEvents.valueChanged)
         refreshControl.tintColor = UIColor.red
         return refreshControl

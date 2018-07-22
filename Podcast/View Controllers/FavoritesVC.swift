@@ -59,7 +59,7 @@ class FavoritesVC: UIViewController,  UITableViewDataSource, UITableViewDelegate
                 cell.contentView.alpha = 1.0
             }
             
-            if episode == SingletonPlayerDelegate.sharedInstance.nowPlayingEpisode {
+            if episode == ARAudioPlayer.sharedInstance.nowPlayingEpisode {
                 cell.specsLabel.text = "Now Playing"
                 cell.specsLabel.textColor = UIColor.green
             }
@@ -83,11 +83,11 @@ class FavoritesVC: UIViewController,  UITableViewDataSource, UITableViewDelegate
         let episode = results![indexPath.row]
         
         //If the selected episode isn't the one playing:
-        if episode != SingletonPlayerDelegate.sharedInstance.nowPlayingEpisode {
-            SingletonPlayerDelegate.sharedInstance.nowPlayingPodcast = episode.podcast
-            SingletonPlayerDelegate.sharedInstance.initalizeViewAndHandleEpisode(episode: episode, startPlaying: true)
-        }
+        if episode != ARAudioPlayer.sharedInstance.nowPlayingEpisode {
+            ARAudioPlayer.sharedInstance.nowPlayingPodcast = episode.podcast
+            ARAudioPlayer.sharedInstance.nowPlayingEpisode = episode
         tableView.deselectRow(at: indexPath, animated: false)
+        }
     }
     
     

@@ -327,11 +327,11 @@
 			children = (
 				21B016761FCF9C500055512B /* ContainerVC.swift */,
 				21B0167A1FCF9FFE0055512B /* TabBarVC.swift */,
-				2173736020240548007AD6E6 /* LatestEpisodesVC.swift */,
 				21CB11DA1F958404009DC978 /* SearchViewController.swift */,
 				21B577911F99877400F5B4F1 /* EpisodesListSearchViewController.swift */,
 				218FBF7B21041E3D00A5EF87 /* LibraryVC.swift */,
 				21EBD9EF1F9EDCFE0052738E /* EpisodesVC.swift */,
+				2173736020240548007AD6E6 /* LatestEpisodesVC.swift */,
 				21D9F9892055D67100CFEAE6 /* FavoritesVC.swift */,
 			);
 			path = "View Controllers";

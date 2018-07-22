@@ -157,7 +157,7 @@ class EpisodesVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
             cell.contentView.alpha = 1.0
         }
         
-        if episode == SingletonPlayerDelegate.sharedInstance.nowPlayingEpisode {
+        if episode == ARAudioPlayer.sharedInstance.nowPlayingEpisode {
             cell.specsLabel.text = "Now Playing"
             cell.specsLabel.textColor = UIColor.green
         }
