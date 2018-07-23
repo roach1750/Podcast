@@ -98,7 +98,8 @@ class ARAudioPlayer: NSObject {
         
         // Associate the player item with the player
         player = AVPlayer(playerItem: playerItem)
-        
+        self.updateNowPlayingInfoForCurrentPlaybackItem()
+
         playerItem.addObserver(self, forKeyPath: "playbackBufferEmpty", options: .new, context: nil)
         playerItem.addObserver(self, forKeyPath: "playbackLikelyToKeepUp", options: .new, context: nil)
         playerItem.addObserver(self, forKeyPath: "playbackBufferFull", options: .new, context: nil)
@@ -188,8 +189,15 @@ class ARAudioPlayer: NSObject {
     
     func seekToDuration(duration: Double) {
         
+        print("seeking to: \(CMTimeMake(Int64(duration), 1))")
+//        player.seek(to:CMTimeMake(Int64(duration), 1))
         
-        player.seek(to:CMTimeMake(Int64(duration), 1))
+        let seekTime = CMTimeMake(Int64(duration), 1)
+        player.seek(to: seekTime, toleranceBefore: kCMTimeZero, toleranceAfter: kCMTimeZero)
+        removePeriodicTimeObserver()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.25, execute: {
+            self.addPeriodicTimeObserver()
+        })
         
     }
     
@@ -202,7 +210,8 @@ class ARAudioPlayer: NSObject {
         let time = CMTime(seconds: 0.5, preferredTimescale: timeScale)
         timeObserverToken = player.addPeriodicTimeObserver(forInterval: time, queue: .main) { [weak self] time in
             self?.delegate.progressUpdated(_sender: self!, timeUpdated: Float(CMTimeGetSeconds(time)))
-            print(CMTimeGetSeconds(time))
+            self?.updateNowPlayingInfoElapsedTime()
+
         }
     }
     
@@ -245,11 +254,23 @@ class ARAudioPlayer: NSObject {
             return .success
         })
         
+//        self.commandCenter.changePlaybackPositionCommand.addTarget(self, action: #selector(ARAudioPlayer.handelChangePlaybackPositionCommandEvent(event:)))
+
     }
     
+//    func handelChangePlaybackPositionCommandEvent(event: MPChangePlaybackPositionCommandEvent) -> MPRemoteCommandHandlerStatus {
+//
+//        let newPosition = CMTimeMakeWithSeconds(event.positionTime, 1)
+//
+//
+//        self.seekToDuration(duration: CMTimeGetSeconds(newPosition) )
+//
+//        return .success
+//    }
+//
     //MARK: - Now Playing Info
     
-    var nowPlayingInfo: [String : AnyObject]?
+    var nowPlayingInfo: [String : Any]?
 
     
     func updateNowPlayingInfoForCurrentPlaybackItem() {
@@ -258,18 +279,21 @@ class ARAudioPlayer: NSObject {
             return
         }
         
+        let duration = Float(CMTimeGetSeconds(player.currentItem!.duration))
+
+        
         var nowPlayingInfo = [MPMediaItemPropertyTitle: currentPlaybackItem.title!,
                               MPMediaItemPropertyArtist: currentPlaybackPodcast.name!,
-//                              MPMediaItemPropertyPlaybackDuration: playerItem.duration,
+                              MPMediaItemPropertyPlaybackDuration: duration,
                               MPNowPlayingInfoPropertyPlaybackRate: NSNumber(value: 1.0 as Float)] as [String : Any]
         
-        let artworkData = nowPlayingPodcast!.artwork100x100
-        let image = UIImage(data: artworkData!) ?? UIImage()
-        let artwork = MPMediaItemArtwork(boundsSize: image.size, requestHandler: {  (_) -> UIImage in
-            return image
-        })
-        nowPlayingInfo[MPMediaItemPropertyArtwork] = artwork
-
+        if let artworkData = nowPlayingPodcast!.artwork100x100 {
+            let image = UIImage(data: artworkData) ?? UIImage()
+            let artwork = MPMediaItemArtwork(boundsSize: image.size, requestHandler: {  (_) -> UIImage in
+                return image
+            })
+            nowPlayingInfo[MPMediaItemPropertyArtwork] = artwork
+        }
         
         self.configureNowPlayingInfo(nowPlayingInfo as [String : AnyObject]?)
         
@@ -277,15 +301,12 @@ class ARAudioPlayer: NSObject {
     }
     
     func updateNowPlayingInfoElapsedTime() {
-//        guard var nowPlayingInfo = self.nowPlayingInfo else { return }
-//
-//
-//        nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = NSNumber(value: Float(CMTimeGetSeconds(player.currentTime())))
-//
-//        self.configureNowPlayingInfo(nowPlayingInfo)
+        guard var nowPlayingInfo = self.nowPlayingInfo else { return }
+        nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = CMTimeGetSeconds(player.currentItem!.currentTime())
+        self.configureNowPlayingInfo(nowPlayingInfo)
     }
     
-    func configureNowPlayingInfo(_ nowPlayingInfo: [String: AnyObject]?) {
+    func configureNowPlayingInfo(_ nowPlayingInfo: [String: Any]?) {
         MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
         self.nowPlayingInfo = nowPlayingInfo
     }

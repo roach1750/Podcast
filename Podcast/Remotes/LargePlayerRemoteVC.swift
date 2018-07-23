@@ -50,8 +50,8 @@ class LargePlayerRemoteVC: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(LargePlayerRemoteVC.airplayAvailableRoutesChanged), name: .MPVolumeViewWirelessRoutesAvailableDidChange, object: nil)
         configureArtwork()
         configurePlayPauseButton()
-        setUpRouteButtonView()
         ARAudioPlayer.sharedInstance.delegate = self
+        setUpRouteButtonView()
     }
     
 
@@ -97,7 +97,6 @@ class LargePlayerRemoteVC: UIViewController {
         let timeInSeconds = TimeSeekData().timeStringToSeconds(timeString: title!)
         ARAudioPlayer.sharedInstance.seekToDuration(duration: Double(timeInSeconds))
         
-        print(timeInSeconds)
         
     }
     
@@ -251,9 +250,12 @@ class LargePlayerRemoteVC: UIViewController {
 extension LargePlayerRemoteVC: ARAudioPlayerDelegate {
     
     func progressUpdated(_sender: ARAudioPlayer, timeUpdated: Float) {
-        
-        seekSlider.setValue(timeUpdated, animated: true)
+    
+        if !seekSlider.isTracking {
+            seekSlider.setValue(timeUpdated, animated: true)
+        }
         let currentTime = Double(timeUpdated)
+        print(currentTime)
         let episode = ARAudioPlayer.sharedInstance.nowPlayingEpisode
         RealmInteractor().setEpisodeCurrentPlaybackDuration(episode: episode!, currentPlaybackDuration: Double(currentTime))
         let duration  = episode?.duration
