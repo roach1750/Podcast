@@ -33,9 +33,9 @@ class SmallPlayerRemoteVC: UIViewController {
         ARAudioPlayer.sharedInstance.delegate = self
 
         if ARAudioPlayer.sharedInstance.nowPlayingEpisode == nil {
-            ARAudioPlayer.sharedInstance.nowPlayingEpisode = RealmInteractor().getNowPlayingEpisode()
-            ARAudioPlayer.sharedInstance.nowPlayingPodcast = ARAudioPlayer.sharedInstance.nowPlayingEpisode?.podcast
-            
+            if let previouslyPlayingEpisode = RealmInteractor().getNowPlayingEpisode() {
+                ARAudioPlayer.sharedInstance.nowPlayingEpisode = previouslyPlayingEpisode
+            }
         }
     }
     

@@ -80,7 +80,7 @@ class LargePlayerRemoteVC: UIViewController {
     }
     
     @IBAction func seekSliderAdjusted(_ sender: UISlider) {
-        ARAudioPlayer.sharedInstance.seekToDuration(duration: Double(sender.value))
+        ARAudioPlayer.sharedInstance.seekTo(Double(sender.value))
     }
     
     @IBAction func skipForwardButtonPressed(_ sender: UIButton) {
@@ -95,8 +95,8 @@ class LargePlayerRemoteVC: UIViewController {
     @IBAction func seekSegmentedControlPress(_ sender: UISegmentedControl) {
         let title = sender.titleForSegment(at: sender.selectedSegmentIndex)
         let timeInSeconds = TimeSeekData().timeStringToSeconds(timeString: title!)
-        ARAudioPlayer.sharedInstance.seekToDuration(duration: Double(timeInSeconds))
-        
+        ARAudioPlayer.sharedInstance.seekTo(Double(timeInSeconds))
+
         
     }
     
