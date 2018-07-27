@@ -255,7 +255,6 @@ extension LargePlayerRemoteVC: ARAudioPlayerDelegate {
             seekSlider.setValue(timeUpdated, animated: true)
         }
         let currentTime = Double(timeUpdated)
-        print(currentTime)
         let episode = ARAudioPlayer.sharedInstance.nowPlayingEpisode
         RealmInteractor().setEpisodeCurrentPlaybackDuration(episode: episode!, currentPlaybackDuration: Double(currentTime))
         let duration  = episode?.duration

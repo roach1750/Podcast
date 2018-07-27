@@ -71,28 +71,33 @@ class SmallPlayerRemoteVC: UIViewController {
     }
     
     func configurePlayPauseButton() {
-        
+        DispatchQueue.main.async {
+
         if ARAudioPlayer.sharedInstance.playerState == .playing {
             self.playPauseButton.setImage(UIImage(named: "Pause Button"), for: .normal)
         }
         else {
             self.playPauseButton.setImage(UIImage(named: "Play Button"), for: .normal)
         }
+        }
     }
     
     func setUpactivityView() {
         //small
-        if activityView != nil {
-            activityView?.startAnimating()
-            activityView?.isHidden = false
-        }
-        else{
-            let smallImageWidth = podcastImageView.bounds.size.width
-            let smallImageHeight = podcastImageView.bounds.size.height
-            let frame = CGRect(x: smallImageWidth/4, y: smallImageHeight/4, width: smallImageWidth / 2, height: smallImageHeight / 2)
-            activityView = NVActivityIndicatorView(frame: frame, type: .lineScalePulseOut, color: .white, padding: nil)
-            activityView?.startAnimating()
-            view.addSubview(activityView!)
+        DispatchQueue.main.async {
+            
+            if self.activityView != nil {
+                self.activityView?.startAnimating()
+                self.activityView?.isHidden = false
+            }
+            else {
+                let smallImageWidth = self.podcastImageView.bounds.size.width
+                let smallImageHeight = self.podcastImageView.bounds.size.height
+                let frame = CGRect(x: smallImageWidth/4, y: smallImageHeight/4, width: smallImageWidth / 2, height: smallImageHeight / 2)
+                self.activityView = NVActivityIndicatorView(frame: frame, type: .lineScalePulseOut, color: .white, padding: nil)
+                self.activityView?.startAnimating()
+                self.view.addSubview(self.activityView!)
+            }
         }
     }
 }
@@ -117,6 +122,8 @@ extension SmallPlayerRemoteVC: ARAudioPlayerDelegate {
                 self.activityView?.stopAnimating()
                 self.activityView?.isHidden = true
             }
+        case .waitingForConnection:
+            setUpactivityView()
         case .buffering:
             setUpactivityView()
         case .stopped:
@@ -129,9 +136,11 @@ extension SmallPlayerRemoteVC: ARAudioPlayerDelegate {
     
     func didFindDuration(_sender: ARAudioPlayer, duration: Float) {
         print("did find duration of: \(duration)")
-        let episode = ARAudioPlayer.sharedInstance.nowPlayingEpisode
-        if episode?.duration == 0 {
-            RealmInteractor().setEpisodeDuration(episode: episode!, duration: Double(duration))
+        DispatchQueue.main.async {
+            let episode = ARAudioPlayer.sharedInstance.nowPlayingEpisode
+            if episode?.duration == 0 {
+                RealmInteractor().setEpisodeDuration(episode: episode!, duration: Double(duration))
+            }
         }
     }
 }

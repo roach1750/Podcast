@@ -27,7 +27,8 @@ class ARAudioPlayer: NSObject {
             NotificationCenter.default.post(name: NSNotification.Name(rawValue: "showPlayerRemote"), object: nil)
             
             if oldValue?.guid != nowPlayingEpisode?.guid && oldValue != nil {
-                prepareToPlay(url: URL(string: nowPlayingEpisode!.downloadURL!)!)
+                let url = self.nowPlayingEpisode!.downloadURL!
+                self.prepareToPlay(url: URL(string: url)!)
             }
             nowPlayingPodcast = nowPlayingEpisode?.podcast
             self.configureCommandCenter()
@@ -79,36 +80,48 @@ class ARAudioPlayer: NSObject {
             removePeriodicTimeObserver()
         }
         
-        // Create the asset to play
-        playerState = .waitingForConnection
-        asset = AVAsset(url: url)
-        // Create a new AVPlayerItem with the asset and an
-        // array of asset keys to be automatically loaded
-        
-        
-//        if let episodeData = FileSystemInteractor().openFileWithFileName(fileName: fileName) {
-//            playerItem = CachingPlayerItem(data: episodeData, mimeType:  "audio/mpeg", fileExtension: "mp3")
-//        }
-//        else {
-            playerItem = CachingPlayerItem(url: url)
-//        }
-        
-        
-        playerItem.delegate = self
-        
-        // Register as an observer of the player item's status property
-        playerItem.addObserver(self,forKeyPath: #keyPath(AVPlayerItem.status),options: [.old, .new],context: &playerItemContext)
-        
-        // Associate the player item with the player
-        player = AVPlayer(playerItem: playerItem)
-        
-        self.updateNowPlayingInfoForCurrentPlaybackItem()
+        DispatchQueue.global(qos: .background).async {
+            // Create the asset to play
+            self.playerState = .waitingForConnection
+            self.asset = AVAsset(url: url)
+            // Create a new AVPlayerItem with the asset and an
+            // array of asset keys to be automatically loaded
+            
+            
+            //        if let episodeData = FileSystemInteractor().openFileWithFileName(fileName: fileName) {
+            //            playerItem = CachingPlayerItem(data: episodeData, mimeType:  "audio/mpeg", fileExtension: "mp3")
+            //        }
+            //        else {
+            self.playerItem = CachingPlayerItem(url: url)
+            //        }
+            
+            
+            self.playerItem.delegate = self
+            
+            // Register as an observer of the player item's status property
+            self.playerItem.addObserver(self,forKeyPath: #keyPath(AVPlayerItem.status),options: [.old, .new],context: &self.playerItemContext)
+            
+            // Associate the player item with the player
+            self.player = AVPlayer(playerItem: self.playerItem)
+            
+            self.playerItem.addObserver(self, forKeyPath: "playbackBufferEmpty", options: .new, context: nil)
+            self.playerItem.addObserver(self, forKeyPath: "playbackLikelyToKeepUp", options: .new, context: nil)
+            self.playerItem.addObserver(self, forKeyPath: "playbackBufferFull", options: .new, context: nil)
+            self.player.automaticallyWaitsToMinimizeStalling = false
+            self.delegate.didFindDuration(_sender: self, duration: Float(CMTimeGetSeconds(self.asset.duration)))
+            
+            DispatchQueue.main.async {
+                self.updateNowPlayingInfoForCurrentPlaybackItem()
+                
 
-        playerItem.addObserver(self, forKeyPath: "playbackBufferEmpty", options: .new, context: nil)
-        playerItem.addObserver(self, forKeyPath: "playbackLikelyToKeepUp", options: .new, context: nil)
-        playerItem.addObserver(self, forKeyPath: "playbackBufferFull", options: .new, context: nil)
-        player.automaticallyWaitsToMinimizeStalling = false
-        delegate.didFindDuration(_sender: self, duration: Float(CMTimeGetSeconds(self.asset.duration)))
+            }
+            
+        }
+
+        
+        
+
+
     }
     
     
@@ -157,11 +170,11 @@ class ARAudioPlayer: NSObject {
                 player.pause()
                 playerState = .paused
             }
+            self.updateNowPlayingInfoForCurrentPlaybackItem()
         }
         else {
             prepareToPlay(url: URL(string: nowPlayingEpisode!.downloadURL!)!)
         }
-        self.updateNowPlayingInfoForCurrentPlaybackItem()
     }
     
     fileprivate let seekDuration: Float64 = 15
