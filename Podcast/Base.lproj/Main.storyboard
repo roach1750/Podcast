@@ -1160,7 +1160,7 @@
                                 <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="0.0" maxValue="1" continuous="NO" translatesAutoresizingMaskIntoConstraints="NO" id="37n-59-pgP">
+                            <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="0.0" maxValue="0.0" continuous="NO" translatesAutoresizingMaskIntoConstraints="NO" id="37n-59-pgP">
                                 <rect key="frame" x="14" y="351" width="347" height="31"/>
                                 <connections>
                                     <action selector="seekSliderAdjusted:" destination="lHj-lF-Vya" eventType="valueChanged" id="g9k-er-kGQ"/>

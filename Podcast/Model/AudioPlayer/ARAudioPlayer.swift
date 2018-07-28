@@ -62,7 +62,7 @@ class ARAudioPlayer: NSObject {
         didSet {
             if oldValue != playerState && delegate != nil {
                 delegate.didChangeState(_sender: self, oldState: oldValue, newState: playerState)
-                print("New State is: \(playerState)")
+//                print("New State is: \(playerState)")
             }
         }
     }

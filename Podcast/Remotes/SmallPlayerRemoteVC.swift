@@ -44,6 +44,7 @@ class SmallPlayerRemoteVC: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(SmallPlayerRemoteVC.configureArtwork), name: NSNotification.Name(rawValue: "podcastArtworkDownloaded"), object: nil)
         ARAudioPlayer.sharedInstance.delegate = self
         configurePlayPauseButton()
+        setUpactivityView()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -82,13 +83,23 @@ class SmallPlayerRemoteVC: UIViewController {
         }
     }
     
-    func setUpactivityView() {
-        //small
+    func setUpactivityView(callingFunctionName: String = #function) {
+        
+//        print("Calling Function: \(callingFunctionName)")
+
+        
         DispatchQueue.main.async {
-            
+            print(ARAudioPlayer.sharedInstance.playerState)
+            if ARAudioPlayer.sharedInstance.playerState == .playing || ARAudioPlayer.sharedInstance.playerState == .paused || ARAudioPlayer.sharedInstance.playerState == .stopped {
+                self.activityView?.removeFromSuperview()
+                return
+            }
+            else {
             if self.activityView != nil {
                 self.activityView?.startAnimating()
-                self.activityView?.isHidden = false
+                self.view.addSubview(self.activityView!)
+                print("adding small activity view reuse")
+
             }
             else {
                 let smallImageWidth = self.podcastImageView.bounds.size.width
@@ -97,9 +108,14 @@ class SmallPlayerRemoteVC: UIViewController {
                 self.activityView = NVActivityIndicatorView(frame: frame, type: .lineScalePulseOut, color: .white, padding: nil)
                 self.activityView?.startAnimating()
                 self.view.addSubview(self.activityView!)
+                print("adding small activity view initial")
+
+                }
             }
         }
     }
+    
+
 }
 
 
@@ -115,18 +131,13 @@ extension SmallPlayerRemoteVC: ARAudioPlayerDelegate {
 
         print("Old State: \(oldState) New State: \(newState)")
         configurePlayPauseButton()
-
+        
         switch newState {
         case .playing:
-            if self.activityView != nil && self.activityView?.isHidden == false {
-                self.activityView?.stopAnimating()
-                self.activityView?.isHidden = true
-            }
+            self.activityView?.removeFromSuperview()
         case .paused:
-            if self.activityView != nil && self.activityView?.isHidden == false {
-                self.activityView?.stopAnimating()
-                self.activityView?.isHidden = true
-            }
+            self.activityView?.removeFromSuperview()
+
         case .waitingForConnection:
             setUpactivityView()
         case .buffering:
@@ -150,4 +161,9 @@ extension SmallPlayerRemoteVC: ARAudioPlayerDelegate {
     }
 }
 
+extension Thread {
+    class func printCurrent() {
+        print("\r⚡️: \(Thread.current)\r" + "🏭: \(OperationQueue.current?.underlyingQueue?.label ?? "None")\r")
+    }
+}
 

@@ -86,6 +86,7 @@ class LargePlayerRemoteVC: UIViewController {
     }
     
     @IBAction func seekSliderAdjusted(_ sender: UISlider) {
+        print(sender.value)
         ARAudioPlayer.sharedInstance.seekTo(Double(sender.value))
     }
     
@@ -118,8 +119,9 @@ class LargePlayerRemoteVC: UIViewController {
         setUpSeekSegmentedControl()
         
         //delete this once I added back in the below:
-        self.currentTimeLabel.text = "00:00"
-        self.timeRemainingLabel.text = "00:00"
+        self.currentTimeLabel.text = "--:--"
+        self.timeRemainingLabel.text = "--:--"
+        seekSlider.setValue(0, animated: false)
         //end delete
         
         
@@ -273,19 +275,20 @@ extension LargePlayerRemoteVC: ARAudioPlayerDelegate {
             return 
         }
         
-        let episode = ARAudioPlayer.sharedInstance.nowPlayingEpisode!
         
         
-        if episode.duration == 0 {
-            DispatchQueue.main.async {
+        DispatchQueue.main.async {
+            let episode = ARAudioPlayer.sharedInstance.nowPlayingEpisode!
+            if episode.duration == 0 {
                 RealmInteractor().setEpisodeDuration(episode: episode, duration: Double(duration))
             }
+            self.seekSlider.minimumValue = 0
+            self.seekSlider.maximumValue = duration
+            self.adjustTimeLabel(label: self.currentTimeLabel, duration: 0)
+            self.adjustTimeLabel(label: self.timeRemainingLabel, duration: Int(duration))
         }
         
-        seekSlider.minimumValue = 0
-        seekSlider.maximumValue = duration
-        self.adjustTimeLabel(label: self.currentTimeLabel, duration: 0)
-        self.adjustTimeLabel(label: self.timeRemainingLabel, duration: Int(duration))
+
     }
     
     func progressUpdated(_sender: ARAudioPlayer, timeUpdated: Float) {
@@ -300,7 +303,7 @@ extension LargePlayerRemoteVC: ARAudioPlayerDelegate {
             seekSlider.maximumValue = Float(duration!)
         }
         let currentTime = Double(timeUpdated)
-        print(currentTime)
+//        print(currentTime)
         RealmInteractor().setEpisodeCurrentPlaybackDuration(episode: episode!, currentPlaybackDuration: Double(currentTime))
         let timeRemaining = duration! - currentTime
         self.adjustTimeLabel(label: self.currentTimeLabel, duration: Int(currentTime))
