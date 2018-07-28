@@ -202,6 +202,7 @@ class EpisodesVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         if episode != ARAudioPlayer.sharedInstance.nowPlayingEpisode {
             ARAudioPlayer.sharedInstance.nowPlayingPodcast = podcast
             ARAudioPlayer.sharedInstance.nowPlayingEpisode = episode
+            ARAudioPlayer.sharedInstance.startPlayingNowPlayingEpisode() 
         }
     }
     
@@ -229,7 +230,8 @@ class EpisodesVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
     func getFormattedDateRelativeToToday(date: Date) -> String {
         let calendar = NSCalendar.current
-        
+        let formatter = DateFormatter()
+
         let date1 = calendar.startOfDay(for: date)
         let date2 = calendar.startOfDay(for: Date())
         
@@ -241,12 +243,10 @@ class EpisodesVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         case 1:
             return "Yesterday"
         case 2,3,4,5,6:
-            let formatter = DateFormatter()
             formatter.dateFormat = "EEEE"
             let dateString = formatter.string(from: date)
             return dateString
         default:
-            let formatter = DateFormatter()
             formatter.dateFormat = "MMMM d"
             let dateString = formatter.string(from: date)
             return dateString

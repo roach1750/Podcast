@@ -122,6 +122,11 @@ extension SmallPlayerRemoteVC: ARAudioPlayerDelegate {
                 self.activityView?.stopAnimating()
                 self.activityView?.isHidden = true
             }
+        case .paused:
+            if self.activityView != nil && self.activityView?.isHidden == false {
+                self.activityView?.stopAnimating()
+                self.activityView?.isHidden = true
+            }
         case .waitingForConnection:
             setUpactivityView()
         case .buffering:

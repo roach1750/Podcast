@@ -20,20 +20,15 @@ class ARAudioPlayer: NSObject {
     
     var nowPlayingEpisode: Episode? {
         didSet {
-            
-            
             RealmInteractor().markEpisodeAsNowPlaying(episode: nowPlayingEpisode!)
             NotificationCenter.default.post(name: NSNotification.Name(rawValue: "nowPlayingEpisodeSet"), object: nil)
             NotificationCenter.default.post(name: NSNotification.Name(rawValue: "showPlayerRemote"), object: nil)
             
-            if oldValue?.guid != nowPlayingEpisode?.guid && oldValue != nil {
-                let url = self.nowPlayingEpisode!.downloadURL!
-                self.prepareToPlay(url: URL(string: url)!)
-            }
             nowPlayingPodcast = nowPlayingEpisode?.podcast
             self.configureCommandCenter()
         }
     }
+    
     var nowPlayingPodcast: Podcast? {
         didSet {
             if nowPlayingPodcast?.artwork100x100 == nil {
@@ -54,6 +49,14 @@ class ARAudioPlayer: NSObject {
     var playerItem: CachingPlayerItem!
     var delegate: ARAudioPlayerDelegate!
     let fileName = "testPodcast1"
+    
+    
+    func startPlayingNowPlayingEpisode() {
+        let url = self.nowPlayingEpisode!.downloadURL!
+        self.prepareToPlay(url: URL(string: url)!)
+    }
+    
+    
     
     var playerState: AudioPlayerState = .stopped {
         didSet {
@@ -112,15 +115,9 @@ class ARAudioPlayer: NSObject {
             
             DispatchQueue.main.async {
                 self.updateNowPlayingInfoForCurrentPlaybackItem()
-                
-
             }
             
         }
-
-        
-        
-
 
     }
     
@@ -146,6 +143,7 @@ class ARAudioPlayer: NSObject {
             case .unknown:
                 print("unknown")
             }
+            
         }
             
         else if object is AVPlayerItem {
@@ -242,7 +240,9 @@ class ARAudioPlayer: NSObject {
         removePeriodicTimeObserver()
 //        let timeScale = CMTimeScale(NSEC_PER_SEC)
 //        let time = CMTime(seconds: 0.5, preferredTimescale: timeScale)
-        timeObserverToken = player.addPeriodicTimeObserver(forInterval: CMTimeMakeWithSeconds(1.0 / 60.0, Int32(NSEC_PER_SEC)), queue: DispatchQueue.main, using: { [weak self] time in
+//        timeObserverToken = player.addPeriodicTimeObserver(forInterval: CMTimeMakeWithSeconds(1.0 / 60.0, Int32(NSEC_PER_SEC)), queue: DispatchQueue.main, using: { [weak self] time in
+
+        timeObserverToken = player.addPeriodicTimeObserver(forInterval: CMTimeMakeWithSeconds(15.0 / 60.0, Int32(NSEC_PER_SEC)), queue: DispatchQueue.main, using: { [weak self] time in
             self?.delegate.progressUpdated(_sender: self!, timeUpdated: Float(CMTimeGetSeconds(time)))
         })
     }

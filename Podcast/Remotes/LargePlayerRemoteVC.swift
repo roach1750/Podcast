@@ -52,6 +52,12 @@ class LargePlayerRemoteVC: UIViewController {
         configurePlayPauseButton()
         ARAudioPlayer.sharedInstance.delegate = self
         setUpRouteButtonView()
+        
+        if ARAudioPlayer.sharedInstance.nowPlayingEpisode?.duration != 0 {
+            seekSlider.maximumValue = Float((ARAudioPlayer.sharedInstance.nowPlayingEpisode?.duration)!)
+            seekSlider.setValue(Float((ARAudioPlayer.sharedInstance.nowPlayingEpisode?.currentPlaybackDuration)!), animated: false)
+        }
+        
     }
     
 
@@ -110,29 +116,40 @@ class LargePlayerRemoteVC: UIViewController {
         titleLabel.text = ARAudioPlayer.sharedInstance.nowPlayingEpisode?.title!
         setUpVolumeView()
         setUpSeekSegmentedControl()
-        if let episode = ARAudioPlayer.sharedInstance.nowPlayingEpisode {
-            if episode.duration != 0 {
-                let timeRemaining = episode.duration - episode.currentPlaybackDuration
-                self.adjustTimeLabel(label: self.currentTimeLabel, duration: Int(episode.currentPlaybackDuration))
-                self.adjustTimeLabel(label: self.timeRemainingLabel, duration: Int(timeRemaining))
-                seekSlider.maximumValue = Float(episode.duration)
-                seekSlider.setValue(Float(episode.currentPlaybackDuration), animated: false)
-            }
-            else {
-                self.currentTimeLabel.text = "00:00"
-                self.timeRemainingLabel.text = "00:00"
-                seekSlider.maximumValue = Float(1)
-                seekSlider.setValue(0, animated: false)
-            }
-        }
+        
+        //delete this once I added back in the below:
+        self.currentTimeLabel.text = "00:00"
+        self.timeRemainingLabel.text = "00:00"
+        //end delete
+        
+        
+//        if let episode = ARAudioPlayer.sharedInstance.nowPlayingEpisode {
+//            if episode.duration != 0 {
+//                let timeRemaining = episode.duration - episode.currentPlaybackDuration
+//                self.adjustTimeLabel(label: self.currentTimeLabel, duration: Int(episode.currentPlaybackDuration))
+//                self.adjustTimeLabel(label: self.timeRemainingLabel, duration: Int(timeRemaining))
+////                seekSlider.maximumValue = Float(episode.duration)
+////                seekSlider.setValue(Float(episode.currentPlaybackDuration), animated: false)
+//            }
+//            else {
+//                self.currentTimeLabel.text = "00:00"
+//                self.timeRemainingLabel.text = "00:00"
+////                seekSlider.maximumValue = Float(1)
+//                seekSlider.setValue(0, animated: false)
+//            }
+//        }
     }
     
     func configurePlayPauseButton() {
+        DispatchQueue.main.async {
+            
+        
         if ARAudioPlayer.sharedInstance.playerState == .playing {
             self.playPauseButton.setImage(UIImage(named: "Pause Button"), for: .normal)
         }
         else {
             self.playPauseButton.setImage(UIImage(named: "Play Button"), for: .normal)
+        }
         }
     }
     
@@ -249,20 +266,45 @@ class LargePlayerRemoteVC: UIViewController {
 //audio delegate
 extension LargePlayerRemoteVC: ARAudioPlayerDelegate {
     
-    func progressUpdated(_sender: ARAudioPlayer, timeUpdated: Float) {
+    func didFindDuration(_sender: ARAudioPlayer, duration: Float) {
+        print("did find duration of: \(duration)")
+
+        if duration.isNaN == true {
+            return 
+        }
+        
+        let episode = ARAudioPlayer.sharedInstance.nowPlayingEpisode!
+        
+        
+        if episode.duration == 0 {
+            DispatchQueue.main.async {
+                RealmInteractor().setEpisodeDuration(episode: episode, duration: Double(duration))
+            }
+        }
+        
+        seekSlider.minimumValue = 0
+        seekSlider.maximumValue = duration
+        self.adjustTimeLabel(label: self.currentTimeLabel, duration: 0)
+        self.adjustTimeLabel(label: self.timeRemainingLabel, duration: Int(duration))
+    }
     
+    func progressUpdated(_sender: ARAudioPlayer, timeUpdated: Float) {
+        let episode = ARAudioPlayer.sharedInstance.nowPlayingEpisode
+        let duration  = episode?.duration
+
         if !seekSlider.isTracking {
             seekSlider.setValue(timeUpdated, animated: true)
         }
+        if seekSlider.maximumValue != Float((episode?.duration)!) {
+            seekSlider.minimumValue = 0
+            seekSlider.maximumValue = Float(duration!)
+        }
         let currentTime = Double(timeUpdated)
-        let episode = ARAudioPlayer.sharedInstance.nowPlayingEpisode
+        print(currentTime)
         RealmInteractor().setEpisodeCurrentPlaybackDuration(episode: episode!, currentPlaybackDuration: Double(currentTime))
-        let duration  = episode?.duration
         let timeRemaining = duration! - currentTime
         self.adjustTimeLabel(label: self.currentTimeLabel, duration: Int(currentTime))
         self.adjustTimeLabel(label: self.timeRemainingLabel, duration: Int(timeRemaining))
-        
-        
     }
     
     func didChangeState(_sender: ARAudioPlayer, oldState: AudioPlayerState, newState: AudioPlayerState) {
@@ -272,6 +314,9 @@ extension LargePlayerRemoteVC: ARAudioPlayerDelegate {
             if self.activityView != nil && self.activityView?.isHidden == false {
                 self.activityView?.stopAnimating()
                 self.activityView?.isHidden = true
+            }
+            if self.seekSlider.maximumValue == 1 {
+                didFindDuration(_sender: ARAudioPlayer.sharedInstance, duration: Float(CMTimeGetSeconds(ARAudioPlayer.sharedInstance.player.currentItem!.duration)))
             }
         case .paused:
             DispatchQueue.main.async {}
@@ -284,17 +329,8 @@ extension LargePlayerRemoteVC: ARAudioPlayerDelegate {
             return
         }
     }
-    
-    func didFindDuration(_sender: ARAudioPlayer, duration: Float) {
-        print("did find duration of: \(duration)")
-        let episode = ARAudioPlayer.sharedInstance.nowPlayingEpisode
-        if episode?.duration == 0 {
-            RealmInteractor().setEpisodeDuration(episode: episode!, duration: Double(duration))
-        }
-        seekSlider.maximumValue = Float(duration)
-        self.adjustTimeLabel(label: self.currentTimeLabel, duration: 0)
-        self.adjustTimeLabel(label: self.timeRemainingLabel, duration: Int(duration))
-    }
+
+
     
 }
 

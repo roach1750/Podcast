@@ -35,7 +35,7 @@ class EpisodesListSearchViewController: UIViewController,UITableViewDataSource, 
         didSet {
             Downloader().convertTopPodcastToPodcast(podcastToConvert: topPodcast!)
         }
-    }
+    } 
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -163,6 +163,7 @@ extension EpisodesListSearchViewController {
         if episode != ARAudioPlayer.sharedInstance.nowPlayingEpisode {
             ARAudioPlayer.sharedInstance.nowPlayingPodcast = podcast
             ARAudioPlayer.sharedInstance.nowPlayingEpisode = episode
+            ARAudioPlayer.sharedInstance.startPlayingNowPlayingEpisode()
         }
         tableView.deselectRow(at: indexPath, animated: false)
     }

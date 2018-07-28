@@ -56,6 +56,7 @@ class LatestEpisodesVC: UIViewController, UITableViewDelegate, UITableViewDataSo
         //If the selected episode isn't the one playing:
         if episode != ARAudioPlayer.sharedInstance.nowPlayingEpisode {
             ARAudioPlayer.sharedInstance.nowPlayingEpisode = episode
+            ARAudioPlayer.sharedInstance.startPlayingNowPlayingEpisode()
         }
         
         
