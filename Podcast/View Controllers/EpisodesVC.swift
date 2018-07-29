@@ -218,7 +218,7 @@ class EpisodesVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
                 return String(h) + " Hours" + String(m)
             }
             else {
-                return String(h) + " Hour" + String(m)
+                return String(h) + " Hour " + String(m) + " Minutes"
             }
         }
     }

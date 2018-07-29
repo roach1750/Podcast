@@ -174,7 +174,8 @@ open class CachingPlayerItem: AVPlayerItem {
     fileprivate let resourceLoaderDelegate = ResourceLoaderDelegate()
     fileprivate let url: URL
     fileprivate let initialScheme: String?
-    
+    var episode: Episode?
+
     weak var delegate: CachingPlayerItemDelegate?
     
     open func download() {

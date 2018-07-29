@@ -9,7 +9,7 @@
 import UIKit
 import  AVKit
 import MediaPlayer
-
+import RealmSwift
 class ARAudioPlayer: NSObject {
     
     
@@ -50,7 +50,6 @@ class ARAudioPlayer: NSObject {
     var delegate: ARAudioPlayerDelegate!
     let fileName = "testPodcast1"
     
-    
     func startPlayingNowPlayingEpisode() {
         let url = self.nowPlayingEpisode!.downloadURL!
         self.prepareToPlay(url: URL(string: url)!)
@@ -62,7 +61,7 @@ class ARAudioPlayer: NSObject {
         didSet {
             if oldValue != playerState && delegate != nil {
                 delegate.didChangeState(_sender: self, oldState: oldValue, newState: playerState)
-//                print("New State is: \(playerState)")
+                //                print("New State is: \(playerState)")
             }
         }
     }
@@ -83,6 +82,8 @@ class ARAudioPlayer: NSObject {
             removePeriodicTimeObserver()
         }
         
+        let episodeTreadSafeReference = ThreadSafeReference(to: nowPlayingEpisode!)
+        
         DispatchQueue.global(qos: .background).async {
             // Create the asset to play
             self.playerState = .waitingForConnection
@@ -90,13 +91,19 @@ class ARAudioPlayer: NSObject {
             // Create a new AVPlayerItem with the asset and an
             // array of asset keys to be automatically loaded
             
-            
-            //        if let episodeData = FileSystemInteractor().openFileWithFileName(fileName: fileName) {
-            //            playerItem = CachingPlayerItem(data: episodeData, mimeType:  "audio/mpeg", fileExtension: "mp3")
-            //        }
-            //        else {
-            self.playerItem = CachingPlayerItem(url: url)
-            //        }
+            let realm = try! Realm()
+            guard let episode = realm.resolve(episodeTreadSafeReference) else {
+                return
+            }
+            let fileName = "EpisodeData_" + (episode.guid?.replacingOccurrences(of: "/", with: ""))! + "_" + (episode.podcast?.iD)!
+            if let episodeData = FileSystemInteractor().openFileWithFileName(fileName: fileName) {
+                self.playerItem = CachingPlayerItem(data: episodeData, mimeType:  "audio/mpeg", fileExtension: "mp3")
+                self.playerItem.episode = self.nowPlayingEpisode
+            }
+            else {
+                self.playerItem = CachingPlayerItem(url: url)
+                self.playerItem.episode = self.nowPlayingEpisode
+            }
             
             
             self.playerItem.delegate = self
@@ -113,12 +120,14 @@ class ARAudioPlayer: NSObject {
             self.player.automaticallyWaitsToMinimizeStalling = false
             self.delegate.didFindDuration(_sender: self, duration: Float(CMTimeGetSeconds(self.asset.duration)))
             
+
+            
             DispatchQueue.main.async {
                 self.updateNowPlayingInfoForCurrentPlaybackItem()
             }
             
         }
-
+        
     }
     
     
@@ -135,6 +144,9 @@ class ARAudioPlayer: NSObject {
             switch status {
             case .readyToPlay:
                 addPeriodicTimeObserver()
+                if nowPlayingEpisode?.currentPlaybackDuration != 0 {
+                    self.seekTo(nowPlayingEpisode!.currentPlaybackDuration)
+                }
                 player.play()
                 print("starting to play")
                 playerState = .playing
@@ -202,20 +214,20 @@ class ARAudioPlayer: NSObject {
         let time2: CMTime = CMTimeMake(Int64(newTime * 1000 as Float64), 1000)
         player.seek(to: time2)
         self.updatePlaybackRateMetadata()
-
+        
     }
     
-//    func seekToDuration(duration: TimeInterval) {
-//
-//        print("seeking to: \(CMTimeMake(Int64(duration), 1))")
-//        player.seek(to:CMTimeMake(Int64(duration), 1))
-//        removePeriodicTimeObserver()
-//
-//        Timer.scheduledTimer(withTimeInterval: 0.25, repeats: false) { (timer) in
-//            self.addPeriodicTimeObserver()
-//        }
-//
-//    }
+    //    func seekToDuration(duration: TimeInterval) {
+    //
+    //        print("seeking to: \(CMTimeMake(Int64(duration), 1))")
+    //        player.seek(to:CMTimeMake(Int64(duration), 1))
+    //        removePeriodicTimeObserver()
+    //
+    //        Timer.scheduledTimer(withTimeInterval: 0.25, repeats: false) { (timer) in
+    //            self.addPeriodicTimeObserver()
+    //        }
+    //
+    //    }
     
     func seekTo(_ position: TimeInterval) {
         guard asset != nil else { return }
@@ -238,10 +250,10 @@ class ARAudioPlayer: NSObject {
     func addPeriodicTimeObserver() {
         // Notify every half second
         removePeriodicTimeObserver()
-//        let timeScale = CMTimeScale(NSEC_PER_SEC)
-//        let time = CMTime(seconds: 0.5, preferredTimescale: timeScale)
-//        timeObserverToken = player.addPeriodicTimeObserver(forInterval: CMTimeMakeWithSeconds(1.0 / 60.0, Int32(NSEC_PER_SEC)), queue: DispatchQueue.main, using: { [weak self] time in
-
+        //        let timeScale = CMTimeScale(NSEC_PER_SEC)
+        //        let time = CMTime(seconds: 0.5, preferredTimescale: timeScale)
+        //        timeObserverToken = player.addPeriodicTimeObserver(forInterval: CMTimeMakeWithSeconds(1.0 / 60.0, Int32(NSEC_PER_SEC)), queue: DispatchQueue.main, using: { [weak self] time in
+        
         timeObserverToken = player.addPeriodicTimeObserver(forInterval: CMTimeMakeWithSeconds(15.0 / 60.0, Int32(NSEC_PER_SEC)), queue: DispatchQueue.main, using: { [weak self] time in
             self?.delegate.progressUpdated(_sender: self!, timeUpdated: Float(CMTimeGetSeconds(time)))
         })
@@ -253,9 +265,9 @@ class ARAudioPlayer: NSObject {
             self.timeObserverToken = nil
         }
     }
-
-
-//Info Center
+    
+    
+    //Info Center
     
     let commandCenter = MPRemoteCommandCenter.shared()
     
@@ -287,7 +299,7 @@ class ARAudioPlayer: NSObject {
         })
         
         self.commandCenter.changePlaybackPositionCommand.addTarget(self, action: #selector(ARAudioPlayer.handleChangePlaybackPositionCommandEvent(event:)))
-
+        
     }
     
     func handleChangePlaybackPositionCommandEvent(event: MPChangePlaybackPositionCommandEvent) -> MPRemoteCommandHandlerStatus {
@@ -295,11 +307,11 @@ class ARAudioPlayer: NSObject {
         self.seekTo(event.positionTime)
         return .success
     }
-
+    
     //MARK: - Now Playing Info
     
     var nowPlayingInfo: [String : Any]?
-
+    
     
     func updateNowPlayingInfoForCurrentPlaybackItem() {
         guard let currentPlaybackItem = self.nowPlayingEpisode, let currentPlaybackPodcast = self.nowPlayingPodcast else {
@@ -352,11 +364,11 @@ class ARAudioPlayer: NSObject {
     
     
     
-//    func updateNowPlayingInfoElapsedTime() {
-//        guard var nowPlayingInfo = self.nowPlayingInfo else { return }
-//        nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = CMTimeGetSeconds(player.currentItem!.currentTime())
-//        self.configureNowPlayingInfo(nowPlayingInfo)
-//    }
+    //    func updateNowPlayingInfoElapsedTime() {
+    //        guard var nowPlayingInfo = self.nowPlayingInfo else { return }
+    //        nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = CMTimeGetSeconds(player.currentItem!.currentTime())
+    //        self.configureNowPlayingInfo(nowPlayingInfo)
+    //    }
     
     func configureNowPlayingInfo(_ nowPlayingInfo: [String: Any]?) {
         MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
@@ -365,16 +377,28 @@ class ARAudioPlayer: NSObject {
     
     
 }
-    
+
 extension ARAudioPlayer: CachingPlayerItemDelegate {
     
     func playerItem(_ playerItem: CachingPlayerItem, didFinishDownloadingData data: Data) {
         print("Finished Download")
         //Now write file to disk:
         
+        DispatchQueue.main.sync {
+            if let episode = self.playerItem.episode {
+                
+                let fileName = "EpisodeData_" + (episode.guid?.replacingOccurrences(of: "/", with: ""))! + "_" + (episode.podcast?.iD)!
+                FileSystemInteractor().saveFileToDisk(file: data, fileName: fileName)
+            }
+        }
+        
     }
     
     func playerItem(_ playerItem: CachingPlayerItem, didDownloadBytesSoFar bytesDownloaded: Int, outOf bytesExpected: Int){
+        let progress = floor(Double(bytesDownloaded)/Double(bytesExpected) * 100)
+        if progress.truncatingRemainder(dividingBy: 10) == 0 {
+            print(progress)
+        }
     }
     
     func playerItem(_ playerItem: CachingPlayerItem, downloadingFailedWith error: Error) {

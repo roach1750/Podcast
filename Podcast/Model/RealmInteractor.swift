@@ -204,6 +204,7 @@ class RealmInteractor: NSObject {
     
     func fetchAllSubscribedPodcast() -> [Podcast] {
         let realm = try! Realm()
+        
         let predicate = NSPredicate(format: "isSubscribed == %@", NSNumber(value: true))
         let allSubscribedPodcast = Array(realm.objects(Podcast.self).filter(predicate))
         for podcast in allSubscribedPodcast {
@@ -302,7 +303,6 @@ class RealmInteractor: NSObject {
     
 
 
- 
     
     func fetchEpisodesForPodcast(podcast:Podcast) -> [Episode] {
         if podcast.isInvalidated {
