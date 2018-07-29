@@ -26,6 +26,7 @@ class EpisodesVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         NotificationCenter.default.addObserver(self, selector: #selector(EpisodesVC.reloadData), name: NSNotification.Name(rawValue: "episodeDownloaded"), object: nil)
         self.tableView.addSubview(self.refreshControl)
         self.title = podcast?.name
+        tableView.contentInset = UIEdgeInsetsMake(0, 0, 60, 0)
         tableView.tableFooterView = UIView()
         reloadData()
     }
@@ -183,14 +184,19 @@ class EpisodesVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
     
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
+        let date = self.dates![indexPath.section]
+        let episode = self.results![date]![indexPath.row]
         let favorite = UITableViewRowAction(style: .normal, title: "⭐️") { action, index in
-            print("favorite button tapped")
-            let date = self.dates![indexPath.section]
-            let episode = self.results![date]![indexPath.row]
             RealmInteractor().markEpisodeAsFavorite(episode: episode)
         }
         favorite.backgroundColor = #colorLiteral(red: 0.3459055424, green: 0.3397476971, blue: 0.8399652839, alpha: 1)
-        return [favorite]
+        
+        let download = UITableViewRowAction(style: .normal, title: "⇩") { (action, index) in
+            EpisodeDownloader().downloadEpisode(episode: episode)
+        }
+        download.backgroundColor = UIColor.orange
+        
+        return [favorite,download]
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {

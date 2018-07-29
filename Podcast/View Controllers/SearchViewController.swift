@@ -32,7 +32,7 @@ class SearchViewController: UIViewController, UISearchBarDelegate, UITableViewDe
         super.viewDidLoad()
         tableView.tableFooterView = UIView()
         downloader.downloadTopPodcasts()
-        tableView.contentInset = UIEdgeInsetsMake(0, 0, 50, 0)
+        tableView.contentInset = UIEdgeInsetsMake(0, 0, 60, 0)
         configureNotificationTokens()
         tableView.delegate = self
         tableView.dataSource = self

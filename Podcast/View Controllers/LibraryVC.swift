@@ -15,7 +15,7 @@ class LibraryVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.tableFooterView = UIView()
-        tableView.contentInset = UIEdgeInsetsMake(0, 0, 50, 0)
+        tableView.contentInset = UIEdgeInsetsMake(0, 0, 60, 0)
         checkIfNowPlayingEpisode()
     }
     
