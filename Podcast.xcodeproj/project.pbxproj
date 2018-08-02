@@ -62,6 +62,9 @@
 		21E8D9C9210CE3D7005DC157 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 21CDF0EC1F32A70F00A6F4DC /* Main.storyboard */; };
 		21E8D9CB210CFD12005DC157 /* SettingsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21E8D9CA210CFD12005DC157 /* SettingsVC.swift */; };
 		21E8D9CD210D4635005DC157 /* EpisodeDownloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21E8D9CC210D4635005DC157 /* EpisodeDownloader.swift */; };
+		21E8D9CF210D49F9005DC157 /* Reachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21E8D9CE210D49F9005DC157 /* Reachability.swift */; };
+		21E8D9D1210E0B8E005DC157 /* EpisodesVC+URLSessionDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21E8D9D0210E0B8E005DC157 /* EpisodesVC+URLSessionDelegate.swift */; };
+		21E8D9D3210E0BD7005DC157 /* DownloadObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21E8D9D2210E0BD7005DC157 /* DownloadObject.swift */; };
 		21EBD9F01F9EDCFE0052738E /* EpisodesVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21EBD9EF1F9EDCFE0052738E /* EpisodesVC.swift */; };
 		2DABEA65B0A16CD60726E1CF /* Pods_Podcast.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 701A299E408C4E218AF9D2F8 /* Pods_Podcast.framework */; };
 		46EE4BE4C986C426461F9584 /* Pods_Watch_Podcast_Extension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 84132D5A0EDCE7211F7C23CE /* Pods_Watch_Podcast_Extension.framework */; };
@@ -190,6 +193,9 @@
 		21D9F9892055D67100CFEAE6 /* FavoritesVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesVC.swift; sourceTree = "<group>"; };
 		21E8D9CA210CFD12005DC157 /* SettingsVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsVC.swift; sourceTree = "<group>"; };
 		21E8D9CC210D4635005DC157 /* EpisodeDownloader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EpisodeDownloader.swift; sourceTree = "<group>"; };
+		21E8D9CE210D49F9005DC157 /* Reachability.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reachability.swift; sourceTree = "<group>"; };
+		21E8D9D0210E0B8E005DC157 /* EpisodesVC+URLSessionDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "EpisodesVC+URLSessionDelegate.swift"; sourceTree = "<group>"; };
+		21E8D9D2210E0BD7005DC157 /* DownloadObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadObject.swift; sourceTree = "<group>"; };
 		21EBD9EF1F9EDCFE0052738E /* EpisodesVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EpisodesVC.swift; sourceTree = "<group>"; };
 		57DB908AEA6D6D254FB55FD9 /* Pods_Watch_Podcast.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Watch_Podcast.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		701A299E408C4E218AF9D2F8 /* Pods_Podcast.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Podcast.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -322,7 +328,9 @@
 				218FBF6F2103DD9700A5EF87 /* ARAudioPlayerState.swift */,
 				218FBF722103DD9800A5EF87 /* CachingPlayerItem.swift */,
 				218FBF702103DD9800A5EF87 /* FileSystemInteractor.swift */,
+				21E8D9CE210D49F9005DC157 /* Reachability.swift */,
 				21E8D9CC210D4635005DC157 /* EpisodeDownloader.swift */,
+				21E8D9D2210E0BD7005DC157 /* DownloadObject.swift */,
 			);
 			path = AudioPlayer;
 			sourceTree = "<group>";
@@ -336,6 +344,7 @@
 				21B577911F99877400F5B4F1 /* EpisodesListSearchViewController.swift */,
 				218FBF7B21041E3D00A5EF87 /* LibraryVC.swift */,
 				21EBD9EF1F9EDCFE0052738E /* EpisodesVC.swift */,
+				21E8D9D0210E0B8E005DC157 /* EpisodesVC+URLSessionDelegate.swift */,
 				2173736020240548007AD6E6 /* LatestEpisodesVC.swift */,
 				21D9F9892055D67100CFEAE6 /* FavoritesVC.swift */,
 				21E8D9CA210CFD12005DC157 /* SettingsVC.swift */,
@@ -729,9 +738,11 @@
 				21CDF0FB1F3BBDC400A6F4DC /* RealmInteractor.swift in Sources */,
 				21D9F98A2055D67100CFEAE6 /* FavoritesVC.swift in Sources */,
 				21CDF0FD1F3BBDE000A6F4DC /* Episode.swift in Sources */,
+				21E8D9CF210D49F9005DC157 /* Reachability.swift in Sources */,
 				2173736120240548007AD6E6 /* LatestEpisodesVC.swift in Sources */,
 				21B577921F99877400F5B4F1 /* EpisodesListSearchViewController.swift in Sources */,
 				21B66F9A1F8FBDBF009FC323 /* EpisodeData.swift in Sources */,
+				21E8D9D3210E0BD7005DC157 /* DownloadObject.swift in Sources */,
 				21D9016D1F8E6219001F2265 /* SendToWatchVC.swift in Sources */,
 				21E8D9CB210CFD12005DC157 /* SettingsVC.swift in Sources */,
 				2144359A20F8437C00AF75F9 /* LargePlayerRemoteVC.swift in Sources */,
@@ -741,6 +752,7 @@
 				217DDEE7209FA10D00D8E835 /* JSONPodcast.swift in Sources */,
 				218FBF772103DD9800A5EF87 /* CachingPlayerItem.swift in Sources */,
 				21B577901F99072400F5B4F1 /* PodcastTableViewCell.swift in Sources */,
+				21E8D9D1210E0B8E005DC157 /* EpisodesVC+URLSessionDelegate.swift in Sources */,
 				21CDF1011F3BBF8900A6F4DC /* Downloader.swift in Sources */,
 				2129DD911FC25A380093D4E1 /* SingletonPlayerDelegate.swift in Sources */,
 				218FBF732103DD9800A5EF87 /* ARAudioPlayer.swift in Sources */,

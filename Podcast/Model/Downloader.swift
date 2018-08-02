@@ -152,14 +152,13 @@ class Downloader: NSObject {
                 print("Tread Problem")
                 fatalError()
             }
-            
             for item in (result.rssFeed?.items)! {
                 let guid = item.guid!.value
                 if RealmInteractor().checkIfPodcastEpisodeExists(guid: guid!) == false {
                     let episode = Episode()
                     episode.guid = item.guid!.value //Unique ID
                     episode.title = item.title //Title
-                    episode.descript = self.trimEpisodeDescription(description: item.description!)
+                    episode.descript = self.trimEpisodeDescription(description: item.description)
                     episode.publishedDate =  item.pubDate //Publish Date
                     if let duration = item.iTunes?.iTunesDuration {
                         episode.estimatedDuration = duration  //duration in seconds
@@ -172,7 +171,9 @@ class Downloader: NSObject {
                     episode.podcastID = podcast.iD
                     RI.saveEpisode(episode: episode)
                 }
+                
             }
+            
             let endTime = Date()
             print("It took: \(endTime.timeIntervalSince(startTime)) seconds to save the episodes")
             
@@ -185,8 +186,11 @@ class Downloader: NSObject {
     }
     
     
-    func trimEpisodeDescription(description: String) -> String {
-        return description.replacingOccurrences(of: "<[^>]+>", with: "", options: .regularExpression, range: nil).trimmingCharacters(in: .whitespacesAndNewlines).replacingOccurrences(of: "&nbsp;", with: "").replacingOccurrences(of: "&amp;", with: "")
+    func trimEpisodeDescription(description: String?) -> String {
+        if description != nil {
+            return description!.replacingOccurrences(of: "<[^>]+>", with: "", options: .regularExpression, range: nil).trimmingCharacters(in: .whitespacesAndNewlines).replacingOccurrences(of: "&nbsp;", with: "").replacingOccurrences(of: "&amp;", with: "")
+        }
+        return ""
     }
     
     

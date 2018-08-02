@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="13771" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14113" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
+        <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -19,27 +20,53 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="fAM-Dn-dpa">
-                        <rect key="frame" x="0.0" y="8" width="0.0" height="83.5"/>
+                        <rect key="frame" x="8" y="8" width="359" height="84"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" text="Podcast Title" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="C2H-VQ-xKX">
-                                <rect key="frame" x="0.0" y="0.0" width="0.0" height="42.5"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" ambiguous="YES" text="Podcast Title" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="C2H-VQ-xKX">
+                                <rect key="frame" x="0.0" y="0.0" width="359" height="23"/>
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="19"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Date, Duration, File Size" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bgK-SN-5j7">
-                                <rect key="frame" x="0.0" y="42.5" width="0.0" height="20.5"/>
+                            <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="oUJ-el-yeV">
+                                <rect key="frame" x="0.0" y="23" width="359" height="21"/>
+                                <subviews>
+                                    <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="5aa-7K-em2">
+                                        <rect key="frame" x="0.0" y="9" width="143.5" height="2"/>
+                                    </progressView>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="MvN-6G-VEf">
+                                        <rect key="frame" x="359" y="0.5" width="0.0" height="20.5"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="trailing" secondItem="MvN-6G-VEf" secondAttribute="trailing" id="5g8-cq-0Qz"/>
+                                    <constraint firstItem="5aa-7K-em2" firstAttribute="centerY" secondItem="MvN-6G-VEf" secondAttribute="centerY" id="8sn-42-FbI"/>
+                                    <constraint firstItem="5aa-7K-em2" firstAttribute="width" secondItem="oUJ-el-yeV" secondAttribute="width" multiplier="0.4" id="RyL-x5-Ehl"/>
+                                    <constraint firstItem="5aa-7K-em2" firstAttribute="top" secondItem="oUJ-el-yeV" secondAttribute="top" constant="9" id="XsG-9Z-H6k"/>
+                                    <constraint firstItem="5aa-7K-em2" firstAttribute="leading" secondItem="oUJ-el-yeV" secondAttribute="leading" id="mx3-Bq-nJQ"/>
+                                    <constraint firstItem="5aa-7K-em2" firstAttribute="centerY" secondItem="oUJ-el-yeV" secondAttribute="centerY" id="xjl-Zc-77a"/>
+                                </constraints>
+                            </view>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Date, Duration, File Size" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bgK-SN-5j7">
+                                <rect key="frame" x="0.0" y="44" width="359" height="20.5"/>
                                 <fontDescription key="fontDescription" type="system" weight="light" pointSize="17"/>
                                 <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Longer Description Label" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Kbs-3e-n56" userLabel="Description Label">
-                                <rect key="frame" x="0.0" y="63" width="0.0" height="20.5"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Longer Description Label" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Kbs-3e-n56" userLabel="Description Label">
+                                <rect key="frame" x="0.0" y="64.5" width="359" height="19.5"/>
                                 <fontDescription key="fontDescription" type="system" weight="ultraLight" pointSize="17"/>
                                 <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
                         </subviews>
+                        <constraints>
+                            <constraint firstItem="C2H-VQ-xKX" firstAttribute="top" secondItem="fAM-Dn-dpa" secondAttribute="top" id="v8L-zk-5Fu"/>
+                        </constraints>
                     </stackView>
                 </subviews>
                 <constraints>
@@ -50,7 +77,10 @@
                 </constraints>
             </tableViewCellContentView>
             <connections>
+                <outlet property="downloadProgressLabel" destination="MvN-6G-VEf" id="k20-8V-RQr"/>
+                <outlet property="downloadView" destination="oUJ-el-yeV" id="kqG-z9-Arh"/>
                 <outlet property="longDescriptionLabel" destination="Kbs-3e-n56" id="KX6-UB-O4G"/>
+                <outlet property="progressBar" destination="5aa-7K-em2" id="upc-ET-RTt"/>
                 <outlet property="specsLabel" destination="bgK-SN-5j7" id="bJe-4I-wrg"/>
                 <outlet property="titleLabel" destination="C2H-VQ-xKX" id="GOl-vn-mjS"/>
             </connections>

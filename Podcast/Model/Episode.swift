@@ -31,8 +31,7 @@ class Episode: Object {
     @objc dynamic var segmentNumber = 0
     var soundDataList = List<EpisodeData>()
     @objc dynamic var isPlayed = false
-    @objc dynamic var isdownloadInProgress = false
-    @objc dynamic var downloadProgress = 0.0
+    @objc dynamic var isDownloaded = false
     
     @objc dynamic var podcast: Podcast?
     @objc dynamic var podcastID: String?

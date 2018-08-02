@@ -17,6 +17,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
 
+    var backgroundSessionCompletionHandler: (() -> Void)?
+
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
@@ -26,7 +28,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 //        UITabBar.appearance().shadowImage = UIImage()
 //        self.window?.backgroundColor = UIColor.white
 
-
+        Reachability.shared.startNetworkReachabilityObserver()
 
         
         let audioSession = AVAudioSession.sharedInstance()
@@ -58,7 +60,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
         }
         
-        let configureationNumber = UInt64(10)
+        let configureationNumber = UInt64(11)
         
         let config = Realm.Configuration(
             // Set the new schema version. This must be greater than the previously used
@@ -95,34 +97,45 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 //        }
 //    }
     
+    func application(_ application: UIApplication, handleEventsForBackgroundURLSession
+        identifier: String, completionHandler: @escaping () -> Void) {
+        backgroundSessionCompletionHandler = completionHandler
+    }
+    
+    
     func application(_ application: UIApplication, performFetchWithCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
         
         print("background app refresh called")
-
         
-        let podcasts = RealmInteractor().fetchAllSubscribedPodcast()
-        print(podcasts.count)
-
-        print(Thread.current)
+        print(Reachability.shared.reachabilityManager?.networkReachabilityStatus)
+        completionHandler(.newData)
         
-        for podcast in podcasts{
-            print("running loop")
-            
-            Downloader().downloadPodcastData(podcast: podcast)
-                DispatchQueue.main.async {
-                    let notification = UNMutableNotificationContent()
-                    notification.title = "Podcast App"
-                    notification.body = "New Episodes Downloaded for: " + podcast.name!
-                    let notificationTrigger = UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
-                    let request = UNNotificationRequest(identifier: podcast.iD, content: notification, trigger: notificationTrigger)
-                    UNUserNotificationCenter.current().add(request, withCompletionHandler: nil)
-                    
-                    if podcast == podcasts.last {
-                        print("calling completion handler")
-                        completionHandler(.newData)
-                        }
-                    }
-        }
+        
+        
+//
+//        let podcasts = RealmInteractor().fetchAllSubscribedPodcast()
+//        print(podcasts.count)
+//
+//        print(Thread.current)
+//
+//        for podcast in podcasts{
+//            print("running loop")
+//
+//            Downloader().downloadPodcastData(podcast: podcast)
+//                DispatchQueue.main.async {
+//                    let notification = UNMutableNotificationContent()
+//                    notification.title = "Podcast App"
+//                    notification.body = "New Episodes Downloaded for: " + podcast.name!
+//                    let notificationTrigger = UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
+//                    let request = UNNotificationRequest(identifier: podcast.iD, content: notification, trigger: notificationTrigger)
+//                    UNUserNotificationCenter.current().add(request, withCompletionHandler: nil)
+//
+//                    if podcast == podcasts.last {
+//                        print("calling completion handler")
+//                        completionHandler(.newData)
+//                        }
+//                    }
+//        }
     }
     
     func applicationWillResignActive(_ application: UIApplication) {

@@ -301,8 +301,30 @@ class RealmInteractor: NSObject {
 
     }
     
+    func markEpisodeAsDownloaded(episode: Episode) {
+        let realm = try! Realm()
+        try! realm.write {
+            episode.isDownloaded = true
+        }
+    }
 
+    func markEpisodeAsNotDownloaded(episode: Episode) {
+        let realm = try! Realm()
+        try! realm.write {
+            episode.isDownloaded = false 
+        }
+    }
+    
+    func markEpisodesForPodcastAsNotDownloaded(podcast: Podcast) {
+        let episodes = fetchEpisodesForPodcast(podcast: podcast)
+        let realm = try! Realm()
 
+        for episode in episodes {
+            try! realm.write {
+                episode.isDownloaded = false
+            }
+        }
+    }
     
     func fetchEpisodesForPodcast(podcast:Podcast) -> [Episode] {
         if podcast.isInvalidated {
@@ -328,30 +350,13 @@ class RealmInteractor: NSObject {
 
     }
     
-    func addDownloadProgressToEpisode(episode: Episode, downloadProgress: Double){
-        let realm = try! Realm()
-        try! realm.write {
-            episode.downloadProgress = downloadProgress
-            if episode.isdownloadInProgress != true {
-                episode.isdownloadInProgress = true
-            }
-        }
-    }
-    
-    func downloadCompleteForEpisode(episode: Episode){
-        let realm = try! Realm()
-        try! realm.write {
-            episode.isdownloadInProgress = false
-            episode.downloadProgress = 0.0
-        }
-    }
+
     
     
     func deleteEpisodeDataForEpisode(episode: Episode) {
         let realm = try! Realm()
         try! realm.write {
             episode.soundDataList.removeAll()
-            episode.downloadProgress = 0.0
         }
     }
     

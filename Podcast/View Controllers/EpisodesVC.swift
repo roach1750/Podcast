@@ -17,6 +17,15 @@ class EpisodesVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     var results: [Date : [Episode]]?
     var dates: [Date]?
     
+    let downloadService = EpisodeDownloader()
+    // Create downloadsSession here, to set self as delegate
+    lazy var downloadsSession: URLSession = {
+        //    let configuration = URLSessionConfiguration.default
+        let configuration = URLSessionConfiguration.background(withIdentifier: "bgSessionConfiguration")
+        return URLSession(configuration: configuration, delegate: self, delegateQueue: nil)
+    }()
+    
+    
     @IBOutlet var sortToolbar: UIToolbar!
     @IBOutlet var sortSegmentControl: UISegmentedControl!
     
@@ -29,6 +38,7 @@ class EpisodesVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         tableView.contentInset = UIEdgeInsetsMake(0, 0, 60, 0)
         tableView.tableFooterView = UIView()
         reloadData()
+        downloadService.downloadsSession = downloadsSession
     }
     
     func reloadData() {
@@ -141,21 +151,28 @@ class EpisodesVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         let cell = tableView.dequeueReusableCell(withIdentifier: "episodeCell") as! EpisodeTableViewCell
         let date = dates![indexPath.section]
         let episode = results![date]![indexPath.row]
-        
+        cell.episode = episode
         cell.longDescriptionLabel.text = episode.descript
-        if episode.soundDataList.count > 0 {
-            cell.backgroundColor = UIColor.green
-        }else {
-            cell.backgroundColor = UIColor.white
-        }
+        
+        //title Label 
+        
+
         
         if episode.isPlayed {
             cell.contentView.alpha = 0.3
-            cell.titleLabel.text = "✅ " + episode.title!
+            if episode.isDownloaded == true {
+                cell.titleLabel.text = "✅ " + episode.title! + "💾📱"
+            }else {
+                cell.titleLabel.text = "✅ " + episode.title!
+            }
         }
         else {
-            cell.titleLabel.text = episode.title
             cell.contentView.alpha = 1.0
+            if episode.isDownloaded == true {
+                cell.titleLabel.text = episode.title! + "💾📱"
+            }else {
+                cell.titleLabel.text = episode.title!
+            }
         }
         
         if episode == ARAudioPlayer.sharedInstance.nowPlayingEpisode {
@@ -174,6 +191,16 @@ class EpisodesVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
             cell.specsLabel.textColor = UIColor.black
         }
         
+        //Download progress
+        cell.downloadView.isHidden = true
+        
+//        let download = downloadService.activeDownloads[sourceURL]
+//        print(downloadService.activeDownloads)
+
+        if downloadService.activeDownloads.keys.contains(URL(string: episode.downloadURL!)!) {
+            cell.downloadView.isHidden = false
+        }
+        
         return cell
     }
     
@@ -186,18 +213,44 @@ class EpisodesVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
         let date = self.dates![indexPath.section]
         let episode = self.results![date]![indexPath.row]
+        
         let favorite = UITableViewRowAction(style: .normal, title: "⭐️") { action, index in
             RealmInteractor().markEpisodeAsFavorite(episode: episode)
         }
         favorite.backgroundColor = #colorLiteral(red: 0.3459055424, green: 0.3397476971, blue: 0.8399652839, alpha: 1)
         
-        let download = UITableViewRowAction(style: .normal, title: "⇩") { (action, index) in
-            EpisodeDownloader().downloadEpisode(episode: episode)
+        if episode.isDownloaded {
+            let delete = UITableViewRowAction(style: .normal, title: "❌") { (action, index) in
+                let fileName = "EpisodeData_" + (episode.guid?.replacingOccurrences(of: "/", with: ""))! + "_" + (episode.podcast?.iD)!
+                FileSystemInteractor().deleteFile(fileName: fileName)
+                RealmInteractor().markEpisodeAsNotDownloaded(episode: episode)
+                
+                tableView.beginUpdates()
+                tableView.reloadRows(at: [indexPath], with: .none)
+                tableView.endUpdates()
+            
+            }
+            delete.backgroundColor = #colorLiteral(red: 0.9254902005, green: 0.2352941185, blue: 0.1019607857, alpha: 1)
+            return [favorite,delete]
         }
-        download.backgroundColor = UIColor.orange
+        else {
+            let download = UITableViewRowAction(style: .normal, title: "⇩") { (action, index) in
+                self.downloadService.startDownload(episode)
+                tableView.beginUpdates()
+                tableView.reloadRows(at: [indexPath], with: .none)
+                tableView.endUpdates()
+            }
+            download.backgroundColor = #colorLiteral(red: 0.3411764801, green: 0.6235294342, blue: 0.1686274558, alpha: 1)
+            return [favorite,download]
+        }
+
         
-        return [favorite,download]
+        
+
     }
+    
+
+    
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let date = dates![indexPath.section]

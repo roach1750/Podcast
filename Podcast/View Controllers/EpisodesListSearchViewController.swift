@@ -152,6 +152,7 @@ extension EpisodesListSearchViewController {
         let sizeInMB = (episode.fileSize) / 1048576
         cell.specsLabel.text = dateString + ", " + generateTimeString(duration: Int((episode.estimatedDuration))) + ", " + String(format:"%.1f", sizeInMB) + " MB"
         cell.longDescriptionLabel.text = episode.descript
+        cell.downloadView.isHidden = true 
         return cell
     }
     

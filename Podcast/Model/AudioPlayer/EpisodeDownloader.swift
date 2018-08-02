@@ -9,34 +9,56 @@
 import UIKit
 import RealmSwift
 
-class EpisodeDownloader: NSObject {
+class EpisodeDownloader: NSObject  {
     
-    let defaultSession = URLSession(configuration: .default)
-    var dataTask: URLSessionDataTask?
     
-    func downloadEpisode(episode: Episode) {
+    // SearchViewController creates downloadsSession
+    var downloadsSession: URLSession!
+    var activeDownloads: [URL: DownloadObject] = [:]
+    
+    // MARK: - Download methods called by TrackCell delegate methods
+    
+    func startDownload(_ episode: Episode) {
+        let download = DownloadObject(episode: episode)
         
-        dataTask?.cancel()
-        
-        guard let url = URL(string: episode.downloadURL!) else { return }
-        
-        let episodeTreadSafeReference = ThreadSafeReference(to: episode)
-
-        
-        dataTask = defaultSession.dataTask(with: url) { data, response, error in
-            
-            
-            let realm = try! Realm()
-            guard let episode = realm.resolve(episodeTreadSafeReference) else {
-                return
-            }
-            
-            let fileName = "EpisodeData_" + (episode.guid?.replacingOccurrences(of: "/", with: ""))! + "_" + (episode.podcast?.iD)!
-            FileSystemInteractor().saveFileToDisk(file: data!, fileName: fileName)
+        if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+            let shortfileName = "EpisodeData_" + (episode.guid?.replacingOccurrences(of: "/", with: ""))! + "_" + (episode.podcast?.iD)!
+            download.fileURL = dir.appendingPathComponent(shortfileName)
         }
         
-        dataTask?.resume()
+        download.task = downloadsSession.downloadTask(with: URL(string: episode.downloadURL!)!)
+        download.task!.resume()
+        download.isDownloading = true
+        activeDownloads[URL(string: episode.downloadURL!)!] = download
     }
     
+    func pauseDownload(_ episode: Episode) {
+        guard let download = activeDownloads[URL(string: episode.downloadURL!)!] else { return }
+        if download.isDownloading {
+            download.task?.cancel(byProducingResumeData: { data in
+                download.resumeData = data
+            })
+            download.isDownloading = false
+        }
+    }
     
+    func cancelDownload(_ episode: Episode) {
+        if let download = activeDownloads[URL(string: episode.downloadURL!)!] {
+            download.task?.cancel()
+            activeDownloads[URL(string: episode.downloadURL!)!] = nil
+        }
+    }
+    
+    func resumeDownload(_ episode: Episode) {
+        guard let download = activeDownloads[URL(string: episode.downloadURL!)!] else { return }
+        if let resumeData = download.resumeData {
+            download.task = downloadsSession.downloadTask(withResumeData: resumeData)
+        } else {
+            download.task = downloadsSession.downloadTask(with: URL(string: episode.downloadURL!)!)
+        }
+        download.task!.resume()
+        download.isDownloading = true
+    }
+
+
 }

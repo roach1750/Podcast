@@ -47,7 +47,13 @@ class FileSystemInteractor: NSObject {
         let filemanager = FileManager.default
         for fileURL in fetchFileURLS() {
             if fileURL.absoluteString.contains(podcast.iD) {
-                try! filemanager.removeItem(at: fileURL)
+                do {
+                    try filemanager.removeItem(at: fileURL)
+                    RealmInteractor().markEpisodesForPodcastAsNotDownloaded(podcast: podcast)
+                }
+                catch {
+                    print("there was an error deleting files")
+                }
             }
         }
     }

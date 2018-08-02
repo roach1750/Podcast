@@ -13,10 +13,11 @@ class EpisodeTableViewCell: UITableViewCell {
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var specsLabel: UILabel!
     @IBOutlet weak var longDescriptionLabel: UILabel!
+    @IBOutlet var downloadView: UIView!
+    @IBOutlet var progressBar: UIProgressView!
+    @IBOutlet var downloadProgressLabel: UILabel!
     
-    @IBAction func playButtonPressed(_ sender: UIButton) {
-    }
-    
+    var episode: Episode? 
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -25,8 +26,13 @@ class EpisodeTableViewCell: UITableViewCell {
 
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
     }
 
+    func updateDisplay(progress: Float, totalSize : String) {
+        progressBar.progress = progress
+        downloadProgressLabel.text = String(format: "%.1f%% of %@", progress * 100, totalSize)
+    }
+    
+    
+    
 }

@@ -386,7 +386,7 @@ extension ARAudioPlayer: CachingPlayerItemDelegate {
         
         DispatchQueue.main.sync {
             if let episode = self.playerItem.episode {
-                
+                RealmInteractor().markEpisodeAsDownloaded(episode: episode)
                 let fileName = "EpisodeData_" + (episode.guid?.replacingOccurrences(of: "/", with: ""))! + "_" + (episode.podcast?.iD)!
                 FileSystemInteractor().saveFileToDisk(file: data, fileName: fileName)
             }
