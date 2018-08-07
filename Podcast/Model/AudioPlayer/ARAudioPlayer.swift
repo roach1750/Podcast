@@ -49,10 +49,13 @@ class ARAudioPlayer: NSObject {
     var playerItem: CachingPlayerItem!
     var delegate: ARAudioPlayerDelegate!
     let fileName = "testPodcast1"
+    var shouldStartPlaying = true
+    
     
     func startPlayingNowPlayingEpisode() {
         let url = self.nowPlayingEpisode!.downloadURL!
         self.prepareToPlay(url: URL(string: url)!)
+        shouldStartPlaying = true
     }
     
     
@@ -143,13 +146,17 @@ class ARAudioPlayer: NSObject {
             
             switch status {
             case .readyToPlay:
-                addPeriodicTimeObserver()
-                if nowPlayingEpisode?.currentPlaybackDuration != 0 {
-                    self.seekTo(nowPlayingEpisode!.currentPlaybackDuration)
+                if shouldStartPlaying == true {
+                    addPeriodicTimeObserver()
+                    if nowPlayingEpisode?.currentPlaybackDuration != 0 {
+                        self.seekTo(nowPlayingEpisode!.currentPlaybackDuration)
+                    }
+                    player.play()
+                    print("starting to play")
+                    playerState = .playing
+                    shouldStartPlaying = false
                 }
-                player.play()
-                print("starting to play")
-                playerState = .playing
+
             case .failed:
                 print("failed")
             case .unknown:
@@ -216,19 +223,7 @@ class ARAudioPlayer: NSObject {
         self.updatePlaybackRateMetadata()
         
     }
-    
-    //    func seekToDuration(duration: TimeInterval) {
-    //
-    //        print("seeking to: \(CMTimeMake(Int64(duration), 1))")
-    //        player.seek(to:CMTimeMake(Int64(duration), 1))
-    //        removePeriodicTimeObserver()
-    //
-    //        Timer.scheduledTimer(withTimeInterval: 0.25, repeats: false) { (timer) in
-    //            self.addPeriodicTimeObserver()
-    //        }
-    //
-    //    }
-    
+
     func seekTo(_ position: TimeInterval) {
         guard asset != nil else { return }
         
@@ -250,9 +245,6 @@ class ARAudioPlayer: NSObject {
     func addPeriodicTimeObserver() {
         // Notify every half second
         removePeriodicTimeObserver()
-        //        let timeScale = CMTimeScale(NSEC_PER_SEC)
-        //        let time = CMTime(seconds: 0.5, preferredTimescale: timeScale)
-        //        timeObserverToken = player.addPeriodicTimeObserver(forInterval: CMTimeMakeWithSeconds(1.0 / 60.0, Int32(NSEC_PER_SEC)), queue: DispatchQueue.main, using: { [weak self] time in
         
         timeObserverToken = player.addPeriodicTimeObserver(forInterval: CMTimeMakeWithSeconds(15.0 / 60.0, Int32(NSEC_PER_SEC)), queue: DispatchQueue.main, using: { [weak self] time in
             self?.delegate.progressUpdated(_sender: self!, timeUpdated: Float(CMTimeGetSeconds(time)))
@@ -383,15 +375,16 @@ extension ARAudioPlayer: CachingPlayerItemDelegate {
     func playerItem(_ playerItem: CachingPlayerItem, didFinishDownloadingData data: Data) {
         print("Finished Download")
         //Now write file to disk:
-        
         DispatchQueue.main.sync {
+            if nowPlayingPodcast?.isSubscribed == true {
             if let episode = self.playerItem.episode {
                 RealmInteractor().markEpisodeAsDownloaded(episode: episode)
                 let fileName = "EpisodeData_" + (episode.guid?.replacingOccurrences(of: "/", with: ""))! + "_" + (episode.podcast?.iD)!
                 FileSystemInteractor().saveFileToDisk(file: data, fileName: fileName)
+                NotificationCenter.default.post(name: NSNotification.Name(rawValue: "nowPlayingEpisodeDownloaded"), object: nil)
+                }
             }
         }
-        
     }
     
     func playerItem(_ playerItem: CachingPlayerItem, didDownloadBytesSoFar bytesDownloaded: Int, outOf bytesExpected: Int){
