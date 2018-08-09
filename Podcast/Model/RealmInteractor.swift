@@ -26,6 +26,13 @@ class RealmInteractor: NSObject {
         }
     }
 
+    //NEW
+    func saveEpisodes(episodes: [Episode]) {
+        let realm = try! Realm()
+        try! realm.write {
+            realm.add(episodes, update: true)
+        }
+    }
     
     func updatePodcastArtwork(podcast:Podcast, artwork:Data, highRes: Bool) {        
         let realm = try! Realm()
@@ -306,6 +313,7 @@ class RealmInteractor: NSObject {
         try! realm.write {
             episode.isDownloaded = true
         }
+        
     }
 
     func markEpisodeAsNotDownloaded(episode: Episode) {
@@ -326,14 +334,19 @@ class RealmInteractor: NSObject {
         }
     }
     
+
+    
     func fetchEpisodesForPodcast(podcast:Podcast) -> [Episode] {
+        print("Realm Interactor - fetching new episodes")
+        
         if podcast.isInvalidated {
             return [Episode]()
         }
         let realm = try! Realm()
-        
+        realm.refresh()
         let predicate = NSPredicate(format: "podcastID == %@", podcast.iD)
         let results = Array(realm.objects(Episode.self).filter(predicate).sorted(byKeyPath: "publishedDate", ascending: false))
+        print("Realm found: \(results.count) results")
         return results
     }
     

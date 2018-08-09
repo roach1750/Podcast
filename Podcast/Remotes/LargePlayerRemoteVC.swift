@@ -26,6 +26,7 @@ class LargePlayerRemoteVC: UIViewController {
     @IBOutlet var seekSegmentedControl: UISegmentedControl!
     
     var activityView: NVActivityIndicatorView?
+    var shouldAdjustTimeLabels = true
     
     override func viewDidLoad() {
         let tapGestureRecognizerLarge = UITapGestureRecognizer(target: self, action: #selector(self.imageTapped(_:)))
@@ -86,9 +87,30 @@ class LargePlayerRemoteVC: UIViewController {
     }
     
     @IBAction func seekSliderAdjusted(_ sender: UISlider) {
-        print(sender.value)
-        ARAudioPlayer.sharedInstance.seekTo(Double(sender.value))
+        shouldAdjustTimeLabels = false
+        currentTimeLabel.textColor = #colorLiteral(red: 0.1764705882, green: 0.9960784314, blue: 0.2549019608, alpha: 1)
+        seekSlider.tintColor = #colorLiteral(red: 0.2431372549, green: 0.9882352941, blue: 0.3098039216, alpha: 1)
+        adjustTimeLabel(label: currentTimeLabel, duration: Int(sender.value))
     }
+    
+    @IBAction func sliderTouchUpInside(_ sender: UISlider) {
+        touchUpOnSlider(sender)
+    }
+    @IBAction func sliderTouchUpOutside(_ sender: UISlider) {
+        touchUpOnSlider(sender)
+    }
+    
+    func touchUpOnSlider(_ sender: UISlider) {
+        print(sender.value)
+        shouldAdjustTimeLabels = true
+        ARAudioPlayer.sharedInstance.seekTo(Double(sender.value))
+        currentTimeLabel.textColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
+        seekSlider.tintColor = UIColor.blue
+        let generator = UISelectionFeedbackGenerator()
+        generator.selectionChanged()
+        
+    }
+    
     
     @IBAction func skipForwardButtonPressed(_ sender: UIButton) {
         ARAudioPlayer.sharedInstance.skipForward()
@@ -107,6 +129,7 @@ class LargePlayerRemoteVC: UIViewController {
         
     }
     
+    
     func configureArtwork() {
         if ARAudioPlayer.sharedInstance.nowPlayingPodcast?.artwork600x600 != nil {
             podcastArtworkImageView.image = UIImage(data: (ARAudioPlayer.sharedInstance.nowPlayingPodcast?.artwork600x600)!)
@@ -124,34 +147,16 @@ class LargePlayerRemoteVC: UIViewController {
         seekSlider.setValue(0, animated: false)
         //end delete
         
-        
-//        if let episode = ARAudioPlayer.sharedInstance.nowPlayingEpisode {
-//            if episode.duration != 0 {
-//                let timeRemaining = episode.duration - episode.currentPlaybackDuration
-//                self.adjustTimeLabel(label: self.currentTimeLabel, duration: Int(episode.currentPlaybackDuration))
-//                self.adjustTimeLabel(label: self.timeRemainingLabel, duration: Int(timeRemaining))
-////                seekSlider.maximumValue = Float(episode.duration)
-////                seekSlider.setValue(Float(episode.currentPlaybackDuration), animated: false)
-//            }
-//            else {
-//                self.currentTimeLabel.text = "00:00"
-//                self.timeRemainingLabel.text = "00:00"
-////                seekSlider.maximumValue = Float(1)
-//                seekSlider.setValue(0, animated: false)
-//            }
-//        }
     }
     
     func configurePlayPauseButton() {
         DispatchQueue.main.async {
-            
-        
-        if ARAudioPlayer.sharedInstance.playerState == .playing {
-            self.playPauseButton.setImage(UIImage(named: "Pause Button"), for: .normal)
-        }
-        else {
-            self.playPauseButton.setImage(UIImage(named: "Play Button"), for: .normal)
-        }
+            if ARAudioPlayer.sharedInstance.playerState == .playing {
+                self.playPauseButton.setImage(UIImage(named: "Pause Button"), for: .normal)
+            }
+            else {
+                self.playPauseButton.setImage(UIImage(named: "Play Button"), for: .normal)
+            }
         }
     }
     
@@ -306,8 +311,11 @@ extension LargePlayerRemoteVC: ARAudioPlayerDelegate {
 //        print(currentTime)
         RealmInteractor().setEpisodeCurrentPlaybackDuration(episode: episode!, currentPlaybackDuration: Double(currentTime))
         let timeRemaining = duration! - currentTime
-        self.adjustTimeLabel(label: self.currentTimeLabel, duration: Int(currentTime))
-        self.adjustTimeLabel(label: self.timeRemainingLabel, duration: Int(timeRemaining))
+        
+        if shouldAdjustTimeLabels == true {
+            self.adjustTimeLabel(label: self.currentTimeLabel, duration: Int(currentTime))
+            self.adjustTimeLabel(label: self.timeRemainingLabel, duration: Int(timeRemaining))
+        }
     }
     
     func didChangeState(_sender: ARAudioPlayer, oldState: AudioPlayerState, newState: AudioPlayerState) {

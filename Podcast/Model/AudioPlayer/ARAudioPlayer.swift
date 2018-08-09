@@ -390,7 +390,7 @@ extension ARAudioPlayer: CachingPlayerItemDelegate {
     func playerItem(_ playerItem: CachingPlayerItem, didDownloadBytesSoFar bytesDownloaded: Int, outOf bytesExpected: Int){
         let progress = floor(Double(bytesDownloaded)/Double(bytesExpected) * 100)
         if progress.truncatingRemainder(dividingBy: 10) == 0 {
-            print(progress)
+//            print(progress)
         }
     }
     

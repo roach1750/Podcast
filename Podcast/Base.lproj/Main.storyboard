@@ -1233,10 +1233,12 @@
                                 <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="0.0" maxValue="0.0" continuous="NO" translatesAutoresizingMaskIntoConstraints="NO" id="37n-59-pgP">
+                            <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="0.0" maxValue="0.0" translatesAutoresizingMaskIntoConstraints="NO" id="37n-59-pgP">
                                 <rect key="frame" x="14" y="351" width="347" height="31"/>
                                 <connections>
                                     <action selector="seekSliderAdjusted:" destination="lHj-lF-Vya" eventType="valueChanged" id="g9k-er-kGQ"/>
+                                    <action selector="sliderTouchUpInside:" destination="lHj-lF-Vya" eventType="touchUpInside" id="jlv-oK-KM4"/>
+                                    <action selector="sliderTouchUpOutside:" destination="lHj-lF-Vya" eventType="touchUpOutside" id="2xa-qh-xnx"/>
                                 </connections>
                             </slider>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="10:30" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zNC-Pv-Sc4">

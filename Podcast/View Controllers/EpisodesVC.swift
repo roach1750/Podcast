@@ -32,19 +32,23 @@ class EpisodesVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         NotificationCenter.default.addObserver(self, selector: #selector(EpisodesVC.reloadData), name: NSNotification.Name(rawValue: "newEpisodeListDownloaded"), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(EpisodesVC.reloadData), name: NSNotification.Name(rawValue: "episodeDownloaded"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(EpisodesVC.reloadVisibleCells), name: NSNotification.Name(rawValue: "nowPlayingEpisodeDownloaded"), object: nil)
+        
+        refreshControl.addTarget(self, action: #selector(doTheRefresh), for: .valueChanged)
+
         self.tableView.addSubview(self.refreshControl)
         self.title = podcast?.name
         tableView.contentInset = UIEdgeInsetsMake(0, 0, 60, 0)
         tableView.tableFooterView = UIView()
-        reloadData()
         downloadService.downloadsSession = downloadsSession
     }
     
     func reloadData() {
+        print("reloading Data")
         let oldPodcastID = podcast!.iD
         self.podcast = RealmInteractor().fetchPodcast(withID: oldPodcastID)
         let episodes = RealmInteractor().fetchEpisodesForPodcast(podcast: self.podcast!)
+        
         switch sortSegmentControl.selectedSegmentIndex {
         case 0: //All
             self.results = sortEpisodesIntoDictionary(data: episodes, unplayedOnly: false)
@@ -55,6 +59,12 @@ class EpisodesVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         }
         refreshControl.endRefreshing()
         tableView.reloadData()
+    }
+    
+    func reloadVisibleCells() {
+        self.tableView.beginUpdates()
+        self.tableView.reloadRows(at: self.tableView.indexPathsForVisibleRows!, with: .none)
+        self.tableView.endUpdates()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -99,17 +109,18 @@ class EpisodesVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         reloadData()
     }
     
-    lazy var refreshControl: UIRefreshControl = {
-        let refreshControl = UIRefreshControl()
-        refreshControl.addTarget(self, action:
-            #selector(EpisodesVC.handleRefresh(_:)),
-                                 for: UIControlEvents.valueChanged)
-        refreshControl.tintColor = UIColor.red
-        return refreshControl
-    }()
-
-    func handleRefresh(_ refreshControl: UIRefreshControl) {
-        Downloader().downloadPodcastData(podcast: podcast!)
+    private let refreshControl = UIRefreshControl()
+    
+    func doTheRefresh() {
+        let treadPodcastReference = ThreadSafeReference(to: podcast!)
+        DispatchQueue.global(qos: .background).async {
+            let realm = try! Realm()
+            guard let podcast = realm.resolve(treadPodcastReference) else {
+                print("Tread Problem")
+                fatalError()
+            }
+            Downloader().downloadPodcastData(podcast: podcast)
+        }
     }
 
     
@@ -261,7 +272,10 @@ class EpisodesVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         if episode != ARAudioPlayer.sharedInstance.nowPlayingEpisode {
             ARAudioPlayer.sharedInstance.nowPlayingPodcast = podcast
             ARAudioPlayer.sharedInstance.nowPlayingEpisode = episode
-            ARAudioPlayer.sharedInstance.startPlayingNowPlayingEpisode() 
+            ARAudioPlayer.sharedInstance.startPlayingNowPlayingEpisode()
+            self.tableView.beginUpdates()
+            self.tableView.reloadRows(at: self.tableView.indexPathsForVisibleRows!, with: .none)
+            self.tableView.endUpdates()
         }
     }
     

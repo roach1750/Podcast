@@ -144,7 +144,7 @@ class Downloader: NSObject {
 //        print("⚡️: \(Thread.current)" + "🏭: \(OperationQueue.current?.underlyingQueue?.label ?? "None")")
 
         parser?.parseAsync(queue: DispatchQueue.global(qos: .userInitiated)) { (result) in
-            print("Found \(String(describing: result.rssFeed?.items?.count)) episodes")
+            print("Downloaded \(String(describing: result.rssFeed!.items!.count)) episodes")
             
             let startTime = Date()
             let realm = try! Realm()
@@ -152,6 +152,7 @@ class Downloader: NSObject {
                 print("Tread Problem")
                 fatalError()
             }
+            var episodes = [Episode]()
             for item in (result.rssFeed?.items)! {
                 let guid = item.guid!.value
                 if RealmInteractor().checkIfPodcastEpisodeExists(guid: guid!) == false {
@@ -169,13 +170,15 @@ class Downloader: NSObject {
                     }
                     episode.podcast = podcast
                     episode.podcastID = podcast.iD
-                    RI.saveEpisode(episode: episode)
+//                    RI.saveEpisode(episode: episode)
+                    episodes.append(episode)
                 }
-                
             }
             
+            RI.saveEpisodes(episodes: episodes)
+            
             let endTime = Date()
-            print("It took: \(endTime.timeIntervalSince(startTime)) seconds to save the episodes")
+            print("Added to database, It took: \(endTime.timeIntervalSince(startTime)) seconds to save the episodes")
             
             DispatchQueue.main.async {
                 print("Send Notification")
