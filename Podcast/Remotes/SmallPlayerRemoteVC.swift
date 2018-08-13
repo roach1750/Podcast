@@ -123,11 +123,11 @@ extension SmallPlayerRemoteVC: ARAudioPlayerDelegate {
 
 
 
-    func progressUpdated(_sender: ARAudioPlayer, timeUpdated: Float) {
+    func progressUpdated(timeUpdated: Float) {
         
     }
 
-    func didChangeState(_sender: ARAudioPlayer, oldState: AudioPlayerState, newState: AudioPlayerState) {
+    func didChangeState(oldState: AudioPlayerState, newState: AudioPlayerState) {
 
         print("Old State: \(oldState) New State: \(newState)")
         configurePlayPauseButton()
@@ -150,7 +150,7 @@ extension SmallPlayerRemoteVC: ARAudioPlayerDelegate {
         }
     }
     
-    func didFindDuration(_sender: ARAudioPlayer, duration: Float) {
+    func didFindDuration(duration: Float) {
         print("did find duration of: \(duration)")
         DispatchQueue.main.async {
             let episode = ARAudioPlayer.sharedInstance.nowPlayingEpisode

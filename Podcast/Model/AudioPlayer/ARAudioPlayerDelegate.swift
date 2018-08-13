@@ -11,9 +11,9 @@ import UIKit
 
 //required Methods
 protocol ARAudioPlayerDelegate {
-    func progressUpdated(_sender: ARAudioPlayer, timeUpdated: Float)
-    func didChangeState(_sender: ARAudioPlayer, oldState: AudioPlayerState, newState: AudioPlayerState)
-    func didFindDuration(_sender: ARAudioPlayer, duration: Float)
+    func progressUpdated(timeUpdated: Float)
+    func didChangeState(oldState: AudioPlayerState, newState: AudioPlayerState)
+    func didFindDuration(duration: Float)
 }
 
 

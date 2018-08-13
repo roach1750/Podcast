@@ -273,7 +273,7 @@ class LargePlayerRemoteVC: UIViewController {
 //audio delegate
 extension LargePlayerRemoteVC: ARAudioPlayerDelegate {
     
-    func didFindDuration(_sender: ARAudioPlayer, duration: Float) {
+    func didFindDuration(duration: Float) {
         print("did find duration of: \(duration)")
 
         if duration.isNaN == true {
@@ -296,7 +296,7 @@ extension LargePlayerRemoteVC: ARAudioPlayerDelegate {
 
     }
     
-    func progressUpdated(_sender: ARAudioPlayer, timeUpdated: Float) {
+    func progressUpdated(timeUpdated: Float) {
         let episode = ARAudioPlayer.sharedInstance.nowPlayingEpisode
         let duration  = episode?.duration
 
@@ -318,7 +318,7 @@ extension LargePlayerRemoteVC: ARAudioPlayerDelegate {
         }
     }
     
-    func didChangeState(_sender: ARAudioPlayer, oldState: AudioPlayerState, newState: AudioPlayerState) {
+    func didChangeState(oldState: AudioPlayerState, newState: AudioPlayerState) {
         configurePlayPauseButton()
         switch newState {
         case .playing:
@@ -327,7 +327,7 @@ extension LargePlayerRemoteVC: ARAudioPlayerDelegate {
                 self.activityView?.isHidden = true
             }
             if self.seekSlider.maximumValue == 1 {
-                didFindDuration(_sender: ARAudioPlayer.sharedInstance, duration: Float(CMTimeGetSeconds(ARAudioPlayer.sharedInstance.player.currentItem!.duration)))
+                didFindDuration(duration: Float(CMTimeGetSeconds(ARAudioPlayer.sharedInstance.player.currentItem!.duration)))
             }
         case .paused:
             DispatchQueue.main.async {}

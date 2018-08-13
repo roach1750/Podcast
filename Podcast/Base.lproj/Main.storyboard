@@ -1304,6 +1304,7 @@
                                     <segment title="First"/>
                                     <segment title="Second"/>
                                 </segments>
+                                <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <connections>
                                     <action selector="seekSegmentedControlPress:" destination="lHj-lF-Vya" eventType="valueChanged" id="UAz-gL-cTo"/>
                                 </connections>

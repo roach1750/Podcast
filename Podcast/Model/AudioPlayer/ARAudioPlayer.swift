@@ -63,7 +63,7 @@ class ARAudioPlayer: NSObject {
     var playerState: AudioPlayerState = .stopped {
         didSet {
             if oldValue != playerState && delegate != nil {
-                delegate.didChangeState(_sender: self, oldState: oldValue, newState: playerState)
+                delegate.didChangeState(oldState: oldValue, newState: playerState)
                 //                print("New State is: \(playerState)")
             }
         }
@@ -100,13 +100,14 @@ class ARAudioPlayer: NSObject {
             }
             let fileName = "EpisodeData_" + (episode.guid?.replacingOccurrences(of: "/", with: ""))! + "_" + (episode.podcast?.iD)!
             if let episodeData = FileSystemInteractor().openFileWithFileName(fileName: fileName) {
-                self.playerItem = CachingPlayerItem(data: episodeData, mimeType:  "audio/mpeg", fileExtension: "mp3")
+                self.playerItem = CachingPlayerItem(data: episodeData, mimeType:  "audio/mpeg", fileExtension: "mp3") //This is probably going to be a problem.
                 self.playerItem.episode = self.nowPlayingEpisode
             }
             else {
                 self.playerItem = CachingPlayerItem(url: url)
                 self.playerItem.episode = self.nowPlayingEpisode
             }
+            
             
             
             self.playerItem.delegate = self
@@ -121,7 +122,7 @@ class ARAudioPlayer: NSObject {
             self.playerItem.addObserver(self, forKeyPath: "playbackLikelyToKeepUp", options: .new, context: nil)
             self.playerItem.addObserver(self, forKeyPath: "playbackBufferFull", options: .new, context: nil)
             self.player.automaticallyWaitsToMinimizeStalling = false
-            self.delegate.didFindDuration(_sender: self, duration: Float(CMTimeGetSeconds(self.asset.duration)))
+            self.delegate.didFindDuration(duration: Float(CMTimeGetSeconds(self.asset.duration)))
             
 
             
@@ -247,7 +248,10 @@ class ARAudioPlayer: NSObject {
         removePeriodicTimeObserver()
         
         timeObserverToken = player.addPeriodicTimeObserver(forInterval: CMTimeMakeWithSeconds(15.0 / 60.0, Int32(NSEC_PER_SEC)), queue: DispatchQueue.main, using: { [weak self] time in
-            self?.delegate.progressUpdated(_sender: self!, timeUpdated: Float(CMTimeGetSeconds(time)))
+            
+            if self?.delegate != nil {
+                self?.delegate.progressUpdated(timeUpdated: Float(CMTimeGetSeconds(time)))
+            }
         })
     }
     

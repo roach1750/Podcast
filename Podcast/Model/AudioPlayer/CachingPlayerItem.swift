@@ -59,15 +59,12 @@ open class CachingPlayerItem: AVPlayerItem {
                     let initialUrl = interceptedUrl.withScheme(initialScheme) else {
                     fatalError("internal inconsistency")
                 }
-                
                 startDataRequest(with: initialUrl)
-                
             }
             
             pendingRequests.insert(loadingRequest)
             processPendingRequests()
             return true
-            
         }
         
         func startDataRequest(with url: URL) {
