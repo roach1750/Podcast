@@ -133,7 +133,7 @@ class Downloader: NSObject {
     }
     
     //Download Episodes for Podcast
-    func downloadPodcastData(podcast: Podcast) {
+    func downloadPodcastData(podcast: Podcast, completion: (() -> Void)?) {
         print("downloading episodes called")
         
         let RI = RealmInteractor()
@@ -181,6 +181,9 @@ class Downloader: NSObject {
             print("Added to database, It took: \(endTime.timeIntervalSince(startTime)) seconds to save the episodes")
             
             DispatchQueue.main.async {
+                if completion != nil {
+                    completion!()
+                }
                 print("Send Notification")
                 NotificationCenter.default.post(name: NSNotification.Name(rawValue: "newEpisodeListDownloaded"), object: nil)
             }

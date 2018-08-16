@@ -337,7 +337,6 @@ class RealmInteractor: NSObject {
 
     
     func fetchEpisodesForPodcast(podcast:Podcast) -> [Episode] {
-        print("Realm Interactor - fetching new episodes")
         
         if podcast.isInvalidated {
             return [Episode]()
@@ -346,7 +345,6 @@ class RealmInteractor: NSObject {
         realm.refresh()
         let predicate = NSPredicate(format: "podcastID == %@", podcast.iD)
         let results = Array(realm.objects(Episode.self).filter(predicate).sorted(byKeyPath: "publishedDate", ascending: false))
-        print("Realm found: \(results.count) results")
         return results
     }
     

@@ -12,24 +12,28 @@ import  RealmSwift
 import AVFoundation
 import UserNotifications
 
+
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
-
+    
     var window: UIWindow?
-
+    
     var backgroundSessionCompletionHandler: (() -> Void)?
-
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
+        
+        
         print(Realm.Configuration.defaultConfiguration.fileURL!)
         
-//        UITabBar.appearance().backgroundImage = UIImage()
-//        UITabBar.appearance().shadowImage = UIImage()
-//        self.window?.backgroundColor = UIColor.white
-
+        //        UITabBar.appearance().backgroundImage = UIImage()
+        //        UITabBar.appearance().shadowImage = UIImage()
+        //        self.window?.backgroundColor = UIColor.white
+        
+        UNUserNotificationCenter.current().delegate = self
+        
+        
         Reachability.shared.startNetworkReachabilityObserver()
-
+        
         
         let audioSession = AVAudioSession.sharedInstance()
         
@@ -46,7 +50,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         catch {
             print("An Error occured activating the audio session: \(error)")
-
+            
         }
         
         UIApplication.shared.setMinimumBackgroundFetchInterval(UIApplicationBackgroundFetchIntervalMinimum)
@@ -86,16 +90,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         _ = try! Realm()
         
         
-        
         return true
-
+        
     }
     
-//    override func remoteControlReceived(with event: UIEvent?) {
-//        if let event = event {
-//            SingletonPlayerDelegate.sharedInstance.player.remoteControlReceived(with: event)
-//        }
-//    }
+    
     
     func application(_ application: UIApplication, handleEventsForBackgroundURLSession
         identifier: String, completionHandler: @escaping () -> Void) {
@@ -107,42 +106,37 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         print("background app refresh called")
         
-        print(Reachability.shared.reachabilityManager?.networkReachabilityStatus)
-        completionHandler(.newData)
-        
-        
-        
-//
-//        let podcasts = RealmInteractor().fetchAllSubscribedPodcast()
-//        print(podcasts.count)
-//
-//        print(Thread.current)
-//
-//        for podcast in podcasts{
-//            print("running loop")
-//
-//            Downloader().downloadPodcastData(podcast: podcast)
-//                DispatchQueue.main.async {
-//                    let notification = UNMutableNotificationContent()
-//                    notification.title = "Podcast App"
-//                    notification.body = "New Episodes Downloaded for: " + podcast.name!
-//                    let notificationTrigger = UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
-//                    let request = UNNotificationRequest(identifier: podcast.iD, content: notification, trigger: notificationTrigger)
-//                    UNUserNotificationCenter.current().add(request, withCompletionHandler: nil)
-//
-//                    if podcast == podcasts.last {
-//                        print("calling completion handler")
-//                        completionHandler(.newData)
-//                        }
-//                    }
-//        }
+        //        print(Reachability.shared.reachabilityManager?.networkReachabilityStatus ?? "")
+        var newData = false
+        let allPodcast = RealmInteractor().fetchAllSubscribedPodcast()
+        for podcast in allPodcast {
+            let previousEpsiodeCount = RealmInteractor().fetchEpisodesForPodcast(podcast: podcast).count
+            Downloader().downloadPodcastData(podcast: podcast, completion: {
+                let newEpisodeCount = RealmInteractor().fetchEpisodesForPodcast(podcast: podcast).count
+                if newEpisodeCount != previousEpsiodeCount { 
+                    newData = true
+                    DispatchQueue.main.async {
+                        let notification = UNMutableNotificationContent()
+                        notification.title = "Podcast"
+                        let newEpisodeCount = abs(newEpisodeCount - previousEpsiodeCount)
+                        notification.body = String(newEpisodeCount) + " New Episodes Downloaded for " + podcast.name!
+                        notification.userInfo = ["id": podcast.iD]
+                        let notificationTrigger = UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
+                        let request = UNNotificationRequest(identifier: podcast.iD, content: notification, trigger: notificationTrigger)
+                        UNUserNotificationCenter.current().add(request, withCompletionHandler: nil)
+                    }
+                }
+            })
+        }
+        if newData == true {
+            completionHandler(.newData)
+        }
+        else {
+            completionHandler(.newData)
+        }
     }
     
-    func applicationWillResignActive(_ application: UIApplication) {
-        // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
-        // Use this method to pause ongoing tasks, disable timers, and invalidate graphics rendering callbacks. Games should use this method to pause the game.
-    }
-
+    
     func applicationDidEnterBackground(_ application: UIApplication) {
         // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
         // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
@@ -160,22 +154,38 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             print(error)
         }
         
-        
-        
     }
-
-    func applicationWillEnterForeground(_ application: UIApplication) {
-        // Called as part of the transition from the background to the active state; here you can undo many of the changes made on entering the background.
-    }
-
-    func applicationDidBecomeActive(_ application: UIApplication) {
-        // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
-    }
-
-    func applicationWillTerminate(_ application: UIApplication) {
-        // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
-    }
-
-
+    
+    
 }
+
+extension AppDelegate: UNUserNotificationCenterDelegate {
+    
+    //this gets called when a user taps a notification
+    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+        // TODO: this won't show when the player is playing...but that might be what I want?
+        if UIApplication.shared.applicationState != .active {
+                if let window = self.window, let rootViewController = window.rootViewController {
+                    for vc in rootViewController.childViewControllers {
+                        if vc.restorationIdentifier == "TabBarVC" {
+                            (vc as! TabBarVC).selectedIndex = 1
+                            let userInfo = response.notification.request.content.userInfo
+                            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "ShowEpisodesBecauseOfNotificaiton"), object: nil, userInfo: userInfo)
+                        }
+                    }
+                }
+        }
+        completionHandler()
+    }
+    
+    
+    
+    //This gets called when the app is on the screen and a local notificaiton is received
+    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        
+        
+        completionHandler([.alert])
+    }
+}
+
 

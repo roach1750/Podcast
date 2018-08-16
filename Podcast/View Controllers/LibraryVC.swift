@@ -17,6 +17,8 @@ class LibraryVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         tableView.tableFooterView = UIView()
         tableView.contentInset = UIEdgeInsetsMake(0, 0, 60, 0)
         checkIfNowPlayingEpisode()
+        NotificationCenter.default.addObserver(self, selector: #selector(self.showEpisodesBecauseOfNotificaiton(_:)), name: NSNotification.Name(rawValue: "ShowEpisodesBecauseOfNotificaiton"), object: nil)
+
     }
     
     var results: [Podcast]?
@@ -27,6 +29,16 @@ class LibraryVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         self.title = "Subscribed"
     }
 
+    
+    //There is a problem with multiple notifications possibly? 
+    func showEpisodesBecauseOfNotificaiton(_ notification: NSNotification) {
+        if let podcastID = notification.userInfo!["id"] as? String{
+            let podcast = RealmInteractor().fetchPodcast(withID: podcastID)
+            performSegue(withIdentifier: "showEpisodes", sender: podcast)
+        }
+    }
+    
+    
     func checkIfNowPlayingEpisode() {
         if let nowPlayingEpisode = RealmInteractor().getNowPlayingEpisode() {
             ARAudioPlayer.sharedInstance.nowPlayingPodcast = nowPlayingEpisode.podcast!

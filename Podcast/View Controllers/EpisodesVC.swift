@@ -119,7 +119,7 @@ class EpisodesVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
                 print("Tread Problem")
                 fatalError()
             }
-            Downloader().downloadPodcastData(podcast: podcast)
+            Downloader().downloadPodcastData(podcast: podcast, completion: nil)
         }
     }
 
