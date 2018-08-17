@@ -89,8 +89,15 @@ class LargePlayerRemoteVC: UIViewController {
     @IBAction func seekSliderAdjusted(_ sender: UISlider) {
         shouldAdjustTimeLabels = false
         currentTimeLabel.textColor = #colorLiteral(red: 0.1764705882, green: 0.9960784314, blue: 0.2549019608, alpha: 1)
+        timeRemainingLabel.textColor = #colorLiteral(red: 0.1764705882, green: 0.9960784314, blue: 0.2549019608, alpha: 1)
         seekSlider.tintColor = #colorLiteral(red: 0.2431372549, green: 0.9882352941, blue: 0.3098039216, alpha: 1)
         adjustTimeLabel(label: currentTimeLabel, duration: Int(sender.value))
+        
+        let episode = ARAudioPlayer.sharedInstance.nowPlayingEpisode
+        let duration  = episode?.duration
+        let timeRemaining = duration! -  Double(sender.value)
+        self.adjustTimeLabel(label: self.timeRemainingLabel, duration: Int(timeRemaining))
+        
     }
     
     @IBAction func sliderTouchUpInside(_ sender: UISlider) {
@@ -105,6 +112,8 @@ class LargePlayerRemoteVC: UIViewController {
         shouldAdjustTimeLabels = true
         ARAudioPlayer.sharedInstance.seekTo(Double(sender.value))
         currentTimeLabel.textColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
+        timeRemainingLabel.textColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
+
         seekSlider.tintColor = UIColor.blue
         let generator = UISelectionFeedbackGenerator()
         generator.selectionChanged()
