@@ -119,7 +119,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                         let notification = UNMutableNotificationContent()
                         notification.title = "Podcast"
                         let newEpisodeCount = abs(newEpisodeCount - previousEpsiodeCount)
-                        notification.body = String(newEpisodeCount) + " New Episodes Downloaded for " + podcast.name!
+                        if newEpisodeCount == 1 {
+                            notification.body = String(newEpisodeCount) + " new episode available for " + podcast.name!
+                        }
+                        else {
+                            notification.body = String(newEpisodeCount) + " new episodes available for " + podcast.name!
+                        }
                         notification.userInfo = ["id": podcast.iD]
                         let notificationTrigger = UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
                         let request = UNNotificationRequest(identifier: podcast.iD, content: notification, trigger: notificationTrigger)

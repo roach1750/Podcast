@@ -20,7 +20,6 @@ class EpisodeDownloader: NSObject  {
     
     func startDownload(_ episode: Episode) {
         let download = DownloadObject(episode: episode)
-        
         if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
             let shortfileName = "EpisodeData_" + (episode.guid?.replacingOccurrences(of: "/", with: ""))! + "_" + (episode.podcast?.iD)!
             download.fileURL = dir.appendingPathComponent(shortfileName)
