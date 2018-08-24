@@ -796,7 +796,13 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="ccZ-cv-HS8"/>
                     </view>
-                    <navigationItem key="navigationItem" title="Title" id="8R0-ol-Be8"/>
+                    <navigationItem key="navigationItem" title="Title" id="8R0-ol-Be8">
+                        <barButtonItem key="rightBarButtonItem" title="Delete Newest" id="hJs-Ix-yyL">
+                            <connections>
+                                <action selector="DeleteNewest:" destination="mwq-Hj-XWf" id="Rxn-eZ-0kr"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                     <connections>
                         <outlet property="sortSegmentControl" destination="Mdy-7B-4Ft" id="S6g-M2-o18"/>
                         <outlet property="sortToolbar" destination="Mvy-Lu-nih" id="gJ4-Iu-uOq"/>

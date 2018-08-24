@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import Alamofire
 import FeedKit
 import AVFoundation
 import RealmSwift
@@ -184,7 +183,6 @@ class Downloader: NSObject {
                 if completion != nil {
                     completion!()
                 }
-                print("Send Notification")
                 NotificationCenter.default.post(name: NSNotification.Name(rawValue: "newEpisodeListDownloaded"), object: nil)
             }
         }
@@ -200,108 +198,7 @@ class Downloader: NSObject {
     }
     
     
-    
-    ///////OLD STUFF
-
-    
-    func searchPodcastInformation() {
-        let link = "https://itunes.apple.com/us/podcast/couples-therapy-with-candice-and-casey/id1380252026?mt=2&uo=4"
-                    
-        let url = URL(string: link)!
-        Alamofire.request(url).responseString { response in
-            
-            print(response)
-                
-        }
-    }
-    
-
-    
-    func deleteTempImageFileForPodcast(podcast: Podcast) {
-        let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        let fileURL = documentsURL.appendingPathComponent(podcast.iD+".png")
-        
-        do {
-            try FileManager.default.removeItem(at: fileURL)
-        }
-        catch {
-            print("Error in trying to delete old artwork: \(error.localizedDescription)")
-
-        }
-    }
-    
-    
-    //This is all the episodes, this is what should refresh
-    
-    
-    func downloadInvidualEpisode(episode: Episode) {
-        let destination: DownloadRequest.DownloadFileDestination = { _, _ in
-            let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-            let fileURL = documentsURL.appendingPathComponent("pig.png")
-            
-            return (fileURL, [.removePreviousFile, .createIntermediateDirectories])
-        }
-        print("starting download")
-        
-        Alamofire.download(episode.downloadURL!, to: destination)
-            
-            .downloadProgress(closure: { (progress) in
-                
-                let userInfo = ["progress": progress.fractionCompleted, "prodcastID" : episode.guid! ] as [String : Any]
-                NotificationCenter.default.post(name: NSNotification.Name(rawValue: "episodeDownloadInProgress"), object: nil, userInfo: userInfo)
-                
-                print(progress)
-            
-            })
-            
-            .response { response in
-                
-                if response.error == nil {
-                    let dataPath = response.destinationURL
-                    let episodeData = try! Data(contentsOf: dataPath!)
-                    //                    let bcf = ByteCountFormatter()
-                    //                    bcf.allowedUnits = [.useMB]
-                    //                    bcf.countStyle = .file
-                    //                    let string = bcf.string(fromByteCount: Int64(length))
-                    //                    print(string)
-                    //
-                    
-                    //Need to check if it is bigger than 16MB then split it into chuncks, probably like 15MB chuncks
-                    
-                    let dataArray = self.splitDataIntoArray(data: episodeData)
-                    
-                    
-                    let RI = RealmInteractor()
-                    RI.addEpisodeAudioToEpisode(episode: episode, audio: dataArray)
-                    DispatchQueue.main.async {
-                        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "episodeDownloaded"), object: nil)
-                    }
-                }
-        }
-    }
-    
-    func splitDataIntoArray(data: Data) -> [Data]{
-        
-        let length = data.count
-        let chunkSize = 1048576 * 1      // 1mb chunk sizes
-        var offset = 0
-        var dataArray = [Data]()
-        repeat {
-            // get the length of the chunk
-            let thisChunkSize = ((length - offset) > chunkSize) ? chunkSize : (length - offset);
-            
-            // get the chunk
-            let chunk = data.subdata(in: offset..<offset + thisChunkSize )
-            
-            dataArray.append(chunk)
-            
-            offset += thisChunkSize;
-            
-        } while (offset < length)
-        
-        return dataArray
-    }
-    
+   
     
     
 }

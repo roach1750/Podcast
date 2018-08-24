@@ -11,7 +11,7 @@ import UIKit
 import  RealmSwift
 import AVFoundation
 import UserNotifications
-
+import Alamofire
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -106,7 +106,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         print("background app refresh called")
         
-        //        print(Reachability.shared.reachabilityManager?.networkReachabilityStatus ?? "")
+        print(Reachability.shared.reachabilityManager?.networkReachabilityStatus ?? "")
+        
+        print()
+        
         var newData = false
         let allPodcast = RealmInteractor().fetchAllSubscribedPodcast()
         for podcast in allPodcast {
@@ -115,20 +118,54 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 let newEpisodeCount = RealmInteractor().fetchEpisodesForPodcast(podcast: podcast).count
                 if newEpisodeCount != previousEpsiodeCount { 
                     newData = true
-                    DispatchQueue.main.async {
-                        let notification = UNMutableNotificationContent()
-                        notification.title = "Podcast"
-                        let newEpisodeCount = abs(newEpisodeCount - previousEpsiodeCount)
-                        if newEpisodeCount == 1 {
-                            notification.body = String(newEpisodeCount) + " new episode available for " + podcast.name!
+                    
+                    
+                    // if on wifi download the episodes:
+                    
+                    if (Reachability.shared.reachabilityManager?.isReachableOnEthernetOrWiFi)! == true {
+                        print("on wifi")
+                        let diffEpisodeCount = abs(newEpisodeCount - previousEpsiodeCount)
+                        let newEpisodes = RealmInteractor().fetchEpisodesForPodcast(podcast: podcast).prefix(diffEpisodeCount)
+                        for episode in newEpisodes {
+                            let url = URL(string: episode.downloadURL!)
+                            let fileName = "EpisodeData_" + (episode.guid?.replacingOccurrences(of: "/", with: ""))! + "_" + (episode.podcast?.iD)!
+                            let destination: DownloadRequest.DownloadFileDestination = { _, _ in
+                                let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+                                let fileURL = documentsURL.appendingPathComponent(fileName)
+                                return (fileURL, [.removePreviousFile, .createIntermediateDirectories])
+                            }
+                            print("Starting Download")
+                            
+//                            Alamofire.download(url!, to: destination).downloadProgress(closure: {progress in
+//                                print("Download Progress: \(progress.fractionCompleted)")
+//                            }).responseData(completionHandler: { (response) in
+//                                if response.error == nil {
+//                                    RealmInteractor().markEpisodeAsDownloaded(episode: episode)
+//                                    self.sendLocalNotificaiton(title: "Podcast", message: "Download Complete for: " + podcast.name!, iD: podcast.iD, userInfo: ["id": podcast.iD])
+//                                }
+//                            })
+//                            
+                            
+                            Networking.sharedInstance.backgroundSessionManager.download(url!, to: destination).downloadProgress(closure: {progress in
+                                print("Download Progress: \(progress.fractionCompleted)")
+                            }).responseData(completionHandler: { (response) in
+                                if response.error == nil {
+                                    RealmInteractor().markEpisodeAsDownloaded(episode: episode)
+                                    self.sendLocalNotificaiton(title: "Podcast", message: "Download Complete for: " + podcast.name!, iD: podcast.iD, userInfo: ["id": podcast.iD])
+                                }
+                            })
+                            
+                            
                         }
-                        else {
-                            notification.body = String(newEpisodeCount) + " new episodes available for " + podcast.name!
-                        }
-                        notification.userInfo = ["id": podcast.iD]
-                        let notificationTrigger = UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
-                        let request = UNNotificationRequest(identifier: podcast.iD, content: notification, trigger: notificationTrigger)
-                        UNUserNotificationCenter.current().add(request, withCompletionHandler: nil)
+                    }
+                    
+                    //Send Notification
+                    let newEpisodeCount = abs(newEpisodeCount - previousEpsiodeCount)
+                    if newEpisodeCount == 1 {
+                        self.sendLocalNotificaiton(title: "Podcast", message: String(newEpisodeCount) + " new episode available for " + podcast.name!, iD: podcast.iD, userInfo: ["id": podcast.iD])
+                    }
+                    else {
+                        self.sendLocalNotificaiton(title: "Podcast", message: String(newEpisodeCount) + " new episodes available for " + podcast.name!, iD: podcast.iD, userInfo: ["id": podcast.iD])
                     }
                 }
             })
@@ -137,9 +174,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             completionHandler(.newData)
         }
         else {
-            completionHandler(.newData)
+            completionHandler(.noData)
         }
     }
+    
+    
+    func sendLocalNotificaiton(title: String, message: String, iD: String, userInfo: [AnyHashable : Any] ) {
+        DispatchQueue.main.async {
+            let notification = UNMutableNotificationContent()
+            notification.title = title
+            notification.body = message
+            notification.userInfo = userInfo
+            let notificationTrigger = UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
+            let request = UNNotificationRequest(identifier: iD, content: notification, trigger: notificationTrigger)
+            UNUserNotificationCenter.current().add(request, withCompletionHandler: nil)
+        }
+    }
+    
     
     
     func applicationDidEnterBackground(_ application: UIApplication) {
@@ -164,21 +215,33 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
 }
 
+class Networking {
+    static let sharedInstance = Networking()
+    public var sessionManager: Alamofire.SessionManager // most of your web service clients will call through sessionManager
+    public var backgroundSessionManager: Alamofire.SessionManager // your web services you intend to keep running when the system backgrounds your app will use this
+    private init() {
+        self.sessionManager = Alamofire.SessionManager(configuration: URLSessionConfiguration.default)
+        self.backgroundSessionManager = Alamofire.SessionManager(configuration: URLSessionConfiguration.background(withIdentifier: "com.lava.app.backgroundtransfer"))
+    }
+}
+
+
+
 extension AppDelegate: UNUserNotificationCenterDelegate {
     
     //this gets called when a user taps a notification
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
         // TODO: this won't show when the player is playing...but that might be what I want?
         if UIApplication.shared.applicationState != .active {
-                if let window = self.window, let rootViewController = window.rootViewController {
-                    for vc in rootViewController.childViewControllers {
-                        if vc.restorationIdentifier == "TabBarVC" {
-                            (vc as! TabBarVC).selectedIndex = 1
-                            let userInfo = response.notification.request.content.userInfo
-                            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "ShowEpisodesBecauseOfNotificaiton"), object: nil, userInfo: userInfo)
-                        }
+            if let window = self.window, let rootViewController = window.rootViewController {
+                for vc in rootViewController.childViewControllers {
+                    if vc.restorationIdentifier == "TabBarVC" {
+                        (vc as! TabBarVC).selectedIndex = 1
+                        let userInfo = response.notification.request.content.userInfo
+                        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "ShowEpisodesBecauseOfNotificaiton"), object: nil, userInfo: userInfo)
                     }
                 }
+            }
         }
         completionHandler()
     }

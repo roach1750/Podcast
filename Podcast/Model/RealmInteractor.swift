@@ -282,6 +282,15 @@ class RealmInteractor: NSObject {
         }
     }
     
+    func deleteNewestEpisodeForPodcast(podcast: Podcast) {
+        let episodes = fetchEpisodesForPodcast(podcast: podcast)
+        let realm = try! Realm()
+        try! realm.write {
+            realm.delete(episodes.first!)
+        }
+    }
+    
+    
     func deleteUnsubscribedPodcast() {
         let realm = try! Realm()
         let predicate = NSPredicate(format: "isSubscribed == %@", NSNumber(value: false))
