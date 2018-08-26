@@ -201,9 +201,22 @@ class EpisodesVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
             cell.specsLabel.textColor = UIColor.red
         }
         else {
-            let sizeInMB = (episode.fileSize) / 1048576
-            cell.specsLabel.text =  generateTimeString(duration: Int((episode.estimatedDuration))) + ", " + String(format:"%.1f", sizeInMB) + " MB"
+            if episode.fileSize != 0 && episode.duration != 0  {
+                let sizeInMB = (episode.fileSize) / 1048576
+                cell.specsLabel.text =  generateTimeString(duration: Int((episode.estimatedDuration))) + ", " + String(format:"%.1f", sizeInMB) + " MB"
+            }
+            else if episode.fileSize == 0 && episode.duration != 0 {
+                cell.specsLabel.text =  generateTimeString(duration: Int((episode.estimatedDuration)))
+            }
+            else if episode.fileSize != 0 && episode.duration == 0{
+                let sizeInMB = (episode.fileSize) / 1048576
+                cell.specsLabel.text = String(format:"%.1f", sizeInMB) + " MB"
+            }
+            else {
+                cell.specsLabel.text = nil
+            }
             cell.specsLabel.textColor = UIColor.black
+
         }
         
         //Download progress
@@ -292,7 +305,7 @@ class EpisodesVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         }
         else {
             if h > 1 {
-                return String(h) + " Hours" + String(m)
+                return String(h) + " Hours " + String(m) + " Minutes"
             }
             else {
                 return String(h) + " Hour " + String(m) + " Minutes"

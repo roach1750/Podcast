@@ -66,6 +66,7 @@ class SmallPlayerRemoteVC: UIViewController {
     }
     
     func configureArtwork() {
+        print("configure artwork")
         if ARAudioPlayer.sharedInstance.nowPlayingPodcast?.artwork100x100 != nil {
             podcastImageView.image = UIImage(data: (ARAudioPlayer.sharedInstance.nowPlayingPodcast?.artwork100x100)!)
         }

@@ -70,6 +70,9 @@ class LibraryVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         cell.lastUpdatedLabel.text = RealmInteractor().getFormattedLastUpdatedDateForPodcast(podcast: result)
         if let imageData = result.artwork600x600 {
             cell.podcastImage?.image = UIImage(data: imageData)
+            cell.podcastImage.layer.cornerRadius = 7.0
+            cell.podcastImage.clipsToBounds = true
+
         }
         return cell
     }

@@ -386,6 +386,29 @@ class RealmInteractor: NSObject {
         return Array(latestEpisodes)
     }
     
+    func fetchLatestEpisodesNumberOfEpisodesGroupedIntoDates(numberOfEpsiosdes: Int) -> [Date : [Episode]]? {
+        let realm = try! Realm()
+        let latestEpisodes = realm.objects(Episode.self).sorted(byKeyPath: "publishedDate", ascending: false)
+        let trimmedLatestEpisodes = Array(Array(latestEpisodes).prefix(numberOfEpsiosdes))
+        var dictionary = [Date : [Episode]]()
+        for episode in trimmedLatestEpisodes {
+            let calendar = Calendar.current
+            let componets = calendar.dateComponents([.year,.month,.day], from: episode.publishedDate!)
+            let date = calendar.date(from: componets)!
+            if dictionary.keys.contains(date) {
+                dictionary[date]?.append(episode)
+            }
+            else {
+                dictionary[date] = [episode]
+            }
+        }
+        
+        _ = dictionary.keys.sorted(by: { $0.compare($1) == .orderedDescending })
+        
+        return dictionary
+        
+    }
+    
     func fetchPodcast(withID iD: String) -> Podcast? {
         let realm = try! Realm()
         let predicate = NSPredicate(format: "iD = %@",iD)

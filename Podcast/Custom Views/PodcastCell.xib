@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="13771" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14113" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
-        <capability name="Stack View standard spacing" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -28,37 +27,30 @@
                             <constraint firstAttribute="width" secondItem="fFv-gd-j2T" secondAttribute="height" multiplier="1:1" id="Vnl-fJ-KZk"/>
                         </constraints>
                     </imageView>
-                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillProportionally" alignment="top" spacingType="standard" baselineRelativeArrangement="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Vb8-RH-mL8">
-                        <rect key="frame" x="94" y="11" width="281" height="115.5"/>
-                        <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="This is the title of the podcast that I am going to allow to be 2 lines max" lineBreakMode="clip" numberOfLines="0" baselineAdjustment="alignBaselines" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="cdR-rA-Gj3">
-                                <rect key="frame" x="0.0" y="0.0" width="405" height="94.5"/>
-                                <fontDescription key="fontDescription" type="boldSystem" pointSize="21"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" verticalCompressionResistancePriority="751" text="Last updated Label" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HG4-eU-Aml">
-                                <rect key="frame" x="0.0" y="95.5" width="0.0" height="9"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <color key="textColor" red="0.047631848635814565" green="0.14624956629496941" blue="0.87406897668393779" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                        </subviews>
-                        <constraints>
-                            <constraint firstAttribute="bottom" secondItem="HG4-eU-Aml" secondAttribute="bottom" id="0hQ-nC-NDq"/>
-                            <constraint firstItem="cdR-rA-Gj3" firstAttribute="top" secondItem="Vb8-RH-mL8" secondAttribute="top" id="dVd-HO-wcE"/>
-                        </constraints>
-                    </stackView>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="This is the title of the podcast that I am going to allow to be " lineBreakMode="clip" numberOfLines="0" baselineAdjustment="alignBaselines" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="cdR-rA-Gj3">
+                        <rect key="frame" x="114" y="11" width="245" height="72"/>
+                        <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
+                        <nil key="textColor"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" verticalCompressionResistancePriority="751" text="Last updated Label" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HG4-eU-Aml">
+                        <rect key="frame" x="114" y="84.5" width="245" height="17"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                        <color key="textColor" red="0.047631848635814565" green="0.14624956629496941" blue="0.87406897668393779" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
                 </subviews>
                 <constraints>
+                    <constraint firstItem="cdR-rA-Gj3" firstAttribute="trailing" secondItem="Xke-Zo-FfB" secondAttribute="trailingMargin" id="0B8-JA-57H"/>
+                    <constraint firstItem="HG4-eU-Aml" firstAttribute="top" secondItem="cdR-rA-Gj3" secondAttribute="bottom" constant="1.5" id="38A-LF-NoP"/>
                     <constraint firstItem="fFv-gd-j2T" firstAttribute="top" secondItem="Xke-Zo-FfB" secondAttribute="topMargin" id="7Dp-6a-7UB"/>
-                    <constraint firstAttribute="bottom" secondItem="Vb8-RH-mL8" secondAttribute="bottom" constant="8" id="G0p-1S-NdL"/>
+                    <constraint firstItem="cdR-rA-Gj3" firstAttribute="top" secondItem="Xke-Zo-FfB" secondAttribute="topMargin" id="Gdl-XE-0Ir"/>
                     <constraint firstItem="fFv-gd-j2T" firstAttribute="leading" secondItem="Xke-Zo-FfB" secondAttribute="leadingMargin" id="QtU-Vt-RuT"/>
-                    <constraint firstItem="Vb8-RH-mL8" firstAttribute="leading" secondItem="fFv-gd-j2T" secondAttribute="trailing" constant="8" id="XBe-qI-slF"/>
-                    <constraint firstItem="fFv-gd-j2T" firstAttribute="bottom" secondItem="Xke-Zo-FfB" secondAttribute="bottomMargin" priority="750" id="d7j-gN-a5P"/>
-                    <constraint firstItem="Vb8-RH-mL8" firstAttribute="top" secondItem="fFv-gd-j2T" secondAttribute="top" id="i3b-kX-J3h"/>
+                    <constraint firstItem="HG4-eU-Aml" firstAttribute="trailing" secondItem="Xke-Zo-FfB" secondAttribute="trailingMargin" id="a2Y-0G-M4e"/>
+                    <constraint firstItem="HG4-eU-Aml" firstAttribute="leading" secondItem="cdR-rA-Gj3" secondAttribute="leading" id="baC-RL-TN8"/>
+                    <constraint firstItem="cdR-rA-Gj3" firstAttribute="leading" secondItem="fFv-gd-j2T" secondAttribute="trailing" constant="4" id="kzx-Tk-ZOc"/>
+                    <constraint firstItem="fFv-gd-j2T" firstAttribute="bottom" secondItem="Xke-Zo-FfB" secondAttribute="bottomMargin" id="lgr-43-uHd"/>
                     <constraint firstItem="fFv-gd-j2T" firstAttribute="width" secondItem="Xke-Zo-FfB" secondAttribute="width" multiplier="0.25" id="yDe-t5-kR4"/>
-                    <constraint firstAttribute="trailing" secondItem="Vb8-RH-mL8" secondAttribute="trailing" constant="8" id="zSX-qD-prv"/>
                 </constraints>
             </tableViewCellContentView>
             <connections>
