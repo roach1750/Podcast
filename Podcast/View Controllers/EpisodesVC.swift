@@ -76,10 +76,7 @@ class EpisodesVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         reloadData()
     }
     
-    @IBAction func DeleteNewest(_ sender: UIBarButtonItem) {
-        RealmInteractor().deleteNewestEpisodeForPodcast(podcast: podcast!)
-        reloadData()
-    }
+
     
     func sortEpisodesIntoDictionary(data: [Episode], unplayedOnly: Bool) -> [Date : [Episode]] {
         var dictionary = [Date : [Episode]]()
