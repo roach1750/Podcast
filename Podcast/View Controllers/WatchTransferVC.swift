@@ -7,8 +7,13 @@
 //
 
 import UIKit
+import WatchKit
+import WatchConnectivity
 
-class WatchTransferVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class WatchTransferVC: UIViewController, UITableViewDelegate, UITableViewDataSource, WCSessionDelegate {
+
+    
+
 
     @IBOutlet var tableView: UITableView!
     @IBOutlet var transferButton: UIButton!
@@ -17,9 +22,16 @@ class WatchTransferVC: UIViewController, UITableViewDelegate, UITableViewDataSou
     var latestEpisodes: [Episode]?
     var episodesToTransfer = [Episode]()
     
-    
+    var session: WCSession!
+
     override func viewDidLoad() {
         super.viewDidLoad()
+        if WCSession.isSupported() {
+            session = WCSession.default()
+            session.delegate = self
+            session.activate()
+        }
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -29,8 +41,42 @@ class WatchTransferVC: UIViewController, UITableViewDelegate, UITableViewDataSou
     }
     
     @IBAction func transferToWatchPressed(_ sender: UIButton) {
+        session.sendMessage(["message": "this is a message"], replyHandler: { (replyHandler) in
+            print("reply handler: \(replyHandler)")
+        }) { (error) in
+            print("error: \(error.localizedDescription)")
+        }
+        
+    
     }
     
+    
+    //Watch Stuff
+    
+    func sessionDidBecomeInactive(_ session: WCSession) {
+        print("sessionDidBecomeInactive")
+    }
+    
+    func sessionDidDeactivate(_ session: WCSession) {
+        print("sessionDidDeactivate")
+    }
+    
+    func sessionWatchStateDidChange(_ session: WCSession) {
+        print("Paired: \(session.isPaired)")
+        print("App Installed: \(session.isWatchAppInstalled)")
+        print("Reachable: \(session.isReachable)")
+    }
+    
+    func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
+        
+    }
+    
+    func session(_ session: WCSession, didReceiveMessage message: [String : Any]) {
+        print(message)
+    }
+    
+    
+    //Tableview Stuff
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return (latestEpisodes?.count)!
     }
