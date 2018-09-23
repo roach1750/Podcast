@@ -9,14 +9,31 @@
     </dependencies>
     <scenes>
         <!--Interface Controller-->
+        <scene sceneID="KWy-rl-kNr">
+            <objects>
+                <controller id="xus-Ga-vho">
+                    <items>
+                        <nowPlayingView alignment="left" id="BVd-fP-zbt"/>
+                    </items>
+                </controller>
+            </objects>
+            <point key="canvasLocation" x="378" y="-112"/>
+        </scene>
+        <!--Interface Controller-->
         <scene sceneID="aou-V4-d1y">
             <objects>
                 <controller id="AgC-eL-Hgc" customClass="InterfaceController" customModule="WatchPodcast" customModuleProvider="target">
                     <items>
                         <label width="136" height="92" alignment="left" text="Test Title label to receive info from watch" numberOfLines="0" id="1CL-Op-JAr"/>
+                        <button width="1" alignment="left" title="Transfer User Info" id="dV4-l7-gNH">
+                            <connections>
+                                <action selector="transferUserInfo" destination="AgC-eL-Hgc" id="Yck-pk-htt"/>
+                            </connections>
+                        </button>
                     </items>
                     <connections>
                         <outlet property="textLabel" destination="1CL-Op-JAr" id="8jJ-Wc-nrL"/>
+                        <segue destination="xus-Ga-vho" kind="relationship" relationship="nextPage" id="bvN-Bs-ABM"/>
                     </connections>
                 </controller>
             </objects>

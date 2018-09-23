@@ -27,6 +27,8 @@
 		218E6E032156B6570000AFC5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 218E6E022156B6570000AFC5 /* Assets.xcassets */; };
 		218E6E082156B6570000AFC5 /* WatchPodcast.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 218E6DEB2156B6550000AFC5 /* WatchPodcast.app */; };
 		218E6E122156B7590000AFC5 /* Settings-Watch.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 218E6E112156B7590000AFC5 /* Settings-Watch.bundle */; };
+		218E6E152156D7F40000AFC5 /* FileTransferObservers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 218E6E142156D7F40000AFC5 /* FileTransferObservers.swift */; };
+		218E6E1D21572B960000AFC5 /* RealmFileMaker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 218E6E1C21572B950000AFC5 /* RealmFileMaker.swift */; };
 		218FBF732103DD9800A5EF87 /* ARAudioPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 218FBF6E2103DD9700A5EF87 /* ARAudioPlayer.swift */; };
 		218FBF742103DD9800A5EF87 /* ARAudioPlayerState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 218FBF6F2103DD9700A5EF87 /* ARAudioPlayerState.swift */; };
 		218FBF752103DD9800A5EF87 /* FileSystemInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 218FBF702103DD9800A5EF87 /* FileSystemInteractor.swift */; };
@@ -150,6 +152,8 @@
 		218E6E102156B69F0000AFC5 /* WatchPodcast.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = WatchPodcast.entitlements; sourceTree = "<group>"; };
 		218E6E112156B7590000AFC5 /* Settings-Watch.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = "Settings-Watch.bundle"; sourceTree = "<group>"; };
 		218E6E132156B7950000AFC5 /* WatchPodcast Extension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "WatchPodcast Extension.entitlements"; sourceTree = "<group>"; };
+		218E6E142156D7F40000AFC5 /* FileTransferObservers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileTransferObservers.swift; sourceTree = "<group>"; };
+		218E6E1C21572B950000AFC5 /* RealmFileMaker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealmFileMaker.swift; sourceTree = "<group>"; };
 		218FBF6E2103DD9700A5EF87 /* ARAudioPlayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ARAudioPlayer.swift; sourceTree = "<group>"; };
 		218FBF6F2103DD9700A5EF87 /* ARAudioPlayerState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ARAudioPlayerState.swift; sourceTree = "<group>"; };
 		218FBF702103DD9800A5EF87 /* FileSystemInteractor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileSystemInteractor.swift; sourceTree = "<group>"; };
@@ -246,6 +250,7 @@
 				21CDF0FC1F3BBDE000A6F4DC /* Episode.swift */,
 				21B66F991F8FBDBF009FC323 /* EpisodeData.swift */,
 				21BF43DA208D514900237770 /* TimeSeekData.swift */,
+				218E6E1C21572B950000AFC5 /* RealmFileMaker.swift */,
 				218FBF79210419FA00A5EF87 /* AudioPlayer */,
 			);
 			path = Model;
@@ -338,6 +343,7 @@
 				21D9F9892055D67100CFEAE6 /* FavoritesVC.swift */,
 				21E8D9CA210CFD12005DC157 /* SettingsVC.swift */,
 				218E6DE72153195C0000AFC5 /* WatchTransferVC.swift */,
+				218E6E142156D7F40000AFC5 /* FileTransferObservers.swift */,
 			);
 			path = "View Controllers";
 			sourceTree = "<group>";
@@ -687,6 +693,7 @@
 				218FBF742103DD9800A5EF87 /* ARAudioPlayerState.swift in Sources */,
 				218FBF762103DD9800A5EF87 /* ARAudioPlayerDelegate.swift in Sources */,
 				218FBF752103DD9800A5EF87 /* FileSystemInteractor.swift in Sources */,
+				218E6E1D21572B960000AFC5 /* RealmFileMaker.swift in Sources */,
 				21B0167B1FCF9FFE0055512B /* TabBarVC.swift in Sources */,
 				2144359820F83A8500AF75F9 /* SmallPlayerRemoteVC.swift in Sources */,
 				21E8D9CD210D4635005DC157 /* EpisodeDownloader.swift in Sources */,
@@ -718,6 +725,7 @@
 				21CDF0E91F32A70F00A6F4DC /* AppDelegate.swift in Sources */,
 				217DDEE9209FA92E00D8E835 /* TopPodcast.swift in Sources */,
 				21B016771FCF9C500055512B /* ContainerVC.swift in Sources */,
+				218E6E152156D7F40000AFC5 /* FileTransferObservers.swift in Sources */,
 				218E6DE82153195C0000AFC5 /* WatchTransferVC.swift in Sources */,
 				21D7517E1F8C0B65001B4AF7 /* PodcastPlayerVC.swift in Sources */,
 				21998A6C209E1A6500840188 /* TopChartPodcastTableViewCell.swift in Sources */,
