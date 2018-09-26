@@ -23,7 +23,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         
         
-        print(Realm.Configuration.defaultConfiguration.fileURL!)
+        print("Realm location for iOS app: \(Realm.Configuration.defaultConfiguration.fileURL!)")
         
         //        UITabBar.appearance().backgroundImage = UIImage()
         //        UITabBar.appearance().shadowImage = UIImage()
@@ -64,7 +64,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
         }
         
-        let configureationNumber = UInt64(11)
+        let configureationNumber = UInt64(12)
         
         let config = Realm.Configuration(
             // Set the new schema version. This must be greater than the previously used

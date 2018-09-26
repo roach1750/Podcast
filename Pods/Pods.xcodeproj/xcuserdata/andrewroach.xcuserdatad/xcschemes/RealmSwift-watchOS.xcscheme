@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "1000"
+   LastUpgradeVersion = "0930"
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "A02ED5BBEEA14A35B840D962D17F043C"
+               BlueprintIdentifier = "A35FAAC22D4A57438CF9CE466D7AFB27"
                BuildableName = "RealmSwift.framework"
                BlueprintName = "RealmSwift-watchOS"
                ReferencedContainer = "container:Pods.xcodeproj">
@@ -45,7 +45,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "A02ED5BBEEA14A35B840D962D17F043C"
+            BlueprintIdentifier = "A35FAAC22D4A57438CF9CE466D7AFB27"
             BuildableName = "RealmSwift.framework"
             BlueprintName = "RealmSwift-watchOS"
             ReferencedContainer = "container:Pods.xcodeproj">

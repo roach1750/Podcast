@@ -317,7 +317,7 @@
         <scene sceneID="09n-bi-v0c">
             <objects>
                 <navigationController id="9q7-VZ-hls" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Watch Transfer" id="xnl-xN-3MH"/>
+                    <tabBarItem key="tabBarItem" title="Watch Transfer" image="Watch Icon" id="xnl-xN-3MH"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="0Ro-ah-PgI">
                         <rect key="frame" x="0.0" y="20" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -953,5 +953,6 @@
         <image name="Skip Backward Button" width="107" height="105"/>
         <image name="Skip Forward Button" width="107" height="105"/>
         <image name="Subscribe Button" width="145" height="34"/>
+        <image name="Watch Icon" width="418" height="585"/>
     </resources>
 </document>

@@ -346,7 +346,8 @@ class RealmInteractor: NSObject {
 
     
     func fetchEpisodesForPodcast(podcast:Podcast) -> [Episode] {
-        
+        print("Realm Interactor ⚡️: \(Thread.current)" + "🏭: \(OperationQueue.current?.underlyingQueue?.label ?? "None")")
+
         if podcast.isInvalidated {
             return [Episode]()
         }
@@ -357,28 +358,28 @@ class RealmInteractor: NSObject {
         return results
     }
     
-    func addEpisodeAudioToEpisode(episode: Episode, audio: [Data]){
-        let realm = try! Realm()
-        try! realm.write {
-            for chunk in audio {
-                let episodeData = EpisodeData()
-                episodeData.soundData = chunk
-                episode.soundDataList.append(episodeData)
-            }
-        }
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "episodeDownloadComplete"), object: nil)
+//    func addEpisodeAudioToEpisode(episode: Episode, audio: [Data]){
+//        let realm = try! Realm()
+//        try! realm.write {
+//            for chunk in audio {
+//                let episodeData = EpisodeData()
+//                episodeData.soundData = chunk
+//                episode.soundDataList.append(episodeData)
+//            }
+//        }
+//        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "episodeDownloadComplete"), object: nil)
+//
+//    }
+//
 
-    }
-    
-
     
     
-    func deleteEpisodeDataForEpisode(episode: Episode) {
-        let realm = try! Realm()
-        try! realm.write {
-            episode.soundDataList.removeAll()
-        }
-    }
+//    func deleteEpisodeDataForEpisode(episode: Episode) {
+//        let realm = try! Realm()
+//        try! realm.write {
+//            episode.soundDataList.removeAll()
+//        }
+//    }
     
     func fetchLatestEpisodes() -> [Episode]? {
         let realm = try! Realm()

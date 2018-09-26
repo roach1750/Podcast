@@ -7,7 +7,7 @@ use_frameworks!
 
 
 target ‘Podcast’ do
-  	platform :ios, '10.0'
+  	platform :ios, '12.0'
 inhibit_all_warnings!
 
 	pod 'RealmSwift'
@@ -19,8 +19,8 @@ inhibit_all_warnings!
 pod 'NVActivityIndicatorView'
 end
 
-target 'Watch Podcast Extension' do
-    platform :watchos, '3.0'
+target 'WatchPodcast Extension' do
+    platform :watchos, '5.0'
 	pod 'RealmSwift'
 
 end

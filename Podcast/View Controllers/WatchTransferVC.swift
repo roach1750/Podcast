@@ -90,11 +90,16 @@ class WatchTransferVC: UIViewController, UITableViewDelegate, UITableViewDataSou
             if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
                 let fileURL = dir.appendingPathComponent(fileName)
                 fileTransferObservers = FileTransferObservers()
-
-                let fileTransfer = session.transferFile(fileURL, metadata: nil)
+                let metadata = ["episodeGuid" : episode.guid!, "episodeTitle" : episode.title!, "podcastName" : episode.podcast!.name!, "podcastID" : episode.podcast!.iD]
+                _ = session.transferFile(fileURL, metadata: metadata)
+                
+                print("starting transfer of \(episode.title!)")
+                
                 DispatchQueue.main.async {
                     print("\(self.session.outstandingFileTransfers.count) files in the transfer queue!")
                 }
+                
+                
                 let fileTransfers = session.outstandingFileTransfers
                 
                 for transfer in fileTransfers {
@@ -124,6 +129,14 @@ class WatchTransferVC: UIViewController, UITableViewDelegate, UITableViewDataSou
     
     
     //Watch Stuff
+    
+    func session(_ session: WCSession, didFinish fileTransfer: WCSessionFileTransfer, error: Error?) {
+        print(error as Any)
+        DispatchQueue.main.async {
+            self.statusLabel.text = "Transfer Complete"
+        }
+    }
+    
     
     func sessionDidBecomeInactive(_ session: WCSession) {
         print("sessionDidBecomeInactive")

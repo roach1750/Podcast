@@ -17,27 +17,67 @@
                     </items>
                 </controller>
             </objects>
-            <point key="canvasLocation" x="378" y="-112"/>
+            <point key="canvasLocation" x="398" y="-112"/>
         </scene>
-        <!--Interface Controller-->
+        <!--Podcasts-->
         <scene sceneID="aou-V4-d1y">
             <objects>
-                <controller id="AgC-eL-Hgc" customClass="InterfaceController" customModule="WatchPodcast" customModuleProvider="target">
+                <controller title="Podcasts" id="AgC-eL-Hgc" customClass="PodcastIC" customModule="WatchPodcast" customModuleProvider="target">
                     <items>
-                        <label width="136" height="92" alignment="left" text="Test Title label to receive info from watch" numberOfLines="0" id="1CL-Op-JAr"/>
-                        <button width="1" alignment="left" title="Transfer User Info" id="dV4-l7-gNH">
-                            <connections>
-                                <action selector="transferUserInfo" destination="AgC-eL-Hgc" id="Yck-pk-htt"/>
-                            </connections>
-                        </button>
+                        <label width="136" height="39" alignment="left" text="On Watch" numberOfLines="0" id="1CL-Op-JAr"/>
+                        <table alignment="left" id="edP-VB-p0E">
+                            <items>
+                                <tableRow identifier="tableview" id="mVg-pk-nFR" customClass="PodcastRow" customModule="WatchPodcast_Extension">
+                                    <group key="rootItem" width="1" alignment="left" id="UF4-DC-KtN">
+                                        <items>
+                                            <label width="136" height="45" alignment="left" text="Label" id="z4m-rz-cUS"/>
+                                        </items>
+                                    </group>
+                                    <connections>
+                                        <outlet property="titleLabel" destination="z4m-rz-cUS" id="06q-iG-1fb"/>
+                                    </connections>
+                                </tableRow>
+                            </items>
+                        </table>
                     </items>
                     <connections>
+                        <outlet property="tableView" destination="edP-VB-p0E" id="eKV-3a-Paq"/>
                         <outlet property="textLabel" destination="1CL-Op-JAr" id="8jJ-Wc-nrL"/>
-                        <segue destination="xus-Ga-vho" kind="relationship" relationship="nextPage" id="bvN-Bs-ABM"/>
+                        <segue destination="XTk-dz-pLp" kind="relationship" relationship="nextPage" id="1uT-JD-VrJ"/>
                     </connections>
                 </controller>
             </objects>
-            <point key="canvasLocation" x="72" y="-112"/>
+            <point key="canvasLocation" x="-86" y="-112"/>
+        </scene>
+        <!--Episodes-->
+        <scene sceneID="rTy-vv-08L">
+            <objects>
+                <controller identifier="EpisodeIC" title="Episodes" id="XTk-dz-pLp" customClass="EpisodeIC" customModule="WatchPodcast_Extension">
+                    <items>
+                        <label alignment="left" text="Label" id="QhG-Lz-dib"/>
+                        <table alignment="left" id="FAm-th-2Hd">
+                            <items>
+                                <tableRow identifier="tableview" id="fFn-t1-NGj" customClass="PodcastRow" customModule="WatchPodcast_Extension">
+                                    <group key="rootItem" width="1" alignment="left" id="RuF-rb-885">
+                                        <items>
+                                            <label width="136" height="46" alignment="left" text="Label" id="5Ij-O4-OGK"/>
+                                        </items>
+                                    </group>
+                                    <connections>
+                                        <outlet property="titleLabel" destination="5Ij-O4-OGK" id="OfI-9e-p2G"/>
+                                    </connections>
+                                </tableRow>
+                            </items>
+                        </table>
+                    </items>
+                    <connections>
+                        <outlet property="tableView" destination="FAm-th-2Hd" id="4Ne-wZ-Tuc"/>
+                        <outlet property="titleLabel" destination="QhG-Lz-dib" id="vrs-oX-PqK"/>
+                        <segue destination="xus-Ga-vho" kind="relationship" relationship="nextPage" id="CeC-i0-Hjz"/>
+                    </connections>
+                </controller>
+            </objects>
+            <point key="canvasLocation" x="164.82608695652172" y="-112.32142857142857"/>
         </scene>
         <!--Static Notification Interface Controller-->
         <scene sceneID="AEw-b0-oYE">
@@ -54,21 +94,21 @@
                     </connections>
                 </notificationController>
             </objects>
-            <point key="canvasLocation" x="220" y="643"/>
+            <point key="canvasLocation" x="17" y="868"/>
         </scene>
         <!--Notification Controller-->
         <scene sceneID="ZPc-GJ-vnh">
             <objects>
                 <controller id="4sK-HA-Art" customClass="NotificationController" customModule="WatchPodcast" customModuleProvider="target"/>
             </objects>
-            <point key="canvasLocation" x="468" y="643"/>
+            <point key="canvasLocation" x="346" y="1025"/>
         </scene>
         <!--Notification Controller-->
         <scene sceneID="Niz-AI-uX2">
             <objects>
                 <controller id="eXb-UN-Cd0" customClass="NotificationController" customModule="WatchPodcast" customModuleProvider="target"/>
             </objects>
-            <point key="canvasLocation" x="468" y="345"/>
+            <point key="canvasLocation" x="288" y="776"/>
         </scene>
     </scenes>
 </document>

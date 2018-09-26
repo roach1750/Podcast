@@ -29,7 +29,6 @@ class Episode: Object {
     @objc dynamic var fileSize = 0.0
     
     @objc dynamic var segmentNumber = 0
-    var soundDataList = List<EpisodeData>()
     @objc dynamic var isPlayed = false
     @objc dynamic var isDownloaded = false
     

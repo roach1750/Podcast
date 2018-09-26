@@ -44,11 +44,12 @@ class FavoritesVC: UIViewController,  UITableViewDataSource, UITableViewDelegate
             let episode = results![indexPath.row]
             
             cell.longDescriptionLabel.text = episode.descript
-            if episode.soundDataList.count > 0 {
-                cell.backgroundColor = UIColor.green
-            }else {
-                cell.backgroundColor = UIColor.white
-            }
+            
+//            if episode.soundDataList.count > 0 {
+//                cell.backgroundColor = UIColor.green
+//            }else {
+//                cell.backgroundColor = UIColor.white
+//            }
             
             if episode.isPlayed {
                 cell.contentView.alpha = 0.3
