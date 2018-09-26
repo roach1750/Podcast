@@ -346,8 +346,6 @@ class RealmInteractor: NSObject {
 
     
     func fetchEpisodesForPodcast(podcast:Podcast) -> [Episode] {
-        print("Realm Interactor ⚡️: \(Thread.current)" + "🏭: \(OperationQueue.current?.underlyingQueue?.label ?? "None")")
-
         if podcast.isInvalidated {
             return [Episode]()
         }

@@ -52,16 +52,11 @@ class EpisodeIC: WKInterfaceController {
     
     
     func reloadTable() {
-        print("Reload Table: ⚡️: \(Thread.current)" + "🏭: \(OperationQueue.current?.underlyingQueue?.label ?? "None")")
-
         if episodes.count != 0 {
             tableView.setNumberOfRows(episodes.count, withRowType: "tableview")
             for (index, episode) in episodes.enumerated() {
                 let row = tableView.rowController(at: index) as! PodcastRow
-                print(episode.title)
-                DispatchQueue.main.async {
-                    row.titleLabel.setText(episode.title!)
-                }
+                row.titleLabel.setText(episode.title!)
             }
         }
     }
