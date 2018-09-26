@@ -90,6 +90,21 @@ class PodcastIC: WKInterfaceController, WCSessionDelegate {
             episode.podcast = podcast
             episode.podcastID = (metaData["podcastID"] as? String)!
             RealmInteractor().saveEpisode(episode: episode)
+            
+            //Need to move file -
+            let dirPaths = NSSearchPathForDirectoriesInDomains(.documentDirectory,
+                                                               .userDomainMask, true)
+            let docsDir = dirPaths[0] as String
+            let filemgr = FileManager.default
+            
+            do {
+                try filemgr.moveItem(atPath: file.fileURL.path,
+                                           toPath: docsDir + "EpisodeData_" + (episode.guid?.replacingOccurrences(of: "/", with: ""))! + "_" + (episode.podcast?.iD)!)
+            } catch let error as NSError {
+                print("Error moving file: \(error.description)")
+            }
+            
+            
             self.podcasts = RealmInteractor().fetchAllPodcast()
             reloadTable()
         }

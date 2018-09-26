@@ -18,7 +18,10 @@ class FileSystemInteractor: NSObject {
                 let episodeData = try Data(contentsOf: fileURL)
                 return episodeData
             }
-            catch {/* error handling here */}
+            catch {
+                /* error handling here */
+                print("error opening file: \(error)")
+            }
         }
         return nil 
     }

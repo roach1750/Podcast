@@ -51,6 +51,7 @@
 		21B577901F99072400F5B4F1 /* PodcastTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21B5778F1F99072400F5B4F1 /* PodcastTableViewCell.swift */; };
 		21B577921F99877400F5B4F1 /* EpisodesListSearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21B577911F99877400F5B4F1 /* EpisodesListSearchViewController.swift */; };
 		21B66FA11F8FF885009FC323 /* EpisodePlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21B66FA01F8FF885009FC323 /* EpisodePlayer.swift */; };
+		21BF0250215B11F0008DC226 /* FileSystemInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 218FBF702103DD9800A5EF87 /* FileSystemInteractor.swift */; };
 		21BF43DB208D514900237770 /* TimeSeekData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21BF43DA208D514900237770 /* TimeSeekData.swift */; };
 		21CB11D71F943653009DC978 /* Podcast.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21CB11D61F943653009DC978 /* Podcast.swift */; };
 		21CB11DB1F958404009DC978 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21CB11DA1F958404009DC978 /* SearchViewController.swift */; };
@@ -746,6 +747,7 @@
 				218E6DFD2156B6560000AFC5 /* PodcastIC.swift in Sources */,
 				218E6E24215744BD0000AFC5 /* PodcastRow.swift in Sources */,
 				218E6E26215747B40000AFC5 /* EpisodeIC.swift in Sources */,
+				21BF0250215B11F0008DC226 /* FileSystemInteractor.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -8,7 +8,7 @@
 
 import WatchKit
 import Foundation
-
+import AVFoundation
 
 class EpisodeIC: WKInterfaceController {
 
@@ -61,5 +61,34 @@ class EpisodeIC: WKInterfaceController {
         }
     }
     
+    var audioPlayer: AVAudioPlayer?
+
+    
+    override func table(_ table: WKInterfaceTable, didSelectRowAt rowIndex: Int) {
+        try! setupAudioSession()
+        let episode = episodes[rowIndex]
+        
+        let dirPaths = NSSearchPathForDirectoriesInDomains(.documentDirectory,
+                                                           .userDomainMask, true)
+        let docsDir = dirPaths[0] as String
+        let filemgr = FileManager.default
+        if let data = filemgr.contents(atPath: docsDir + "EpisodeData_" + (episode.guid?.replacingOccurrences(of: "/", with: ""))! + "_" + (episode.podcast?.iD)!) {
+            print(data.count)
+                    audioPlayer = try! AVAudioPlayer(data: data)
+                    audioPlayer?.play()
+        }
+
+
+    }
+    
+    
+    func setupAudioSession() throws {
+        try AVAudioSession.sharedInstance().setCategory(
+            AVAudioSession.Category.playback,
+            mode: AVAudioSession.Mode.default,
+            policy: .longForm,
+            options: []
+        )
+    }
     
 }
