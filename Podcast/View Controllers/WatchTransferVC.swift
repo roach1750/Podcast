@@ -32,11 +32,11 @@ class WatchTransferVC: UIViewController, UITableViewDelegate, UITableViewDataSou
             session.delegate = self
             session.activate()
         }
-
+        tableView.tableFooterView = UIView()
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        latestEpisodes = RealmInteractor().fetchLatestEpisodes()
+        latestEpisodes = RealmInteractor().fetchLatestDownloadedEpiosdes()
         tableView.reloadData()
         statusLabel.isHidden = true
     }
@@ -163,7 +163,12 @@ class WatchTransferVC: UIViewController, UITableViewDelegate, UITableViewDataSou
     
     //Tableview Stuff
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return (latestEpisodes?.count)!
+        if latestEpisodes != nil {
+            return (latestEpisodes?.count)!
+        }
+        else {
+            return 0
+        }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {

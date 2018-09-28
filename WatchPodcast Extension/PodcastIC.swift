@@ -11,13 +11,13 @@ import Foundation
 import WatchConnectivity
 
 class PodcastIC: WKInterfaceController, WCSessionDelegate {
-
+    
     @IBOutlet var tableView: WKInterfaceTable!
     @IBOutlet var textLabel: WKInterfaceLabel!
     
     var podcasts = [Podcast]()
     var session : WCSession!
-
+    
     override func awake(withContext context: Any?) {
         super.awake(withContext: context)
         if WCSession.isSupported() {
@@ -55,12 +55,12 @@ class PodcastIC: WKInterfaceController, WCSessionDelegate {
     override func table(_ table: WKInterfaceTable, didSelectRowAt rowIndex: Int) {
         let podcast = podcasts[rowIndex]
         let podcastDict = ["podcast" : podcast]
-
+        
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: "goToMiddleControllerToViewEpisodes"), object: nil, userInfo: podcastDict)
-
+        
     }
     
-
+    
     
     //transfer stuff
     
@@ -81,6 +81,7 @@ class PodcastIC: WKInterfaceController, WCSessionDelegate {
             print("episodeTitle: \(String(describing: metaData["episodeTitle"]))")
             print("podcastName: \(String(describing: metaData["podcastName"]))")
             print("podcastID: \(String(describing: metaData["podcastID"]))")
+            
             let episode = Episode()
             episode.guid = metaData["episodeGuid"] as? String
             episode.title = metaData["episodeTitle"] as? String
@@ -89,7 +90,10 @@ class PodcastIC: WKInterfaceController, WCSessionDelegate {
             podcast.iD = (metaData["podcastID"] as? String)!
             episode.podcast = podcast
             episode.podcastID = (metaData["podcastID"] as? String)!
+            print("saveEpisodeCalled from - ⚡️: \(Thread.current)" + "🏭: \(OperationQueue.current?.underlyingQueue?.label ?? "None")")
+            
             RealmInteractor().saveEpisode(episode: episode)
+            
             
             //Need to move file -
             let dirPaths = NSSearchPathForDirectoriesInDomains(.documentDirectory,
@@ -99,51 +103,52 @@ class PodcastIC: WKInterfaceController, WCSessionDelegate {
             
             do {
                 try filemgr.moveItem(atPath: file.fileURL.path,
-                                           toPath: docsDir + "EpisodeData_" + (episode.guid?.replacingOccurrences(of: "/", with: ""))! + "_" + (episode.podcast?.iD)!)
+                                     toPath: docsDir + "EpisodeData_" + (episode.guid?.replacingOccurrences(of: "/", with: ""))! + "_" + (episode.podcast?.iD)!)
             } catch let error as NSError {
                 print("Error moving file: \(error.description)")
             }
             
             
             self.podcasts = RealmInteractor().fetchAllPodcast()
-            reloadTable()
+            self.reloadTable()
+            
         }
     }
     
-
-    
-//    func session(_ session: WCSession, didReceiveApplicationContext applicationContext: [String : Any]) {
-//        let messageText = applicationContext["message"] as! String
-//        textLabel.setText(messageText)
-//        textLabel.setTextColor(UIColor(red: .random(in: 0...1),
-//                                       green: .random(in: 0...1),
-//                                       blue: .random(in: 0...1),
-//                                       alpha: 1.0))
-//    }
-//
-//    func session(_ session: WCSession, didReceiveMessage message: [String : Any], replyHandler: @escaping ([String : Any]) -> Void) {
-//        let messageText = message["message"] as! String
-//        textLabel.setText(messageText)
-//        textLabel.setTextColor(UIColor(red: .random(in: 0...1),
-//                                       green: .random(in: 0...1),
-//                                       blue: .random(in: 0...1),
-//                                       alpha: 1.0))
-//        replyHandler([:])
-//    }
     
     
+    //    func session(_ session: WCSession, didReceiveApplicationContext applicationContext: [String : Any]) {
+    //        let messageText = applicationContext["message"] as! String
+    //        textLabel.setText(messageText)
+    //        textLabel.setTextColor(UIColor(red: .random(in: 0...1),
+    //                                       green: .random(in: 0...1),
+    //                                       blue: .random(in: 0...1),
+    //                                       alpha: 1.0))
+    //    }
+    //
+    //    func session(_ session: WCSession, didReceiveMessage message: [String : Any], replyHandler: @escaping ([String : Any]) -> Void) {
+    //        let messageText = message["message"] as! String
+    //        textLabel.setText(messageText)
+    //        textLabel.setTextColor(UIColor(red: .random(in: 0...1),
+    //                                       green: .random(in: 0...1),
+    //                                       blue: .random(in: 0...1),
+    //                                       alpha: 1.0))
+    //        replyHandler([:])
+    //    }
     
     
-//    @IBAction func transferUserInfo() {
-//
-//        let userInfo = ["message": "UserInfo transfer"]
-//        _ = session.transferUserInfo(userInfo)
-//        _ = session.outstandingUserInfoTransfers
-//    }
-//
     
     
-
-
-
+    //    @IBAction func transferUserInfo() {
+    //
+    //        let userInfo = ["message": "UserInfo transfer"]
+    //        _ = session.transferUserInfo(userInfo)
+    //        _ = session.outstandingUserInfoTransfers
+    //    }
+    //
+    
+    
+    
+    
+    
 }

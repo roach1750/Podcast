@@ -20,11 +20,13 @@ class RealmInteractor: NSObject {
     }
     
     func saveEpisode(episode: Episode) {
+        print("saveEpisodeCalled Actual Method - ⚡️: \(Thread.current)" + "🏭: \(OperationQueue.current?.underlyingQueue?.label ?? "None")")
         let realm = try! Realm()
         try! realm.write {
             realm.create(Episode.self, value: episode, update: true)
         }
     }
+    
 
     //NEW
     func saveEpisodes(episodes: [Episode]) {
@@ -346,15 +348,21 @@ class RealmInteractor: NSObject {
 
     
     func fetchEpisodesForPodcast(podcast:Podcast) -> [Episode] {
+        print("fetchEpisodesForPodcast - ⚡️: \(Thread.current)" + "🏭: \(OperationQueue.current?.underlyingQueue?.label ?? "None")")
+        let realm = try! Realm()
+
         if podcast.isInvalidated {
             return [Episode]()
         }
-        let realm = try! Realm()
         realm.refresh()
         let predicate = NSPredicate(format: "podcastID == %@", podcast.iD)
         let results = Array(realm.objects(Episode.self).filter(predicate).sorted(byKeyPath: "publishedDate", ascending: false))
         return results
     }
+    
+
+    
+    
     
 //    func addEpisodeAudioToEpisode(episode: Episode, audio: [Data]){
 //        let realm = try! Realm()
@@ -382,6 +390,13 @@ class RealmInteractor: NSObject {
     func fetchLatestEpisodes() -> [Episode]? {
         let realm = try! Realm()
         let latestEpisodes = realm.objects(Episode.self).sorted(byKeyPath: "publishedDate", ascending: false)
+        return Array(latestEpisodes)
+    }
+    
+    func fetchLatestDownloadedEpiosdes() -> [Episode]? {
+        let realm = try! Realm()
+        let predicate = NSPredicate(format: "isDownloaded == true")
+        let latestEpisodes = realm.objects(Episode.self).filter(predicate).sorted(byKeyPath: "publishedDate", ascending: false)
         return Array(latestEpisodes)
     }
     

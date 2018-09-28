@@ -39,8 +39,10 @@ class EpisodeIC: WKInterfaceController {
     }
     
     @objc func becomeVisiblePage(_ notification: NSNotification) {
+        
         if let podcast = notification.userInfo!["podcast"] as? Podcast {
             selectedPodcast = podcast
+            print("becomeVisiblePage - ⚡️: \(Thread.current)" + "🏭: \(OperationQueue.current?.underlyingQueue?.label ?? "None")")
             episodes = RealmInteractor().fetchEpisodesForPodcast(podcast: selectedPodcast!)
             print("Watch found \(episodes.count) episodes")
             titleLabel.setText(selectedPodcast!.name!)
