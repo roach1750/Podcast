@@ -8,30 +8,47 @@
 
 import WatchKit
 import Foundation
-import WatchConnectivity
+import RealmSwift
 
-class PodcastIC: WKInterfaceController, WCSessionDelegate {
+class PodcastIC: WKInterfaceController {
     
     @IBOutlet var tableView: WKInterfaceTable!
     @IBOutlet var textLabel: WKInterfaceLabel!
     
+    
+    var notificationToken: NotificationToken? = nil
+
+    
     var podcasts = [Podcast]()
-    var session : WCSession!
     
     override func awake(withContext context: Any?) {
         super.awake(withContext: context)
-        if WCSession.isSupported() {
-            session = WCSession.default
-            session.delegate = self
-            session.activate()
+        
+        let realm = try! Realm()
+        let results = realm.objects(Podcast.self)
+        notificationToken = results.observe { [weak self] (changes: RealmCollectionChange) in
+            switch changes {
+            case .initial:
+                self?.reloadTable()
+                // Results are now populated and can be accessed without blocking the UI
+            case .update:
+                self?.reloadTable()
+                // Query results have changed, so apply them to the UITableView
+            case .error(let error):
+                // An error occurred while opening the Realm file on the background worker thread
+                fatalError("\(error)")
+            }
         }
+        
     }
     
+    deinit {
+        notificationToken?.invalidate()
+    }
     
     
     override func willActivate() {
         super.willActivate()
-        podcasts = RealmInteractor().fetchAllPodcast()
         reloadTable()
     }
     
@@ -42,6 +59,7 @@ class PodcastIC: WKInterfaceController, WCSessionDelegate {
     
     //table stuff
     func reloadTable() {
+        podcasts = RealmInteractor().fetchAllPodcast()
         if podcasts.count != 0 {
             tableView.setNumberOfRows(podcasts.count, withRowType: "tableview")
             for (index, podcast) in podcasts.enumerated() {
@@ -63,57 +81,7 @@ class PodcastIC: WKInterfaceController, WCSessionDelegate {
     
     
     //transfer stuff
-    
-    func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
-        
-    }
-    
-    
-    func session(_ session: WCSession, didReceive file: WCSessionFile) {
-        
-        //file = file url and metadata
-        //file is documents inbox folder and we need to relocate it to more permanent location, if not the file will be delete after this delegate returns
-        print("file received")
-        textLabel.setText("file received")
-        print(file.fileURL)
-        if let metaData = file.metadata {
-            print("episodeGuid: \(String(describing: metaData["episodeGuid"]))")
-            print("episodeTitle: \(String(describing: metaData["episodeTitle"]))")
-            print("podcastName: \(String(describing: metaData["podcastName"]))")
-            print("podcastID: \(String(describing: metaData["podcastID"]))")
-            
-            let episode = Episode()
-            episode.guid = metaData["episodeGuid"] as? String
-            episode.title = metaData["episodeTitle"] as? String
-            let podcast = Podcast()
-            podcast.name = metaData["podcastName"] as? String
-            podcast.iD = (metaData["podcastID"] as? String)!
-            episode.podcast = podcast
-            episode.podcastID = (metaData["podcastID"] as? String)!
-            print("saveEpisodeCalled from - ⚡️: \(Thread.current)" + "🏭: \(OperationQueue.current?.underlyingQueue?.label ?? "None")")
-            
-            RealmInteractor().saveEpisode(episode: episode)
-            
-            
-            //Need to move file -
-            let dirPaths = NSSearchPathForDirectoriesInDomains(.documentDirectory,
-                                                               .userDomainMask, true)
-            let docsDir = dirPaths[0] as String
-            let filemgr = FileManager.default
-            
-            do {
-                try filemgr.moveItem(atPath: file.fileURL.path,
-                                     toPath: docsDir + "EpisodeData_" + (episode.guid?.replacingOccurrences(of: "/", with: ""))! + "_" + (episode.podcast?.iD)!)
-            } catch let error as NSError {
-                print("Error moving file: \(error.description)")
-            }
-            
-            
-            self.podcasts = RealmInteractor().fetchAllPodcast()
-            self.reloadTable()
-            
-        }
-    }
+
     
     
     

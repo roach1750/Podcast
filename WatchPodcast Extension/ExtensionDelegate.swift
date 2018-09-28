@@ -8,18 +8,71 @@
 
 import WatchKit
 import RealmSwift
+import WatchConnectivity
 
 
-class ExtensionDelegate: NSObject, WKExtensionDelegate {
+class ExtensionDelegate: NSObject, WKExtensionDelegate, WCSessionDelegate {
 
+
+    var session : WCSession!
 
     
     func applicationDidFinishLaunching() {
         // Perform any final initialization of your application.
         print("Realm location for watchOS app: \(Realm.Configuration.defaultConfiguration.fileURL!)")
-
+        if WCSession.isSupported() {
+            session = WCSession.default
+            session.delegate = self
+            session.activate()
+        }
     }
 
+    //file transfer:
+    
+    func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
+        
+    }
+    
+    
+    func session(_ session: WCSession, didReceive file: WCSessionFile) {
+        
+        //file = file url and metadata
+        //file is documents inbox folder and we need to relocate it to more permanent location, if not the file will be delete after this delegate returns
+        print("file received")
+        print(file.fileURL)
+        if let metaData = file.metadata {
+            print("episodeGuid: \(String(describing: metaData["episodeGuid"]))")
+            print("episodeTitle: \(String(describing: metaData["episodeTitle"]))")
+            print("podcastName: \(String(describing: metaData["podcastName"]))")
+            print("podcastID: \(String(describing: metaData["podcastID"]))")
+            
+            let episode = Episode()
+            episode.guid = metaData["episodeGuid"] as? String
+            episode.title = metaData["episodeTitle"] as? String
+            let podcast = Podcast()
+            podcast.name = metaData["podcastName"] as? String
+            podcast.iD = (metaData["podcastID"] as? String)!
+            episode.podcast = podcast
+            episode.podcastID = (metaData["podcastID"] as? String)!
+            print("saveEpisodeCalled from - ⚡️: \(Thread.current)" + "🏭: \(OperationQueue.current?.underlyingQueue?.label ?? "None")")
+            
+            RealmInteractor().saveEpisode(episode: episode)
+            
+            //Need to move file -
+            let dirPaths = NSSearchPathForDirectoriesInDomains(.documentDirectory,
+                                                               .userDomainMask, true)
+            let docsDir = dirPaths[0] as String
+            let filemgr = FileManager.default
+            
+            do {
+                try filemgr.moveItem(atPath: file.fileURL.path,
+                                     toPath: docsDir + "EpisodeData_" + (episode.guid?.replacingOccurrences(of: "/", with: ""))! + "_" + (episode.podcast?.iD)!)
+            } catch let error as NSError {
+                print("Error moving file: \(error.description)")
+            }
+            
+        }
+    }
 
     
     
