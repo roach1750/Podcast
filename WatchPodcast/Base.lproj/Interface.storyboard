@@ -8,16 +8,16 @@
         <plugIn identifier="com.apple.InterfaceBuilder.IBWatchKitPlugin" version="14238.10"/>
     </dependencies>
     <scenes>
-        <!--Interface Controller-->
+        <!--RemoteControlIC-->
         <scene sceneID="KWy-rl-kNr">
             <objects>
-                <controller id="xus-Ga-vho">
+                <controller identifier="RemoteControlIC" id="xus-Ga-vho" customClass="RemoteControlIC" customModule="WatchPodcast_Extension">
                     <items>
                         <nowPlayingView alignment="left" id="BVd-fP-zbt"/>
                     </items>
                 </controller>
             </objects>
-            <point key="canvasLocation" x="398" y="-112"/>
+            <point key="canvasLocation" x="401" y="-112"/>
         </scene>
         <!--Podcasts-->
         <scene sceneID="aou-V4-d1y">

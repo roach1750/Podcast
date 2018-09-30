@@ -14,6 +14,8 @@
 		21369CCA2133491000CDDF7E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 21CDF0EC1F32A70F00A6F4DC /* Main.storyboard */; };
 		2144359820F83A8500AF75F9 /* SmallPlayerRemoteVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2144359720F83A8500AF75F9 /* SmallPlayerRemoteVC.swift */; };
 		2144359A20F8437C00AF75F9 /* LargePlayerRemoteVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2144359920F8437C00AF75F9 /* LargePlayerRemoteVC.swift */; };
+		215679B9215FD41D00B406C7 /* WatchAudioPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 215679B8215FD41D00B406C7 /* WatchAudioPlayer.swift */; };
+		215679BB216164B800B406C7 /* RemoteControlIC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 215679BA216164B800B406C7 /* RemoteControlIC.swift */; };
 		2173736120240548007AD6E6 /* LatestEpisodesVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2173736020240548007AD6E6 /* LatestEpisodesVC.swift */; };
 		217DDEE7209FA10D00D8E835 /* JSONPodcast.swift in Sources */ = {isa = PBXBuildFile; fileRef = 217DDEE6209FA10D00D8E835 /* JSONPodcast.swift */; };
 		217DDEE9209FA92E00D8E835 /* TopPodcast.swift in Sources */ = {isa = PBXBuildFile; fileRef = 217DDEE8209FA92E00D8E835 /* TopPodcast.swift */; };
@@ -138,6 +140,8 @@
 		2146BCA71F8D57E4009B5C37 /* Documents */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Documents; path = "../../Library/Mobile Documents/com~apple~CloudDocs/Documents"; sourceTree = "<group>"; };
 		2146BCA91F8D5800009B5C37 /* Realm.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Realm.framework; path = "../../Downloads/realm-swift-2.10-2.2/watchos/swift-3.0/Realm.framework"; sourceTree = "<group>"; };
 		2146BCAA1F8D5800009B5C37 /* RealmSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RealmSwift.framework; path = "../../Downloads/realm-swift-2.10-2.2/watchos/swift-3.0/RealmSwift.framework"; sourceTree = "<group>"; };
+		215679B8215FD41D00B406C7 /* WatchAudioPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchAudioPlayer.swift; sourceTree = "<group>"; };
+		215679BA216164B800B406C7 /* RemoteControlIC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteControlIC.swift; sourceTree = "<group>"; };
 		2173736020240548007AD6E6 /* LatestEpisodesVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LatestEpisodesVC.swift; sourceTree = "<group>"; };
 		217DDEE6209FA10D00D8E835 /* JSONPodcast.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JSONPodcast.swift; sourceTree = "<group>"; };
 		217DDEE8209FA92E00D8E835 /* TopPodcast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopPodcast.swift; sourceTree = "<group>"; };
@@ -301,6 +305,8 @@
 				218E6E132156B7950000AFC5 /* WatchPodcast Extension.entitlements */,
 				218E6DFC2156B6560000AFC5 /* PodcastIC.swift */,
 				218E6E25215747B40000AFC5 /* EpisodeIC.swift */,
+				215679BA216164B800B406C7 /* RemoteControlIC.swift */,
+				215679B8215FD41D00B406C7 /* WatchAudioPlayer.swift */,
 				218E6E23215744BD0000AFC5 /* PodcastRow.swift */,
 				218E6E002156B6570000AFC5 /* NotificationController.swift */,
 				218E6E022156B6570000AFC5 /* Assets.xcassets */,
@@ -741,6 +747,7 @@
 			files = (
 				218E6E012156B6570000AFC5 /* NotificationController.swift in Sources */,
 				218E6E2221572FA80000AFC5 /* RealmInteractor.swift in Sources */,
+				215679BB216164B800B406C7 /* RemoteControlIC.swift in Sources */,
 				218E6DFF2156B6570000AFC5 /* ExtensionDelegate.swift in Sources */,
 				218E6E1F21572EA20000AFC5 /* Podcast.swift in Sources */,
 				218E6E2021572ECC0000AFC5 /* Episode.swift in Sources */,
@@ -748,6 +755,7 @@
 				218E6E24215744BD0000AFC5 /* PodcastRow.swift in Sources */,
 				218E6E26215747B40000AFC5 /* EpisodeIC.swift in Sources */,
 				21BF0250215B11F0008DC226 /* FileSystemInteractor.swift in Sources */,
+				215679B9215FD41D00B406C7 /* WatchAudioPlayer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

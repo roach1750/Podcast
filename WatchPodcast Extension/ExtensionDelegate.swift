@@ -114,5 +114,20 @@ class ExtensionDelegate: NSObject, WKExtensionDelegate, WCSessionDelegate {
             }
         }
     }
+    
+    func handleRemoteNowPlayingActivity() {
+            // Get visible controller
+        let visibleController = WKExtension.shared().visibleInterfaceController
+        
+        if visibleController!.isKind(of: RemoteControlIC.self) {
+            print("remote is visible")
+        }
+        else {
+            WKInterfaceController.reloadRootPageControllers(withNames: ["RemoteControlIC"], contexts: nil, orientation: .horizontal, pageIndex: 0)
+        }
+    }
+    
 
 }
+
+
