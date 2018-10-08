@@ -20,7 +20,7 @@ class RealmInteractor: NSObject {
     }
     
     func saveEpisode(episode: Episode) {
-        print("saveEpisodeCalled Actual Method - ⚡️: \(Thread.current)" + "🏭: \(OperationQueue.current?.underlyingQueue?.label ?? "None")")
+//        print("saveEpisodeCalled Actual Method - ⚡️: \(Thread.current)" + "🏭: \(OperationQueue.current?.underlyingQueue?.label ?? "None")")
         let realm = try! Realm()
         try! realm.write {
             realm.create(Episode.self, value: episode, update: true)
@@ -348,7 +348,7 @@ class RealmInteractor: NSObject {
 
     
     func fetchEpisodesForPodcast(podcast:Podcast) -> [Episode] {
-        print("fetchEpisodesForPodcast - ⚡️: \(Thread.current)" + "🏭: \(OperationQueue.current?.underlyingQueue?.label ?? "None")")
+//        print("fetchEpisodesForPodcast - ⚡️: \(Thread.current)" + "🏭: \(OperationQueue.current?.underlyingQueue?.label ?? "None")")
         let realm = try! Realm()
 
         if podcast.isInvalidated {

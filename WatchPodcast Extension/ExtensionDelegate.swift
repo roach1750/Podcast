@@ -54,22 +54,32 @@ class ExtensionDelegate: NSObject, WKExtensionDelegate, WCSessionDelegate {
             podcast.iD = (metaData["podcastID"] as? String)!
             episode.podcast = podcast
             episode.podcastID = (metaData["podcastID"] as? String)!
-            print("saveEpisodeCalled from - ⚡️: \(Thread.current)" + "🏭: \(OperationQueue.current?.underlyingQueue?.label ?? "None")")
+//            print("saveEpisodeCalled from - ⚡️: \(Thread.current)" + "🏭: \(OperationQueue.current?.underlyingQueue?.label ?? "None")")
             
             RealmInteractor().saveEpisode(episode: episode)
             
-            //Need to move file -
-            let dirPaths = NSSearchPathForDirectoriesInDomains(.documentDirectory,
-                                                               .userDomainMask, true)
-            let docsDir = dirPaths[0] as String
-            let filemgr = FileManager.default
             
-            do {
-                try filemgr.moveItem(atPath: file.fileURL.path,
-                                     toPath: docsDir + "EpisodeData_" + (episode.guid?.replacingOccurrences(of: "/", with: ""))! + "_" + (episode.podcast?.iD)!)
-            } catch let error as NSError {
-                print("Error moving file: \(error.description)")
+            //Need to move file -
+            
+            DispatchQueue.main.sync {
+                
+                
+                let dirPaths = NSSearchPathForDirectoriesInDomains(.documentDirectory,
+                                                                   .userDomainMask, true)
+                let docsDir = dirPaths[0] as String
+                let filemgr = FileManager.default
+                
+                do {
+                    try filemgr.moveItem(atPath: file.fileURL.path,
+                                         toPath: docsDir + "/EpisodeData_" + (episode.guid?.replacingOccurrences(of: "/", with: ""))! + "_" + (episode.podcast?.iD)!)
+                    print("Moved File To Path: \(docsDir + "/EpisodeData_" + (episode.guid?.replacingOccurrences(of: "/", with: ""))! + "_" + (episode.podcast?.iD)!)")
+                    
+                    
+                } catch let error as NSError {
+                    print("Error moving file: \(error.description)")
+                }
             }
+        
             
         }
     }

@@ -55,8 +55,15 @@ class Downloader: NSObject {
 
     //INDIVIDUAL
     fileprivate func decodeIndividualPodcastSearchResults(_ data: Data) {
-        let results = try! JSONDecoder().decode(iTunesPodcastResults.self, from: data)
-        convertJSONPodcastToPodcast(podcastToConvert: results.results.first!)
+        
+        do {
+            
+            let results = try JSONDecoder().decode(iTunesPodcastResults.self, from: data)
+            convertJSONPodcastToPodcast(podcastToConvert: results.results.first!)
+        }
+        catch {
+            print(error)
+        }
     }
     
     func convertJSONPodcastToPodcast(podcastToConvert: iTunesPodcastResults.JSONPodcast) {

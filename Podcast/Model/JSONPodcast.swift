@@ -20,7 +20,7 @@ struct iTunesPodcastResults: Codable {
     var results: [JSONPodcast]
     
     struct JSONPodcast: Codable {
-        let artistId: Int?
+        let artistId: String?
         let collectionId: Int?
         let trackId: Int?
         let artistName: String?
