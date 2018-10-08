@@ -11,7 +11,6 @@ import AVFoundation
 import MediaPlayer
 import RealmSwift
 import NVActivityIndicatorView
-import KDEAudioPlayer
 
 
 class SmallPlayerRemoteVC: UIViewController {
@@ -125,7 +124,9 @@ extension SmallPlayerRemoteVC: ARAudioPlayerDelegate {
 
 
     func progressUpdated(timeUpdated: Float) {
-        
+        let episode = ARAudioPlayer.sharedInstance.nowPlayingEpisode
+        let currentTime = Double(timeUpdated)
+        RealmInteractor().setEpisodeCurrentPlaybackDuration(episode: episode!, currentPlaybackDuration: Double(currentTime))
     }
 
     func didChangeState(oldState: AudioPlayerState, newState: AudioPlayerState) {

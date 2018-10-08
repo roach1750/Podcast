@@ -14,7 +14,6 @@ inhibit_all_warnings!
     	pod 'Alamofire', '~> 4.7'
     	pod 'Kanna', '~> 4.0.0'
   	pod 'FeedKit', '~> 6.0'
-	pod 'KDEAudioPlayer'
 
 pod 'NVActivityIndicatorView'
 end

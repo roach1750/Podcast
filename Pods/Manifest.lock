@@ -2,7 +2,6 @@ PODS:
   - Alamofire (4.7.3)
   - FeedKit (6.2.0)
   - Kanna (4.0.2)
-  - KDEAudioPlayer (1.1.0)
   - NVActivityIndicatorView (4.4.0):
     - NVActivityIndicatorView/Presenter (= 4.4.0)
   - NVActivityIndicatorView/Presenter (4.4.0)
@@ -16,7 +15,6 @@ DEPENDENCIES:
   - Alamofire (~> 4.7)
   - FeedKit (~> 6.0)
   - Kanna (~> 4.0.0)
-  - KDEAudioPlayer
   - NVActivityIndicatorView
   - RealmSwift
 
@@ -25,7 +23,6 @@ SPEC REPOS:
     - Alamofire
     - FeedKit
     - Kanna
-    - KDEAudioPlayer
     - NVActivityIndicatorView
     - Realm
     - RealmSwift
@@ -34,11 +31,10 @@ SPEC CHECKSUMS:
   Alamofire: c7287b6e5d7da964a70935e5db17046b7fde6568
   FeedKit: 48e371d0884b3bc7d87253f5ae3313c91d2a7e72
   Kanna: c60b61d72554bf04ed1ee074f9b379855cab4892
-  KDEAudioPlayer: b3787f02b6718c2416589a7726f2633cde2cd60e
   NVActivityIndicatorView: ec7440a57af2450319d3a4181cca7da6fc127064
   Realm: 85ab9e4f779d66f6e9ffeb118dc25b7f130c96ac
   RealmSwift: 69121c8b86d0ae005fb779efdb10e606732e1c74
 
-PODFILE CHECKSUM: cde570a662385a14c2e8f60c537477d65f7d2d68
+PODFILE CHECKSUM: b12bda99000fb4e6c858873df09285c965fd3e7d
 
 COCOAPODS: 1.5.0

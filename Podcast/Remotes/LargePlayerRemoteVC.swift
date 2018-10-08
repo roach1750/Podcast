@@ -11,7 +11,6 @@ import AVFoundation
 import MediaPlayer
 import RealmSwift
 import NVActivityIndicatorView
-import KDEAudioPlayer
 
 class LargePlayerRemoteVC: UIViewController {
     
