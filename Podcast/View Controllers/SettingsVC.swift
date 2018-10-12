@@ -46,7 +46,7 @@ class SettingsVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         let podcast = keys[indexPath.row]
         cell.textLabel?.text = podcast.name
         cell.detailTextLabel?.text = formatSize(size: results[podcast]!)
-        cell.imageView?.image = UIImage(data: podcast.artwork100x100!)
+        cell.imageView?.image = UIImage(data: podcast.artwork600x600!)
         return cell
     }
     

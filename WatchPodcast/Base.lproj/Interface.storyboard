@@ -13,11 +13,43 @@
             <objects>
                 <controller identifier="RemoteControlIC" id="xus-Ga-vho" customClass="RemoteControlIC" customModule="WatchPodcast_Extension">
                     <items>
-                        <nowPlayingView alignment="left" id="BVd-fP-zbt"/>
+                        <label alignment="left" text="Podcast Name" id="F2P-Zi-dRC">
+                            <color key="textColor" cocoaTouchSystemColor="lightTextColor"/>
+                        </label>
+                        <label alignment="left" text="Episode Name" id="dEp-Wo-fwh"/>
+                        <group width="1" height="102" alignment="center" contentMode="center" id="ov8-5Z-H3M">
+                            <items>
+                                <button alignment="left" verticalAlignment="center" title="SB" id="Way-Un-BHR">
+                                    <connections>
+                                        <action selector="skipBackwardButtonPressed" destination="xus-Ga-vho" id="q75-Nv-2lD"/>
+                                    </connections>
+                                </button>
+                                <button width="75" alignment="center" verticalAlignment="center" title="Play" id="NaD-wz-Z4N">
+                                    <connections>
+                                        <action selector="playPauseButtonPressed" destination="xus-Ga-vho" id="Jxo-wZ-6Lm"/>
+                                    </connections>
+                                </button>
+                                <button alignment="right" verticalAlignment="center" title="SF" id="386-rR-0hb">
+                                    <connections>
+                                        <action selector="skipForwardButtonPressed" destination="xus-Ga-vho" id="ZIu-Xa-XJh"/>
+                                    </connections>
+                                </button>
+                            </items>
+                        </group>
+                        <group width="1" alignment="center" id="mkW-4I-KkR">
+                            <items>
+                                <volumeControlView alignment="center" verticalAlignment="center" controlsLocalVolume="NO" id="4wm-W8-zNj"/>
+                            </items>
+                        </group>
                     </items>
+                    <connections>
+                        <outlet property="episodeNameLabel" destination="dEp-Wo-fwh" id="nWC-aL-oXw"/>
+                        <outlet property="playPauseButton" destination="NaD-wz-Z4N" id="DnL-GE-yi1"/>
+                        <outlet property="podcastNameLabel" destination="F2P-Zi-dRC" id="NC5-yW-lwN"/>
+                    </connections>
                 </controller>
             </objects>
-            <point key="canvasLocation" x="401" y="-112"/>
+            <point key="canvasLocation" x="400.60869565217388" y="-112.32142857142857"/>
         </scene>
         <!--Podcasts-->
         <scene sceneID="aou-V4-d1y">

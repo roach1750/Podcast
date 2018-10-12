@@ -28,55 +28,77 @@ class WatchAudioPlayer: NSObject {
     fileprivate let nowPlayingInfoCenter = MPNowPlayingInfoCenter.default()
 
     func playPodcastEpisode(episode: Episode) {
-        nowPlayingEpisode = episode
-        try! setupAudioSession()
         
+        nowPlayingEpisode = episode
+        setupAudioSession()
+        
+        if let data = fetchAudioFileForEpisode(episode: episode) {
+
+            do {
+                try audioPlayer = AVAudioPlayer(data: data)
+            } catch  {
+                print("error creating audioplayer")
+            }
+            print("Found episode File size of: \(data.count)")
+            play()
+        }
+    }
+    
+    func fetchAudioFileForEpisode(episode: Episode) -> Data? {
         let dirPaths = NSSearchPathForDirectoriesInDomains(.documentDirectory,
                                                            .userDomainMask, true)
         let docsDir = dirPaths[0] as String
         let filemgr = FileManager.default
+        return filemgr.contents(atPath: docsDir + "/EpisodeData_" + (episode.guid?.replacingOccurrences(of: "/", with: ""))! + "_" + (episode.podcast?.iD)!)
+            
+    }
+    
+    func setupAudioSession()  {
+        do {
+            try AVAudioSession.sharedInstance().setCategory(
+                AVAudioSession.Category.playback,
+                mode: AVAudioSession.Mode.default,
+                policy: .longForm,
+                options: []
+            )
+        }
+        catch {
+            print(error)
+        }
         
+    }
 
-        
-        if let data = filemgr.contents(atPath: docsDir + "/EpisodeData_" + (episode.guid?.replacingOccurrences(of: "/", with: ""))! + "_" + (episode.podcast?.iD)!) {
-            
-            print("Found episode File size of: \(data.count)")
-            
-            AVAudioSession.sharedInstance().activate(options: []) { (bool, error) in
-                
-                if let error = error {
-                    print("Error from activating the auido session: \(error)")
-                }
-                else {
-                    print("Telling audio player to PLAY")
-                    self.audioPlayer?.play()
-                    self.configureNowPlayignInfoCenter()
-                }
+    func play() {
+        AVAudioSession.sharedInstance().activate(options: []) { (bool, error) in
+            if let error = error {
+                print("Error from activating the auido session: \(error)")
+            }
+            else {
+                print("Telling audio player to PLAY")
+                self.audioPlayer?.play()
             }
         }
+        
+    }
+        
+    func pause () {
+        audioPlayer?.pause()
     }
     
-    func setupAudioSession() throws {
-        try AVAudioSession.sharedInstance().setCategory(
-            AVAudioSession.Category.playback,
-            mode: AVAudioSession.Mode.default,
-            policy: .longForm,
-            options: []
-        )
-    }
-
-    func configureNowPlayignInfoCenter() {
-        DispatchQueue.main.async {
-            print("configureNowPlayignInfoCenter called on  - ⚡️: \(Thread.current)" + "🏭: \(OperationQueue.current?.underlyingQueue?.label ?? "None")")
-            var nowPlayingInfo = [String: Any]()
-            nowPlayingInfo[MPMediaItemPropertyTitle] = self.nowPlayingEpisode?.title
-            nowPlayingInfo[MPMediaItemPropertyArtist] = self.nowPlayingEpisode?.podcast?.name
-            self.nowPlayingInfoCenter.nowPlayingInfo = nowPlayingInfo
-        }
-    }
     
-    fileprivate let remoteCommandCenter = MPRemoteCommandCenter.shared()
     
+//    func configureNowPlayignInfoCenter() {
+//        DispatchQueue.main.async {
+//            print("configureNowPlayignInfoCenter called on  - ⚡️: \(Thread.current)" + "🏭: \(OperationQueue.current?.underlyingQueue?.label ?? "None")")
+//            var nowPlayingInfo = [String: Any]()
+//            nowPlayingInfo[MPMediaItemPropertyTitle] = self.nowPlayingEpisode?.title
+//            nowPlayingInfo[MPMediaItemPropertyArtist] = self.nowPlayingEpisode?.podcast?.name
+//            self.nowPlayingInfoCenter.nowPlayingInfo = nowPlayingInfo
+//        }
+//    }
+    
+//    fileprivate let remoteCommandCenter = MPRemoteCommandCenter.shared()
+//
 //    func enableSkipForwardCommand(interval: Int = 15) {
 //        remoteCommandCenter.skipForwardCommand.preferredIntervals = [NSNumber(value: interval)]
 //        remoteCommandCenter.skipForwardCommand.addTarget(self, action:

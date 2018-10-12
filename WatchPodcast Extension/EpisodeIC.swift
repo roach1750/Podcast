@@ -69,6 +69,8 @@ class EpisodeIC: WKInterfaceController {
         
         let episode = episodes[rowIndex]
         WatchAudioPlayer.sharedInstance.playPodcastEpisode(episode: episode)
+        
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "goToRemoteControlIC"), object: nil, userInfo: nil)
 
     }
     
