@@ -524,6 +524,7 @@
 					217EE9E520CF51920005C73A = {
 						CreatedOnToolsVersion = 9.4;
 						DevelopmentTeam = P44AL382B9;
+						LastSwiftMigration = 1000;
 						ProvisioningStyle = Automatic;
 						TestTargetID = 21CDF0E41F32A70F00A6F4DC;
 					};
@@ -553,7 +554,7 @@
 					21CDF0E41F32A70F00A6F4DC = {
 						CreatedOnToolsVersion = 8.3.3;
 						DevelopmentTeam = P44AL382B9;
-						LastSwiftMigration = 0940;
+						LastSwiftMigration = 1000;
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
 							com.apple.ApplicationGroups.iOS = {

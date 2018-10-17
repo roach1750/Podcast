@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "25622BDCA24151D7C101C916DCD4C64D"
+               BlueprintIdentifier = "4D10E4FF5A483B852B47CCA0B994E340"
                BuildableName = "Kanna.framework"
                BlueprintName = "Kanna"
                ReferencedContainer = "container:Pods.xcodeproj">
@@ -45,7 +45,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "25622BDCA24151D7C101C916DCD4C64D"
+            BlueprintIdentifier = "4D10E4FF5A483B852B47CCA0B994E340"
             BuildableName = "Kanna.framework"
             BlueprintName = "Kanna"
             ReferencedContainer = "container:Pods.xcodeproj">

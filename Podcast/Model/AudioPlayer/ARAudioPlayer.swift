@@ -10,6 +10,7 @@ import UIKit
 import  AVKit
 import MediaPlayer
 import RealmSwift
+
 class ARAudioPlayer: NSObject {
     
     
@@ -64,7 +65,7 @@ class ARAudioPlayer: NSObject {
         didSet {
             if oldValue != playerState && delegate != nil {
                 delegate.didChangeState(oldState: oldValue, newState: playerState)
-                //                print("New State is: \(playerState)")
+                print("New State is: \(playerState)")
             }
         }
     }

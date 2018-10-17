@@ -19,6 +19,7 @@ class WatchAudioPlayer: NSObject {
     
     var audioPlayer: AVAudioPlayer?
     
+    
     var nowPlayingEpisode: Episode? {
         didSet {
             print("Nowplayingepisode set on  - ⚡️: \(Thread.current)" + "🏭: \(OperationQueue.current?.underlyingQueue?.label ?? "None")")
@@ -41,6 +42,7 @@ class WatchAudioPlayer: NSObject {
             }
             print("Found episode File size of: \(data.count)")
             play()
+            
         }
     }
     

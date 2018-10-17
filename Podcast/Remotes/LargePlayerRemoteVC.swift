@@ -57,18 +57,15 @@ class LargePlayerRemoteVC: UIViewController {
             seekSlider.maximumValue = Float((ARAudioPlayer.sharedInstance.nowPlayingEpisode?.duration)!)
             seekSlider.setValue(Float((ARAudioPlayer.sharedInstance.nowPlayingEpisode?.currentPlaybackDuration)!), animated: false)
         }
-        
+        setNeedsStatusBarAppearanceUpdate()
+
     }
     
 
+
     
-    override func viewDidAppear(_ animated: Bool) {
-        UIApplication.shared.statusBarStyle = .lightContent
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        UIApplication.shared.statusBarStyle = .default
-        ARAudioPlayer.sharedInstance.delegate = nil
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .lightContent
     }
     
     func newEpisodeSet() {
